@@ -1,0 +1,52 @@
+swagger: "2.0"
+info:
+  description: "Flask API Server for Asset Manager"
+  version: "1.0.0"
+  title: "Asset Manager"
+host: "localhost:5000"
+basePath: "/"
+tags:
+- name: "home"
+  description: "Log in"
+- name: "auth"
+  description: "User authentication"
+schemes:
+- "https"
+- "http"
+paths:
+  /:
+    get:
+      tags:
+      - "home"
+      summary: "Application entry point"
+      description: ""
+      operationId: "home"
+      produces:
+      - "application/html"
+      responses:
+        200:
+          description: "OK"
+  /auth:
+    post:
+      tags:
+      - "auth"
+      summary: "Sign in to obtain JWT token"
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "JWT"
+        in: "header"
+        description: "authorization"
+        required: true
+        type: "string"
+      responses:
+        405:
+          description: "Invalid input"
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
