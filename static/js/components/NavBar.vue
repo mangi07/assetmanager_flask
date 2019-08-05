@@ -36,7 +36,7 @@
 <script>
 
 module.exports = {
-  props: {user: Object),
+  props: {user: Object},
   methods: {},
   computed: {},
 }

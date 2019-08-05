@@ -3,7 +3,7 @@
 window.myapp = new Vue({
   el: '#app',
   components: {
-        'app': httpVueLoader('../js/App.vue')
+        'app': httpVueLoader('./static/js/App.vue')
       },
 })
 
