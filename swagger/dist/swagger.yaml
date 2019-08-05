@@ -1,0 +1,40 @@
+openapi: 3.0.0
+info:
+  description: "Flask API Server for Asset Manager"
+  version: "1.0.0"
+  title: "Asset Manager"
+servers:
+  - url: http://localhost:5000/
+tags:
+- name: "home"
+  description: "Log in"
+- name: "auth"
+  description: "User authentication"
+paths:
+  /:
+    get:
+      tags:
+      - "home"
+      summary: "Application entry point"
+      responses:
+        '200':
+          description: OK
+  /auth:
+    post:
+      tags:
+      - "auth"
+      summary: "Sign in to obtain JWT token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
