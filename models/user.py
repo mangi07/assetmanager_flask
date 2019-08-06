@@ -16,12 +16,11 @@ class User(object):
 
     def authenticate(username, password):
         user = username_table.get(username, None)
-        if user and verify_password(user.password, password):
-            return user
+        return verify_password(user.password, password)
 
-    def identity(payload):
-        user_id = payload['identity']
-        return userid_table.get(user_id, None)
+    def get(username):
+        user = username_table.get(username, None)
+        return {'username':user.username, 'role':user.role}
 
 
 ##############################################
