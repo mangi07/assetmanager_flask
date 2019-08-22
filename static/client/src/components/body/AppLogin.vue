@@ -1,11 +1,13 @@
 <template>
-  <div>Login</div>
+  <div>
+    Login
+    {{ user.username }}
+  </div>
 </template>
 
 <script>
-
 module.exports = {
-  props: {},
+  props: {user: Object},
   methods: {},
   computed: {},
 }

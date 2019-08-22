@@ -5,9 +5,12 @@
   </div>
 </template>
 
-<script>
 
-let loggedIn = false;  //TODO: remove once real user can be set in props
+<script>
+'use strict';
+//import './static/js/user/check_login.js';
+console.log('hello2');
+
 
 module.exports = {
   components: {
@@ -19,10 +22,11 @@ module.exports = {
       type: Object,
       default: function () {
         // create user object here with promise
+        //console.log(userUtils.getUser());
         return {
           username: '',
           role: '',
-          loggedIn: loggedIn
+          loggedIn: false
         };
       }
     }

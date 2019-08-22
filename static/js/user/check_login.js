@@ -13,9 +13,15 @@ const requester = axios.create({
 
 /* get information on the current user from the server */
 function getUser(){
-  requester.get('user/')
+  try {
+    var tokens = tokenUtils.getTokensFromStorage();
+  } catch (error) {
+    console.log(error);
+  }
+  
+  requester.get('user/', {headers: {'Authorization': 'Bearer ' + tokens.access}})
     .then(function (response) {
-      console.log(response);
+      return response;
     })
     .catch(function (error) {
       console.log(error);
@@ -23,12 +29,19 @@ function getUser(){
 }
 
 /* check access and refresh to see if user is currently logged in */
-function check_login(){
+function checkLogin(){
   try {
     var tokens = tokenUtils.getTokensFromStorage();
+    var user = getUser();
   } catch (error) {
     console.log(error);
     return;
   }
   // do other stuff here
 }
+
+alert('imported!');
+
+export default {
+  getuser,
+};
