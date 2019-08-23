@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 from models.user import User
+from flask_cors import CORS
 
 ##############################################
 # INIT WEB APP
@@ -14,6 +15,9 @@ app = Flask(__name__)
 app.debug = True
 #app.config['SECRET_KEY'] = 'super-secret'
 app.config['JWT_SECRET_KEY'] = 'super-secret'
+
+#cors = CORS(app, resources={r"/*": {"origins": "http://localhost:8080/"}}, allow_header=["Access-Control-Allow-Origin"])
+CORS(app)
 
 #jwt = JWT(app, user.User.authenticate, user.User.identity)
 jwt = JWTManager(app)

@@ -8,7 +8,7 @@ import axios from 'axios';
 import tokenUtils from "./tokens.js";
 
 const requester = axios.create({
-  baseURL: '/',
+  baseURL: 'http://localhost:5000/',
   //timeout: 1000,
 });
 
@@ -46,6 +46,7 @@ var getUser = new Promise(function(resolve, reject) {
 });
 */
 
+/* always returns a user object */
 function getUser(){
   let user = {
     username: null,
@@ -59,7 +60,7 @@ function getUser(){
     tokens = {access:'abc'};
   }
   
-  return requester.get('user/', {headers: {'Authorization': 'Bearer ' + tokens.access}})
+  return requester.get('/user', {headers: {'Authorization': 'Bearer ' + tokens.access}})
     .then(function (response) {
       // handle errors
       if (response.msg) {

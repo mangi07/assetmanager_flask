@@ -1,7 +1,7 @@
 <template>
   <div>
     Login
-    {{ user.username }}
+    {{ user.error }}
   </div>
 </template>
 

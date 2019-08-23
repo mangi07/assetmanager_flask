@@ -2,8 +2,9 @@
   <div id="app">
     <navbar :user=user></navbar>
     <appbody :user=user></appbody>
-    <p>{{ testing.s }}</p>
-  </div>
+    <p>{{ user.error }}</p>
+
+</div>
 </template>
 
 <script>
@@ -11,28 +12,21 @@ import navbar from './components/NavBar.vue'
 import appbody from './components/AppBody.vue'
 import userUtils from './js/user/check_login.js'
 
-window.user = {
+let user = {
   username: null,
   role: null,
   loggedIn: false,
   error: null
 };
 
-let x = {s:"hello"};
+let ui = {user:user}
 
 userUtils.getUser()
         .then(function(result){
-          console.log(result);
-          window.user = result; // TODO: wrap in object to make reactive
-          window.user.username = 'something';
-          x.s = "hello from then";
-          console.log(x.s);
+          ui.user = result;
         }).catch(function(error){
           console.log(error);
-          window.user = error; // object contains error message
-          window.user.username = 'something';
-          x.s = "hello from catch";
-          console.log(x.s);
+          ui.user = error; // object contains error message
         });
 
 export default {
@@ -42,22 +36,20 @@ export default {
     'appbody':appbody,
   },
   data: function() {
-    return {
-      testing: x
-    }
+    return ui;
   },
   props: {
-    user: {
+    ui: {
       type: Object,
-      default: function(){
-        //return window.user;
-        return {
-          username: 'test',
-          role: null,
-          loggedIn: false,
-          error: null
-        }
-      }
+      // default: function(){
+      //   //return window.user;
+      //   return {
+      //     username: 'test',
+      //     role: null,
+      //     loggedIn: false,
+      //     error: null
+      //   }
+      // }
     }
   },
   methods: {},
