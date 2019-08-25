@@ -2,8 +2,6 @@
   <div id="app">
     <navbar :user=user></navbar>
     <appbody :user=user></appbody>
-    <p>{{ user.error }}</p>
-
 </div>
 </template>
 

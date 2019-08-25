@@ -12,41 +12,11 @@ const requester = axios.create({
   //timeout: 1000,
 });
 
-/* get information on the current user from the server */
-/*
-var getUser = new Promise(function(resolve, reject) {
-  let user = {
-    username: null,
-    role: null,
-    loggedIn: false,
-    error: null
-  };
-  var tokens = tokenUtils.getTokensFromStorage();
-  if (tokens === null) {
-    //resolve(user);  // TODO: uncomment once request (below) is tested
-    tokens = {access:'abc'};
-  }
 
-  requester.get('user/', {headers: {'Authorization': 'Bearer ' + tokens.access}})
-    .then(function (response) {
-      // handle errors
-      if (response.msg) {
-        user.error = response.msg;
-      }
-      user.username = response.data.username;
-      user.role = response.data.role;
-      user.loggedIn = true
-      resolve(user);
-    })
-    .catch(function (error) {
-      console.log(error);
-      user.error = error;
-      reject(user);
-    });
-});
-*/
-
-/* always returns a user object */
+/* Checks if user is logged in.
+Always returns a user object with boolean loggedIn property.
+Attempts to use access token from browser storage
+ */
 function getUser(){
   let user = {
     username: null,
@@ -57,7 +27,7 @@ function getUser(){
   var tokens = tokenUtils.getTokensFromStorage();
   if (tokens === null) {
     //return user;  // TODO: uncomment once request (below) is tested
-    tokens = {access:'abc'};
+    tokens = {access:'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjQ3NDcyODIsImlhdCI6MTU2NDc0Njk4MiwibmJmIjoxNTY0NzQ2OTgyLCJpZGVudGl0eSI6MX0.j1Hxf4PpggJBLlbHi7pI-lVBZWi_5e6F5L7m9Rpinww'};
   }
   
   return requester.get('/user', {headers: {'Authorization': 'Bearer ' + tokens.access}})
@@ -73,11 +43,20 @@ function getUser(){
     })
     .catch(function (error) {
       user.error = error;
+      console.log(error.config);
       return user;
     });
 }
 
+function logIn (username, password) {
+  console.log(username);
+  console.log(password);
+  // TODO: user axios to request access and refresh token,
+  // store in browser storage, and either show error message in this component
+  // or load home page
+}
 
 export default {
   getUser,
+  logIn
 };
