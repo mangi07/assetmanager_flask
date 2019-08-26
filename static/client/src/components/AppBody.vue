@@ -1,7 +1,7 @@
 <template>
   <div>
     <home v-if ="  user.loggedIn" :user=user></home>
-    <login v-if="! user.loggedIn"></login>
+    <login v-if="! user.loggedIn" :user=user></login>
   </div>
 </template>
 

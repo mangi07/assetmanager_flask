@@ -6,6 +6,7 @@
     <!-- <p>{{ username }}</p> -->
     <!-- <p>{{ password }}</p> -->
     <div><button id="submit" @click="logIn">Log In</button></div>
+    <div>{{ ui.data }}</div>
   </div>
 </template>
 
@@ -16,12 +17,28 @@ export default {
   data: function  () {
     return {
       username: null,
-      password: null
+      password: null,
+      ui: {data:"something"}
     }
   },
+  props: {user: Object},
   methods: {
     logIn: function (event) {
-      userUtils.logIn(this.username, this.password);      
+      var data = this.ui.data;
+      userUtils.logIn(this.username, this.password)
+        .then(function(result){
+          data = result;
+          console.log(data);
+        })
+        .catch(function(error){
+          data = error;
+          console.log(data);
+        });
+    }
+  },
+  watch: {
+    ui() {
+      console.log('error has changed!');
     }
   },
   computed: {},

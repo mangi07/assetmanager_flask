@@ -16,6 +16,8 @@ class User(object):
 
     def authenticate(username, password):
         user = username_table.get(username, None)
+        if not user:
+            return False
         return verify_password(user.password, password)
 
     def get(username):

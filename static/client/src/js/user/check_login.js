@@ -14,7 +14,7 @@ const requester = axios.create({
 
 
 /* Checks if user is logged in.
-Always returns a user object with boolean loggedIn property.
+Always returns a Promise with boolean loggedIn property.
 Attempts to use access token from browser storage
  */
 function getUser(){
@@ -26,16 +26,13 @@ function getUser(){
   };
   var tokens = tokenUtils.getTokensFromStorage();
   if (tokens === null) {
-    //return user;  // TODO: uncomment once request (below) is tested
-    tokens = {access:'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjQ3NDcyODIsImlhdCI6MTU2NDc0Njk4MiwibmJmIjoxNTY0NzQ2OTgyLCJpZGVudGl0eSI6MX0.j1Hxf4PpggJBLlbHi7pI-lVBZWi_5e6F5L7m9Rpinww'};
+    return new Promise(function(resolve, reject){
+      resolve(user);
+    });
   }
   
   return requester.get('/user', {headers: {'Authorization': 'Bearer ' + tokens.access}})
     .then(function (response) {
-      // handle errors
-      if (response.msg) {
-        user.error = response.msg;
-      }
       user.username = response.data.username;
       user.role = response.data.role;
       user.loggedIn = true
@@ -49,11 +46,7 @@ function getUser(){
 }
 
 function logIn (username, password) {
-  console.log(username);
-  console.log(password);
-  // TODO: user axios to request access and refresh token,
-  // store in browser storage, and either show error message in this component
-  // or load home page
+  return tokenUtils.requestTokens(username, password);
 }
 
 export default {
