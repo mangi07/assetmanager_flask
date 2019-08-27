@@ -35,23 +35,7 @@ export default {
   },
   data: function() {
     return ui;
-  },
-  props: {
-    ui: {
-      type: Object,
-      // default: function(){
-      //   //return window.user;
-      //   return {
-      //     username: 'test',
-      //     role: null,
-      //     loggedIn: false,
-      //     error: null
-      //   }
-      // }
-    }
-  },
-  methods: {},
-  computed: {},
+  }
 }
 </script>
 

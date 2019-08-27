@@ -24,6 +24,7 @@ function getUser(){
     loggedIn: false,
     error: null
   };
+
   var tokens = tokenUtils.getTokensFromStorage();
   if (tokens === null) {
     return new Promise(function(resolve, reject){
