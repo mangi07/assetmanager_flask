@@ -3,8 +3,6 @@
     <p>Login</p>
     <div><input v-model="username"></div>
     <div><input type="password" v-model="password"></div>
-    <!-- <p>{{ username }}</p> -->
-    <!-- <p>{{ password }}</p> -->
     <div><button id="submit" @click="logIn">Log In</button></div>
     <div>{{ ui.data.error }}</div>
   </div>
@@ -29,19 +27,14 @@ export default {
   methods: {
     logIn: function (event) {
       var vm = this.ui.data;
-      
+      var vi = this;
 
       userUtils.logIn(this.username, this.password)
         .then(function(result){
-          console.log(result);
-          vm.error = result.error;
-          user.loggedIn = true;
-          console.log("then");
-        })
-        .catch(function(error){
-          vm.error = error;
-          console.log("catch");
-          console.log(error);
+          vm.error = result.tokens.error;
+          if (result.error == null) {
+            vi.$emit('success', result);
+          }
         });
     }
   },

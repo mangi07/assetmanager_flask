@@ -8,3 +8,11 @@ curl -X POST http://localhost:5000/login -H "Content-Type: application/json" -d 
 
 # take the results of this and post with access token, like:
 curl -X GET http://localhost:5000/user -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjQ3NDcyODIsImlhdCI6MTU2NDc0Njk4MiwibmJmIjoxNTY0NzQ2OTgyLCJpZGVudGl0eSI6MX0.j1Hxf4PpggJBLlbHi7pI-lVBZWi_5e6F5L7m9Rpinww"
+
+# refresh
+curl -X POST http://localhost:5000/refresh -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODI4NTYsIm5iZiI6MTU2Njg4Mjg1NiwianRpIjoiZDNiODk3NDgtOThhNy00NzBkLThjOTUtNDM0NTMwODEwMzMxIiwiZXhwIjoxNTY5NDc0ODU2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.q-MTMIGfsfFHt5vgRPHz9PKruaQHQIdFZe7G4WjJcSg"
+# Example response:
+# {
+#   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODYyMDYsIm5iZiI6MTU2Njg4NjIwNiwianRpIjoiZTcxZTgxMWQtM2JjYi00Yjk4LTk4M2ItOGQ3OTJjODYyNmQ1IiwiZXhwIjoxNTY2ODg3MTA2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.nj3-7l8K1vX1pdBkLNeWD-6PYrpyhUjM9OyYWpBBIUE",
+#   "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODYyMDYsIm5iZiI6MTU2Njg4NjIwNiwianRpIjoiMjk3NTM5YzctMGM2NS00YTA0LThlZTUtYTNjYTZhZDczNTk5IiwiZXhwIjoxNTY5NDc4MjA2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.XMgsW2NF7lLbcauPCHduHG_B6ECh9veZMY9oMAdLnQM"
+# }

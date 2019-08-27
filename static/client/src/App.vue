@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <navbar :user=user></navbar>
-    <appbody :user=user></appbody>
+    <appbody :user=user @success="onSuccess"></appbody>
 </div>
 </template>
 
@@ -35,6 +35,13 @@ export default {
   },
   data: function() {
     return ui;
+  },
+  methods: {
+    onSuccess (result) {
+      this.user.username = result.user.username;
+      this.user.loggedIn = result.user.loggedIn;
+      this.user.role = result.user.role;
+    }
   }
 }
 </script>

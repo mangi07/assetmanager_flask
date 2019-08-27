@@ -2,7 +2,7 @@ from flask import Flask, send_from_directory, jsonify, request
 #from flask_jwt import JWT, jwt_required, current_identity
 from flask_jwt_extended import (
     JWTManager, jwt_required,
-    create_access_token, create_refresh_token,
+    create_access_token, create_refresh_token, jwt_refresh_token_required,
     get_jwt_identity
 )
 from models.user import User
@@ -11,12 +11,14 @@ from flask_cors import CORS
 ##############################################
 # INIT WEB APP
 app = Flask(__name__)
+
 # TODO: switch debug to False in production
 app.debug = True
-#app.config['SECRET_KEY'] = 'super-secret'
+
+# TODO: better secret and read in from external file
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 
-#cors = CORS(app, resources={r"/*": {"origins": "http://localhost:8080/"}}, allow_header=["Access-Control-Allow-Origin"])
+# TODO: read a config or environment so CORS is used only in development
 CORS(app)
 
 #jwt = JWT(app, user.User.authenticate, user.User.identity)
@@ -58,10 +60,14 @@ def identity(username):
     return user
 
 
-@app.route('/refresh')
-@jwt_required
+@app.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
 def refresh():
-    return
+    current_identity = get_jwt_identity()
+    username = current_identity['username']
+    access_token = create_access_token(identity=username)
+    refresh_token = create_refresh_token(identity=username)
+    return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
 @app.route('/user')
 @jwt_required

@@ -28,7 +28,7 @@ class User(object):
 ##############################################
 # todo: FOR DB
 users = [
-    User(1, 'user1', 'abcxyz'),
+    User(1, 'a', 'a'),
     User(2, 'user2', 'abcxyz'),
 ]
 

@@ -15,7 +15,7 @@ const requester = axios.create({
 
 /* Checks if user is logged in.
 Always returns a Promise with boolean loggedIn property.
-Attempts to use access token from browser storage
+Attempts to use access token from browser storage.
  */
 function getUser(){
   let user = {
@@ -36,18 +36,26 @@ function getUser(){
     .then(function (response) {
       user.username = response.data.username;
       user.role = response.data.role;
-      user.loggedIn = true
+      user.loggedIn = true;
       return user;
     })
     .catch(function (error) {
       user.error = error;
-      console.log(error.config);
       return user;
     });
 }
 
 function logIn (username, password) {
-  return tokenUtils.requestTokens(username, password);
+  let token_response;
+  return tokenUtils.requestTokens(username, password)
+    .then(function (response) {
+      token_response = response;
+      return getUser();
+    })
+    .then(function (response) {
+      let resp = {tokens: token_response, user: response};
+      return resp;
+    });
 }
 
 export default {

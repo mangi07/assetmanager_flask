@@ -51,17 +51,55 @@ function requestTokens(username, password) {
     });
 }
 
+// borrowed from https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript-without-using-a-library
+// accessed 8/27/2019
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
+function getToken(access, refresh) {
+  var now = new Date().getTime();
+  var token = null;
+  try {
+    if (now < parseJwt(access).exp * 1000) {
+      return new Promise( function(resolve) {
+        resolve(access);
+      });
+    }
+    if (now < parseJwt(refresh).exp * 1000) {
+      renewTokens(refresh)
+        .then(function (response) {
+          console.log("in getToken getting refresh token");
+          token = response;
+          return token;
+        });
+    } 
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+  return null;
+}
+
 function renewTokens(refresh) {
   console.log("refresh requested");
-  var data = {'refresh': refresh};
-  return requester.post('refresh/', data)
+  return requester.post('refresh/', {headers: {'Authorization': 'Bearer ' + refresh}})
     .then(function (response) {
       // handle success
       var accessToken = response.data.access;
       var refreshToken = response.data.refresh;
       
       setTokens(accessToken, refreshToken);
-      console.log("This should come before template requested in inner getTemplate");
+      return accessToken;
+    })
+    .catch(function (error) {
+      // TODO: properly handle error here
+      console.log(error);
+      return null;
     });
 }
 

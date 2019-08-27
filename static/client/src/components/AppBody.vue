@@ -2,7 +2,7 @@
   <div>
     <div>{{ user }}</div>
     <home v-if ="  user.loggedIn" :user=user></home>
-    <login v-if="! user.loggedIn" :user=user></login>
+    <login v-if="! user.loggedIn" :user=user @success="onSuccess"></login>
   </div>
 </template>
 
@@ -17,7 +17,11 @@ export default {
     'login':login
   },
   props: {user: Object},
-  methods: {},
+  methods: {
+    onSuccess (result) {
+      this.$emit('success', result);
+    }
+  },
   computed: {},
 }
 
