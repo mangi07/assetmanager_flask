@@ -53,7 +53,7 @@ function requestTokens(username, password) {
 
 // borrowed from https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript-without-using-a-library
 // accessed 8/27/2019
-const parseJwt = (token) => {
+const parseJwt = function (token) {
   try {
     return JSON.parse(atob(token.split('.')[1]));
   } catch (e) {
@@ -73,16 +73,15 @@ function getToken(access, refresh) {
     if (now < parseJwt(refresh).exp * 1000) {
       renewTokens(refresh)
         .then(function (response) {
-          console.log("in getToken getting refresh token");
           token = response;
           return token;
         });
     } 
   } catch (e) {
-    console.log(e);
-    return null;
+    return new Promise( function(resolve) {
+      resolve(null);
+    });
   }
-  return null;
 }
 
 function renewTokens(refresh) {

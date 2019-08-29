@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "test:unit": "vue-cli-service test:unit",
+    "test:mocha": "mocha tests/**/*.js --require babel-core/register"
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -18,10 +20,16 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",
     "@vue/cli-plugin-eslint": "^3.10.0",
+    "@vue/cli-plugin-unit-mocha": "^3.11.0",
     "@vue/cli-service": "^3.10.0",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.1",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "mocha": "^6.2.0",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
@@ -36,7 +44,17 @@
     "rules": {},
     "parserOptions": {
       "parser": "babel-eslint"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)"
+        ],
+        "env": {
+          "mocha": true
+        }
+      }
+    ]
   },
   "postcss": {
     "plugins": {
