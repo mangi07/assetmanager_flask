@@ -5,19 +5,26 @@
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles and hot-reloads for development server
 ```
 npm run serve
+```
+
+### Compiles and runs libraries for quick tests in node
+### index.js runner must be present in ./src/js/
+```
+npm run libs
+```
+
+### Setup for testing js libraries
+### modified from: https://dev.to/bnorbertjs/my-nodejs-setup-mocha--chai-babel7-es6-43ei
+```
+npm run test:libs
 ```
 
 ### Compiles and minifies for production
 ```
 npm run build
-```
-
-### Run your tests
-```
-npm run test
 ```
 
 ### Lints and fixes files
