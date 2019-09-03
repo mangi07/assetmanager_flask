@@ -6,6 +6,7 @@ Note:
 ************************************************************** */
 'use strict';
 import axios from 'axios';
+import atob from 'atob'
 
 const requester = axios.create({
   baseURL: 'http://localhost:5000/',
@@ -86,7 +87,7 @@ function getToken(access, refresh) {
 
 function renewTokens(refresh) {
   console.log("refresh requested");
-  return requester.post('refresh/', {headers: {'Authorization': 'Bearer ' + refresh}})
+  return requester.post('refresh', {headers: {'Authorization': 'Bearer ' + refresh}})
     .then(function (response) {
       // handle success
       var accessToken = response.data.access;
@@ -106,5 +107,6 @@ export default {
 	setTokens,
 	getTokensFromStorage,
 	requestTokens,
-	renewTokens,
+  renewTokens,
+  getToken
 }

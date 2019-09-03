@@ -18,6 +18,7 @@ npm run libs
 
 ### Setup for testing js libraries
 ### modified from: https://dev.to/bnorbertjs/my-nodejs-setup-mocha--chai-babel7-es6-43ei
+### Currently, flask dev server must be running for axios requests.
 ```
 npm run test:libs
 ```
