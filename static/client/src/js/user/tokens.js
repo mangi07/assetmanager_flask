@@ -72,11 +72,11 @@ function getToken(access, refresh) {
       });
     }
     if (now < parseJwt(refresh).exp * 1000) {
-      renewTokens(refresh)
+      return renewTokens(refresh)
         .then(function (response) {
           token = response;
           return token;
-        });
+        })
     } 
   } catch (e) {
     return new Promise( function(resolve) {
@@ -86,7 +86,6 @@ function getToken(access, refresh) {
 }
 
 function renewTokens(refresh) {
-  console.log("refresh requested");
   return requester.post('refresh', {headers: {'Authorization': 'Bearer ' + refresh}})
     .then(function (response) {
       // handle success
@@ -98,7 +97,6 @@ function renewTokens(refresh) {
     })
     .catch(function (error) {
       // TODO: properly handle error here
-      console.log(error);
       return null;
     });
 }
