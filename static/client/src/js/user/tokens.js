@@ -89,7 +89,9 @@ function renewTokens(refresh) {
   return requester.post('refresh', null, {headers: {'Authorization': 'Bearer ' + refresh}})
     .then(function (response) {
       // handle success
-      //console.log(response)
+      if (response.data.error) {
+        return response.data
+      }
       var accessToken = response.data.access_token;
       var refreshToken = response.data.refresh_token;
       
@@ -98,7 +100,7 @@ function renewTokens(refresh) {
     })
     .catch(function (error) {
       // TODO: properly handle error here
-      //console.log(error)
+      // console.log(error)
       return null;
     });
 }

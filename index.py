@@ -71,7 +71,6 @@ def refresh():
         refresh_token = create_refresh_token(identity=username)
         return jsonify(access_token=access_token, refresh_token=refresh_token), 200
     except:
-        print("except got called")
         return jsonify({"error":"This user could not be found."})
 
 @app.route('/user')
