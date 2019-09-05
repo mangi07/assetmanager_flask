@@ -1,5 +1,6 @@
 import { expect } from "chai"
 import MockDate from "mockdate"
+import atob from 'atob'
 //import moxios from 'moxios'
 import tokenUtils from "../src/js/user/tokens.js"
 
@@ -97,11 +98,21 @@ describe("tokens test", () => {
 
         // mock 2 days into the future
         var date = new Date()
-        MockDate.set(date.setDate(date.getDate() + 2))
+        var now = ~~(date.valueOf() / 1000)
+        var after_tomorrow = date.getDate() + 2
+        MockDate.set(date.setDate(after_tomorrow)) // should force refresh token to be used
 
         return tokenUtils.getToken(access, refresh).then( (chosen) => {
-          console.log(chosen)  // TODO: Why is this returning null ?
-          // TODO: expect chosen to equal a valid JWT token with expiration newer than access
+          expect(chosen).to.not.equal(access)
+          expect(chosen).to.not.equal(refresh)
+          
+          var typ = JSON.parse(atob(chosen.split('.')[0])).typ
+          expect(typ).to.equal('JWT')
+
+          var new_exp = JSON.parse(atob(chosen.split('.')[1])).exp
+          expect(new_exp).to.be.above(now) // new token has newer expiration
+
+          MockDate.reset()
         })
       })
     })
@@ -114,11 +125,30 @@ describe("tokens test", () => {
       // access: expires Aug. 22, 2019 at 10:12:13 (1566432733)
       // refresh: expires Sept. 21, 2019 at 09:57:13 (1569023833)
 
-      // TODO: spoof time and use moxios
+      // TODO: use moxios
       MockDate.set('8/25/2019')
 
       return tokenUtils.getToken(tokens.access, tokens.refresh).then( (chosen) => {
         expect(chosen).to.equal(null)
+      })
+    })
+
+    
+
+  })
+
+  describe('renewTokens', function () {
+    it.only('should renew token when given valid refresh', () => {
+      // TODO: modify below...
+      var tokens = {
+        "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiYzdlYTQwNTgtYTQxNC00NjNmLWIxMWMtNTE1MjdmYTE3NDY3IiwiZXhwIjoxNTY2NDMyNzMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.T1kKOKCIO6xoan_HuVPfM_EMEz9OsfreKwcAJ7tXD0M",
+        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiNGI0ZGIzY2QtMTQ2NC00NzZmLTlmYjMtYzQwZDJhZWI0MjMwIiwiZXhwIjoxNTY5MDIzODMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwidHlwZSI6InJlZnJlc2gifQ._4gV3XXFKk6sHqw_FUjjtLMKl6IImWLO65_BJMWbSGM"
+      }
+      // access: expires Aug. 22, 2019 at 10:12:13 (1566432733)
+      // refresh: expires Sept. 21, 2019 at 09:57:13 (1569023833)
+
+      return tokenUtils.renewTokens(tokens.refresh).then( (response) => {
+        console.log(response.data)
       })
     })
   })

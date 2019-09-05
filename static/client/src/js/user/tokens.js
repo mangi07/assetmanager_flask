@@ -86,17 +86,19 @@ function getToken(access, refresh) {
 }
 
 function renewTokens(refresh) {
-  return requester.post('refresh', {headers: {'Authorization': 'Bearer ' + refresh}})
+  return requester.post('refresh', null, {headers: {'Authorization': 'Bearer ' + refresh}})
     .then(function (response) {
       // handle success
-      var accessToken = response.data.access;
-      var refreshToken = response.data.refresh;
+      //console.log(response)
+      var accessToken = response.data.access_token;
+      var refreshToken = response.data.refresh_token;
       
       setTokens(accessToken, refreshToken);
       return accessToken;
     })
     .catch(function (error) {
       // TODO: properly handle error here
+      //console.log(error)
       return null;
     });
 }
