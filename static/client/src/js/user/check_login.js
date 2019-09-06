@@ -27,35 +27,45 @@ function getUser(){
 
   var tokens = tokenUtils.getTokensFromStorage();
   if (tokens === null) {
-    return new Promise(function(resolve, reject){
-      resolve(user);
-    });
+    return Promise.resolve(user)
   }
-  
-  return requester.get('/user', {headers: {'Authorization': 'Bearer ' + tokens.access}})
-    .then(function (response) {
-      user.username = response.data.username;
-      user.role = response.data.role;
-      user.loggedIn = true;
-      return user;
+
+  return tokenUtils.getToken(tokens.access, tokens.refresh)
+    .then( (result) => {
+      return requester.get('/user', {headers: {'Authorization': 'Bearer ' + result}})
+        .then(function (response) {
+          user.username = response.data.username;
+          user.role = response.data.role;
+          user.loggedIn = true;
+          return user;
+        })
+        .catch(function (error) {
+          user.error = error;
+          return user;
+        });
     })
-    .catch(function (error) {
-      user.error = error;
-      return user;
-    });
 }
 
+// TODO: test this function - should always return an object with properties username, role, loggedIn, and error
 function logIn (username, password) {
-  let token_response;
+  if (username == null || password == null) {
+    return Promise.resolve({
+      username: null,
+      role: null,
+      loggedIn: false,
+      error: "No username or password provided."
+    })
+  }
   return tokenUtils.requestTokens(username, password)
     .then(function (response) {
-      token_response = response;
-      return getUser();
+      if (response.error) {
+        return {response}
+      } else {
+        return getUser().then( (response) => {
+          return {response}
+        })
+      }
     })
-    .then(function (response) {
-      let resp = {tokens: token_response, user: response};
-      return resp;
-    });
 }
 
 export default {

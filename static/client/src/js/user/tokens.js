@@ -98,7 +98,6 @@ function renewTokens(refresh) {
       return {access:accessToken};
     })
     .catch(function (error) {
-      // TODO: properly handle error here
       return Promise.resolve({"error": "Could not refresh tokens."});
     });
 }

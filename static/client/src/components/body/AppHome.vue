@@ -4,6 +4,7 @@
     Home
     <div>{{ user.username }}</div>
     <div>{{ user.role }}</div>
+    <div>{{ count }}</div>
   </div>
 </template>
 
@@ -12,6 +13,10 @@
 module.exports = {
   props: {user: Object},
   methods: {},
-  computed: {},
+  computed: {
+    count () {
+	    return this.$store.state.user.loggedIn
+    }
+  },
 }
 </script>

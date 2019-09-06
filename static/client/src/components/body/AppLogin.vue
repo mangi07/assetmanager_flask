@@ -31,9 +31,13 @@ export default {
 
       userUtils.logIn(this.username, this.password)
         .then(function(result){
-          vm.error = result.tokens.error;
+          vi.username = null
+          vi.password = null
+          console.log(result)
+          vm.error = result.error;
           if (result.error == null) {
-            vi.$emit('success', result);
+            //vi.$emit('success', result);
+            vi.$store.commit('setUser', result)
           }
         });
     }
