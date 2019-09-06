@@ -29,7 +29,7 @@ class User(object):
 # todo: FOR DB
 users = [
     User(1, 'a', 'a'),
-    User(2, 'user2', 'abcxyz'),
+    User(2, 'b', 'b'),
 ]
 
 username_table = {u.username: u for u in users}

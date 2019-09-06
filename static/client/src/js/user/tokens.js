@@ -79,10 +79,9 @@ function getToken(access, refresh) {
         })
     } 
   } catch (e) {
-    return new Promise( function(resolve) {
-      resolve(null);
-    });
+    return Promise.resolve({"error": "Cannot parse tokens."})
   }
+  return Promise.resolve({"error": "Tokens have expired."})
 }
 
 function renewTokens(refresh) {
@@ -96,12 +95,11 @@ function renewTokens(refresh) {
       var refreshToken = response.data.refresh_token;
       
       setTokens(accessToken, refreshToken);
-      return accessToken;
+      return {access:accessToken};
     })
     .catch(function (error) {
       // TODO: properly handle error here
-      // console.log(error)
-      return null;
+      return Promise.resolve({"error": "Could not refresh tokens."});
     });
 }
 

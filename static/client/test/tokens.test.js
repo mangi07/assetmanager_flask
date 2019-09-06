@@ -89,7 +89,7 @@ describe("tokens test", () => {
       })
     })
     
-    it('should use refresh token', function () {
+    it('should use refresh token and obtain new token', function () {
       var username = 'a'
       var password = 'a'
       return tokenUtils.requestTokens(username, password).then( (result) => {
@@ -117,7 +117,7 @@ describe("tokens test", () => {
       })
     })
 
-    it.only('should attempt refresh to get new pair since access is expired but fail since refresh is also expired', () => {
+    it('should attempt refresh to get new pair since access is expired but fail since refresh is also expired', () => {
       var tokens = {
         "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiYzdlYTQwNTgtYTQxNC00NjNmLWIxMWMtNTE1MjdmYTE3NDY3IiwiZXhwIjoxNTY2NDMyNzMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.T1kKOKCIO6xoan_HuVPfM_EMEz9OsfreKwcAJ7tXD0M",
         "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiNGI0ZGIzY2QtMTQ2NC00NzZmLTlmYjMtYzQwZDJhZWI0MjMwIiwiZXhwIjoxNTY5MDIzODMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwidHlwZSI6InJlZnJlc2gifQ._4gV3XXFKk6sHqw_FUjjtLMKl6IImWLO65_BJMWbSGM"
@@ -129,28 +129,50 @@ describe("tokens test", () => {
       MockDate.set('9/25/2019')
 
       return tokenUtils.getToken(tokens.access, tokens.refresh).then( (chosen) => {
-        expect(chosen).to.equal(null)
+        expect(chosen).to.have.property('error')
+        expect(chosen).to.not.have.property('access')
+        expect(chosen).to.not.have.property('refresh')
       })
     })
-
-    
 
   })
 
   describe('renewTokens', function () {
-    it.only('should not renew token when given refresh if user was deleted', () => {
-      // TODO: modify below...
+    it('should not renew token when given refresh if user was deleted', () => {
       var tokens = {
         "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiYzdlYTQwNTgtYTQxNC00NjNmLWIxMWMtNTE1MjdmYTE3NDY3IiwiZXhwIjoxNTY2NDMyNzMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.T1kKOKCIO6xoan_HuVPfM_EMEz9OsfreKwcAJ7tXD0M",
         "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiNGI0ZGIzY2QtMTQ2NC00NzZmLTlmYjMtYzQwZDJhZWI0MjMwIiwiZXhwIjoxNTY5MDIzODMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwidHlwZSI6InJlZnJlc2gifQ._4gV3XXFKk6sHqw_FUjjtLMKl6IImWLO65_BJMWbSGM"
       }
       // access: expires Aug. 22, 2019 at 10:12:13 (1566432733)
       // refresh: expires Sept. 21, 2019 at 09:57:13 (1569023833)
+      MockDate.set('8/25/2019')
 
       return tokenUtils.renewTokens(tokens.refresh).then( (response) => {
         expect(response).to.have.property('error')
         expect(response).to.not.have.property('access')
         expect(response).to.not.have.property('refresh')
+        MockDate.reset()
+      })
+    })
+
+    it.only('should error when attempting to refresh with bad token', () => {
+      var refresh = "9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiNGI0ZGIzY2QtMTQ2NC00NzZmLTlmYjMtYzQwZDJhZWI0MjMwIiwiZXhwIjoxNTY5MDIzODMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwidHlwZSI6InJlZnJlc2gifQ._4gV3XXFKk6sHqw_FUjjtLMKl6IImWLO65_BJMWbSGM"
+
+      return tokenUtils.renewTokens(refresh).then( (response) => {
+        expect(response).to.have.property('error')
+        expect(response).to.not.have.property('access')
+        expect(response).to.not.have.property('refresh')
+      })
+    })
+
+    it.only('should renew tokens when request sent with good refresh token', () => {
+      var username = 'a'
+      var password = 'a'
+      return tokenUtils.requestTokens(username, password).then( (result) => {
+        return tokenUtils.renewTokens(result.refresh).then( (result) => {
+          console.log(result)
+          expect(result).to.have.property('access')
+        })
       })
     })
   })
