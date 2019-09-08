@@ -36,7 +36,6 @@ export default {
           console.log(result)
           vm.error = result.error;
           if (result.error == null) {
-            //vi.$emit('success', result);
             vi.$store.commit('setUser', result)
           }
         });
