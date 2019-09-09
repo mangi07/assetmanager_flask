@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <navbar :user=user></navbar>
-    <appbody :user=user></appbody>
+    <navbar></navbar>
+    <appbody></appbody>
 </div>
 </template>
 
@@ -9,6 +9,7 @@
 import navbar from './components/NavBar.vue'
 import appbody from './components/AppBody.vue'
 import Vuex from 'vuex'
+
 
 export default {
   name: 'app',

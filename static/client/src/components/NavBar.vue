@@ -1,6 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Asset Manager</a>
+    <div class="navbar-brand">Asset Manager</div>
+    <button type="button" class="btn btn-dark" @click='logOut' v-if="user.loggedIn">Log Out</button>
+
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -8,10 +11,10 @@
     <div v-if="user.loggedIn" class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">User: {{ username }}</a>
+          <a class="nav-link" href="#">User: {{ user.username }}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Role: {{ role }}</a>
+          <a class="nav-link" href="#">Role: {{ user.role }}</a>
         </li>
       </ul>
     </div>
@@ -19,17 +22,19 @@
 </template>
 
 <script>
+import userUtils from '../js/user/check_login'
 
-module.exports = {
-  props: {user: Object},
-  methods: {},
+export default {
+  methods: {
+    logOut: function (event) {
+      userUtils.logOut()
+      this.$store.commit('unsetUser')
+    }
+  },
   computed: {
-    username () {
-      return this.$store.state.user.username
-    } ,
-    role () {
-      return this.$store.state.user.role
-    } 
+    user () {
+      return this.$store.state.user
+    },
   },
 }
 </script>

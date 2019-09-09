@@ -23,7 +23,6 @@ export default {
       }
     }
   },
-  props: {user: Object},
   methods: {
     logIn: function (event) {
       var vm = this.ui.data;
@@ -33,7 +32,6 @@ export default {
         .then(function(result){
           vi.username = null
           vi.password = null
-          console.log(result)
           vm.error = result.error;
           if (result.error == null) {
             vi.$store.commit('setUser', result)

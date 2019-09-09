@@ -102,10 +102,14 @@ function renewTokens(refresh) {
     });
 }
 
+function deleteTokens() {
+  window.sessionStorage.clear();
+}
 export default {
 	setTokens,
 	getTokensFromStorage,
 	requestTokens,
   renewTokens,
-  getToken
+  getToken,
+  deleteTokens,
 }

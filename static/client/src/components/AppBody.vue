@@ -16,13 +16,13 @@ export default {
     'home':home,
     'login':login
   },
-  props: {user: Object},
-  methods: {
-    onSuccess (result) {
-      this.$emit('success', result);
-    }
+  props: {},
+  methods: {},
+  computed: {
+    user () {
+	    return this.$store.state.user
+    },
   },
-  computed: {},
 }
 
 </script>

@@ -10,7 +10,7 @@
 <script>
 
 module.exports = {
-  //props: {user: Object},
+  props: {},
   methods: {},
   computed: {
     user () {
