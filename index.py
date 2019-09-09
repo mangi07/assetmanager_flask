@@ -79,10 +79,13 @@ def user():
     current_identity = get_jwt_identity()
     return jsonify(current_identity)
 
-
+rel_path = 'static/client/dist'
 @app.route("/")
 def index():
-    return send_from_directory('static/html', 'index.html')
+    return send_from_directory(rel_path, 'index.html')
+@app.route("/<path:path>")
+def send_static_files(path):
+    return send_from_directory(rel_path, path)
 
 
 
