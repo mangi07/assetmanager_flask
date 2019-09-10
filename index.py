@@ -7,6 +7,7 @@ from flask_jwt_extended import (
 )
 from models.user import User
 from flask_cors import CORS
+from queries import asset_queries
 
 ##############################################
 # INIT WEB APP
@@ -86,6 +87,29 @@ def index():
 @app.route("/<path:path>")
 def send_static_files(path):
     return send_from_directory(rel_path, path)
+
+
+# ASSETS ##############################################################
+@app.route("/assets/<int:page>")
+@app.route("/assets")
+#@jwt_required # TODO: uncomment when done testing with curl
+def list_assets(page=0):
+    # create location tree
+    # get filters
+    cost = request.args.get('cost', None)
+    filters = {
+        'location': request.args.get('location', None),
+        'cost': float(cost) if cost else None
+    }
+    
+    # execute query
+    assets = asset_queries.get_assets(page, filters)
+
+    return jsonify(
+        msg='testing',
+        filters=filters,
+        assets=assets
+    )
 
 
 

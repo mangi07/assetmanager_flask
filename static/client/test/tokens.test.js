@@ -3,20 +3,11 @@ import MockDate from "mockdate"
 import atob from 'atob'
 //import moxios from 'moxios'
 import tokenUtils from "../src/js/user/tokens.js"
+import { mockSessionStorage } from "./mockSessionStorage.js";
 
 describe("tokens test", () => {
   before( () => {
-    global.window = {
-      sessionStorage: {
-        _data: {},
-        getItem: function (key) {
-          return this._data[key]
-        },
-        setItem: function (key, val) {
-          this._data[key] = val
-        }
-      }
-    }
+    global.window = {sessionStorage: mockSessionStorage}
   })
 
   describe("setTokens", () => {
@@ -89,7 +80,7 @@ describe("tokens test", () => {
       })
     })
     
-    it('should use refresh token and obtain new token', function () {
+    it.only('should use refresh token and obtain new token', function () {
       var username = 'a'
       var password = 'a'
       return tokenUtils.requestTokens(username, password).then( (result) => {
@@ -106,6 +97,7 @@ describe("tokens test", () => {
           expect(chosen).to.not.equal(access)
           expect(chosen).to.not.equal(refresh)
           
+          console.log(chosen)
           var typ = JSON.parse(atob(chosen.split('.')[0])).typ
           expect(typ).to.equal('JWT')
 
@@ -155,7 +147,7 @@ describe("tokens test", () => {
       })
     })
 
-    it.only('should error when attempting to refresh with bad token', () => {
+    it('should error when attempting to refresh with bad token', () => {
       var refresh = "9.eyJpYXQiOjE1NjY0MzE4MzMsIm5iZiI6MTU2NjQzMTgzMywianRpIjoiNGI0ZGIzY2QtMTQ2NC00NzZmLTlmYjMtYzQwZDJhZWI0MjMwIiwiZXhwIjoxNTY5MDIzODMzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6InJlZ3VsYXIifSwidHlwZSI6InJlZnJlc2gifQ._4gV3XXFKk6sHqw_FUjjtLMKl6IImWLO65_BJMWbSGM"
 
       return tokenUtils.renewTokens(refresh).then( (response) => {
@@ -165,7 +157,7 @@ describe("tokens test", () => {
       })
     })
 
-    it.only('should renew tokens when request sent with good refresh token', () => {
+    it('should renew tokens when request sent with good refresh token', () => {
       var username = 'a'
       var password = 'a'
       return tokenUtils.requestTokens(username, password).then( (result) => {

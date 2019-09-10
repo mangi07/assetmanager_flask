@@ -68,14 +68,14 @@ function getToken(access, refresh) {
   try {
     if (now < parseJwt(access).exp * 1000) {
       return new Promise( function(resolve) {
-        resolve(access);
+        resolve({token:access});
       });
     }
     if (now < parseJwt(refresh).exp * 1000) {
       return renewTokens(refresh)
         .then(function (response) {
           token = response;
-          return token;
+          return {token:token.refresh};
         })
     } 
   } catch (e) {

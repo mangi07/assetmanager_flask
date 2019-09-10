@@ -46,7 +46,7 @@ function getUser(){
     })
 }
 
-// TODO: test this function - should always return an object with properties username, role, loggedIn, and error
+// should always return an object with properties username, role, loggedIn, and error
 function logIn (username, password) {
   if (username == null || password == null) {
     return Promise.resolve({
