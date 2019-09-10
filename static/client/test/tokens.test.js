@@ -75,12 +75,12 @@ describe("tokens test", () => {
         var access = result.access
         var refresh = result.refresh
         return tokenUtils.getToken(access, refresh).then( (chosen) => {
-          expect(chosen).to.equal(access)
+          expect(chosen.token).to.equal(access)
         })
       })
     })
     
-    it.only('should use refresh token and obtain new token', function () {
+    it('should use refresh token and obtain new token', function () {
       var username = 'a'
       var password = 'a'
       return tokenUtils.requestTokens(username, password).then( (result) => {
@@ -94,14 +94,13 @@ describe("tokens test", () => {
         MockDate.set(date.setDate(after_tomorrow)) // should force refresh token to be used
 
         return tokenUtils.getToken(access, refresh).then( (chosen) => {
-          expect(chosen).to.not.equal(access)
-          expect(chosen).to.not.equal(refresh)
+          expect(chosen.token).to.not.equal(access)
+          expect(chosen.token).to.not.equal(refresh)
           
-          console.log(chosen)
-          var typ = JSON.parse(atob(chosen.split('.')[0])).typ
+          var typ = JSON.parse(atob(chosen.token.split('.')[0])).typ
           expect(typ).to.equal('JWT')
 
-          var new_exp = JSON.parse(atob(chosen.split('.')[1])).exp
+          var new_exp = JSON.parse(atob(chosen.token.split('.')[1])).exp
           expect(new_exp).to.be.above(now) // new token has newer expiration
 
           MockDate.reset()
@@ -162,7 +161,6 @@ describe("tokens test", () => {
       var password = 'a'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         return tokenUtils.renewTokens(result.refresh).then( (result) => {
-          console.log(result)
           expect(result).to.have.property('access')
         })
       })

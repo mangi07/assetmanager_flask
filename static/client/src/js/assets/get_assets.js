@@ -20,7 +20,7 @@ function getPaginatedAssets(link='/assets/0', filters=null) {
       if (filters) {
           link += '/' + '?cost='
       }
-      return requester.get(link, {headers: {'Authorization': 'Bearer ' + result}})
+      return requester.get(link, {headers: {'Authorization': 'Bearer ' + result.token}})
         .then(function (response) {
           return response;
         })

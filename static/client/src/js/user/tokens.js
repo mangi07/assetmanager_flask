@@ -74,8 +74,7 @@ function getToken(access, refresh) {
     if (now < parseJwt(refresh).exp * 1000) {
       return renewTokens(refresh)
         .then(function (response) {
-          token = response;
-          return {token:token.refresh};
+          return {token: response.access};
         })
     } 
   } catch (e) {

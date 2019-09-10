@@ -32,7 +32,7 @@ function getUser(){
 
   return tokenUtils.getToken(tokens.access, tokens.refresh)
     .then( (result) => {
-      return requester.get('/user', {headers: {'Authorization': 'Bearer ' + result}})
+      return requester.get('/user', {headers: {'Authorization': 'Bearer ' + result.token}})
         .then(function (response) {
           user.username = response.data.username;
           user.role = response.data.role;
