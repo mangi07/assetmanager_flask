@@ -92,23 +92,31 @@ def send_static_files(path):
 # ASSETS ##############################################################
 @app.route("/assets/<int:page>")
 @app.route("/assets")
-#@jwt_required # TODO: uncomment when done testing with curl
+@jwt_required 
 def list_assets(page=0):
     # create location tree
-    # get filters
-    cost = request.args.get('cost', None)
+    # get filters - TODO: may want to move this to asset_queries (??) by passing request.args
+    cost_gt = request.args.get('cost_gt', None)
+    cost_lt = request.args.get('cost_lt', None)
     filters = {
         'location': request.args.get('location', None),
-        'cost': float(cost) if cost else None
+        'cost_gt': float(cost_gt) if cost_gt else None,
+        'cost_lt': float(cost_lt) if cost_lt else None,
     }
     
     # execute query
     assets = asset_queries.get_assets(page, filters)
+    
+    # pagination links
+    prev = '/assets/' + str(max(page, 0))
+    next = '/assets/' + str(page + 1)
 
     return jsonify(
         msg='testing',
         filters=filters,
-        assets=assets
+        assets=assets,
+        prev=prev,
+        next=next
     )
 
 

@@ -13,19 +13,21 @@ const requester = axios.create({
   //timeout: 1000,
 });
 
-function getPaginatedAssets(link='/assets/0', filters=null) {
-  var tokens = tokenUtils.getTokensFromStorage();
-  return tokenUtils.getToken(tokens.access, tokens.refresh)
-    .then( (result) => {
-      if (filters) {
-          link += '/' + '?cost='
-      }
-      return requester.get(link, {headers: {'Authorization': 'Bearer ' + result.token}})
-        .then(function (response) {
-          return response;
-        })
-        .catch(function (error) {
-          return error;
-        });
-    })
+function getPaginatedAssets(link='/assets/0') {
+  var tokens = tokenUtils.getTokensFromStorage()
+  return tokenUtils.getToken(tokens.access, tokens.refresh).then( (result) => {
+    return requester.get(link, {headers: {'Authorization': 'Bearer ' + result.token}})
+      .then(function (response) {
+        return response;
+      })
+      .catch(function (error) {
+        return error;
+      });
+  }).catch( (error) => {
+    console.log(error)
+  })
+}
+
+export default {
+  getPaginatedAssets,
 }
