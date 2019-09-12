@@ -32,7 +32,7 @@ describe("get_assets test", () => {
     })
     
     // assumes db on server is seeded sufficiently
-    it.only("should apply cost filter to list only assets over $1000", () => {
+    it("should apply cost filter to list only assets over $1000", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
         var link = '/assets/0?cost_gt=1000'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
@@ -47,7 +47,7 @@ describe("get_assets test", () => {
     })
 
     // assumes db on server is seeded sufficiently
-    it.only("should apply cost filter to list only assets under $500", () => {
+    it("should apply cost filter to list only assets under $500", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
         var link = '/assets/0?cost_lt=500'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
@@ -55,13 +55,41 @@ describe("get_assets test", () => {
           expect(result.data.assets).to.be.an.instanceof(Array)
           
           result.data.assets.forEach(asset => {
-              console.log(asset.cost)
               expect(asset.cost).to.be.below(500)
           });
         })
       })
     })
 
+    it("should apply cost filter to list only assets between $500 and $1000", () => {
+      return tokenUtils.requestTokens('a', 'a').then ( () => {
+        var link = '/assets/0?cost_gt=500&cost_lt=1000'
+        return assetsAPI.getPaginatedAssets(link).then( (result) => {
+          expect(result.data).to.have.property('assets')
+          expect(result.data.assets).to.be.an.instanceof(Array)
+          
+          result.data.assets.forEach(asset => {
+              expect(asset.cost).to.be.above(500)
+              expect(asset.cost).to.be.below(1000)
+          });
+        })
+      })
+    })
+
+    it.only("should list assets with location per asset", () => {
+      return tokenUtils.requestTokens('a', 'a').then ( () => {
+        var link = '/assets/0'
+        return assetsAPI.getPaginatedAssets(link).then( (result) => {
+          expect(result.data).to.have.property('assets')
+          expect(result.data.assets).to.be.an.instanceof(Array)
+          
+          result.data.assets.forEach(asset => {
+              console.log(asset.location)
+              expect(asset).to.have.property('location')
+          });
+        })
+      })
+    })
  })
   
 })
