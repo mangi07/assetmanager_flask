@@ -1,6 +1,4 @@
 import { expect } from "chai"
-import MockDate from "mockdate"
-import atob from 'atob'
 import tokenUtils from "../src/js/user/tokens.js"
 import assetsAPI from "../src/js/assets/get_assets"
 import { mockSessionStorage } from "./mockSessionStorage.js";
@@ -78,14 +76,17 @@ describe("get_assets test", () => {
 
     it.only("should list assets with location per asset", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
-        var link = '/assets/0'
+        var link = '/assets/0?location=10'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
-          expect(result.data.assets).to.be.an.instanceof(Array)
+          expect(result.data.assets).to.be.an.instanceof(Object)
           
-          result.data.assets.forEach(asset => {
-              console.log(asset.location)
-              expect(asset).to.have.property('location')
+          console.log(result.data)
+          var assets = result.data.assets
+          Object.keys(assets).forEach( (asset, index) => {
+              console.log(assets[asset])
+              a = assets[asset]
+              expect(a).to.have.property('location_counts')
           });
         })
       })

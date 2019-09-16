@@ -7,7 +7,10 @@ from flask_jwt_extended import (
 )
 from models.user import User
 from flask_cors import CORS
-from queries import asset_queries
+from queries import (
+    asset_queries,
+    location_queries
+)
 
 ##############################################
 # INIT WEB APP
@@ -94,7 +97,6 @@ def send_static_files(path):
 @app.route("/assets")
 @jwt_required 
 def list_assets(page=0):
-    # create location tree
     # get filters - TODO: may want to move this to asset_queries (??) by passing request.args
     cost_gt = request.args.get('cost_gt', None)
     cost_lt = request.args.get('cost_lt', None)
@@ -118,6 +120,20 @@ def list_assets(page=0):
         prev=prev,
         next=next
     )
+
+#  ##############################################################
+@app.route("/locations")
+@jwt_required 
+def list_locations():
+   
+    # execute query
+    locations = location_queries.get_all_locations()
+    
+    # create location tree
+    return jsonify(
+        locations=locations,
+    )
+
 
 
 
