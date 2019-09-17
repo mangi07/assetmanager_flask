@@ -18,3 +18,7 @@ curl -X POST http://localhost:5000/refresh -H "Authorization: Bearer eyJ0eXAiOiJ
 # }
 
 curl -X GET http://localhost:5000/assets/0 -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODI4NTYsIm5iZiI6MTU2Njg4Mjg1NiwianRpIjoiZDNiODk3NDgtOThhNy00NzBkLThjOTUtNDM0NTMwODEwMzMxIiwiZXhwIjoxNTY5NDc0ODU2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.q-MTMIGfsfFHt5vgRPHz9PKruaQHQIdFZe7G4WjJcSg"
+
+# asset listing with filtering
+# filter options: cost_gt, cost_lt, location (by id)
+curl -X GET http://localhost:5000/assets/0?cost_gt=500&cost_lt=2000&location=10 -H "Authorization: Bearer $TOKEN"

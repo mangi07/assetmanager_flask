@@ -13,7 +13,7 @@ describe("get_assets test", () => {
       return tokenUtils.requestTokens('a', 'a').then( () => {
         assetsAPI.getPaginatedAssets().then( (result) => {
           expect(result.data).to.have.property('assets')
-          expect(result.data.assets).to.be.an.instanceof(Array)
+          expect(result.data.assets).to.be.an.instanceof(Object)
         })
       })
     })
@@ -35,10 +35,11 @@ describe("get_assets test", () => {
         var link = '/assets/0?cost_gt=1000'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
-          expect(result.data.assets).to.be.an.instanceof(Array)
+          expect(result.data.assets).to.be.an.instanceof(Object)
           
-          result.data.assets.forEach(asset => {
-              expect(asset.cost).to.be.above(1000)
+          var assets = result.data.assets
+          Object.values(assets).forEach( (asset, index) => {
+            expect(asset.cost).to.be.above(1000)
           });
         })
       })
@@ -50,23 +51,26 @@ describe("get_assets test", () => {
         var link = '/assets/0?cost_lt=500'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
-          expect(result.data.assets).to.be.an.instanceof(Array)
+          expect(result.data.assets).to.be.an.instanceof(Object)
           
-          result.data.assets.forEach(asset => {
+          var assets = result.data.assets
+          Object.values(assets).forEach( (asset, index) => {
               expect(asset.cost).to.be.below(500)
           });
         })
       })
     })
 
+    // assumes db on server is seeded sufficiently
     it("should apply cost filter to list only assets between $500 and $1000", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
         var link = '/assets/0?cost_gt=500&cost_lt=1000'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
-          expect(result.data.assets).to.be.an.instanceof(Array)
+          expect(result.data.assets).to.be.an.instanceof(Object)
           
-          result.data.assets.forEach(asset => {
+          var assets = result.data.assets
+          Object.values(assets).forEach( (asset, index) => {
               expect(asset.cost).to.be.above(500)
               expect(asset.cost).to.be.below(1000)
           });
@@ -74,19 +78,17 @@ describe("get_assets test", () => {
       })
     })
 
-    it.only("should list assets with location per asset", () => {
+    // assumes db on server is seeded sufficiently
+    it("should list assets with location per asset", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
         var link = '/assets/0?location=10'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
           expect(result.data.assets).to.be.an.instanceof(Object)
           
-          console.log(result.data)
           var assets = result.data.assets
-          Object.keys(assets).forEach( (asset, index) => {
-              console.log(assets[asset])
-              a = assets[asset]
-              expect(a).to.have.property('location_counts')
+          Object.values(assets).forEach( (asset, index) => {
+              expect(asset).to.have.property('location_counts')
           });
         })
       })

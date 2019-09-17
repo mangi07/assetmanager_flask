@@ -1,5 +1,50 @@
 import sqlite3
 
+def get_asset_locations(ids):
+    conn = sqlite3.connect("db.sqlite3")
+    cur = conn.cursor()
+    query_select = """
+        SELECT location_count.asset, location_count.id, location.id, location.description, location.parent, location_count.count, location_count.audit_date 
+        FROM location_count
+        left join location on location_count.location = location.id
+        WHERE location_count.asset in ({});
+    """.format(','.join('?'*len(ids)))
+
+    cur.execute(query_select, ids)
+    rows = cur.fetchall()
+    conn.close()
+
+    asset_groups = {id:[] for id in ids}
+    for asset_id, loc_cnt_id, loc_id, loc_desc, loc_par, loc_cnt, audit_date in rows:
+        asset_groups[asset_id].append({
+            'count_id': loc_cnt_id,
+            'location_id': loc_id,
+            'description': loc_desc,
+            'parent_id': loc_par,
+            'count': loc_cnt,
+            'audit_date': audit_date
+        })
+    return asset_groups
+
+
+def get_asset_pictures(ids):
+    conn = sqlite3.connect("db.sqlite3")
+    cur = conn.cursor()
+    query_select = """
+        select asset_picture.asset, picture.file_path from asset_picture
+        left join picture on asset_picture.picture = picture.id
+        where asset_picture.asset in ({});
+    """.format(','.join('?'*len(ids)))
+
+    cur.execute(query_select, ids)
+    rows = cur.fetchall()
+    conn.close()
+
+    pic_groups = {id:[] for id in ids}
+    for id, path in rows:
+        pic_groups[id].append(path)
+    return pic_groups
+
 
 def get_assets(page=0, filters=None):
     conn = sqlite3.connect("db.sqlite3")
@@ -13,22 +58,13 @@ def get_assets(page=0, filters=None):
     params_page = [offset, limit]
 
     # query string formation with optional filters
-    cost_precision = 10000000000
     params_where = []
     query_select = """
-        SELECT asset.id, asset.asset_id, asset.description, asset.cost, 
-        location.id, location.description, location_count.count, location_count.audit_date,
-        picture.file_path, invoice.number, invoice.file_path, purchase_order.number 
-        FROM asset 
-        left join location_count on location_count.asset = asset.id
-        left join location on location_count.location = location.id
-        left join asset_picture on asset_picture.asset = asset.id
-        left join picture on asset_picture.picture = picture.id
-        left join asset_invoice on asset_invoice.asset = asset.id
-        left join invoice on asset_invoice.invoice = invoice.id
-        left join purchase_order on asset.purchase_order = purchase_order.id
-        """
+        SELECT asset.id, asset.asset_id, asset.description, asset.cost
+        FROM asset
+    """
     query_where = ""
+    cost_precision = 10000000000
     if (filters):
         #print(filters)
         filter_str = ""
@@ -50,8 +86,9 @@ def get_assets(page=0, filters=None):
         location_id = filters.get('location')
         if location_id:
             loc = " AND " if one_or_more else ""
-            filter_str += loc + " location.id = ? "
-            params_where.append(location_id)
+            asset_select = "SELECT asset FROM location_count WHERE location = ?"
+            filter_str += loc + " asset.id in ({}) ".format(asset_select)
+            params_where.append(int(location_id))
             one_or_more = True
         # add more filters here in a similar manner
 
@@ -60,48 +97,32 @@ def get_assets(page=0, filters=None):
     query_limit = " LIMIT ?, ?"
     query_string = query_select + query_where + query_limit
     params = params_where + params_page
-    #print(query_string)
-    #print(params)
 
     cur.execute(query_string, params)
     rows = cur.fetchall()
     conn.close()
     
+    import pprint
+    asset_ids = [id for id, x, y, z in rows]
+    location_groups = get_asset_locations(asset_ids)
+    # TODO: get pictures here
+    picture_groups = get_asset_pictures(asset_ids)
+
     # combine rows per asset
-    precision = 10000000000
     assets = {}
-    for (id, asset_id, description, cost,
-        loc_id, loc_desc, loc_count, loc_audit_date,
-        pic_path, inv_num, inv_path, po_num) in rows:
+    for (id, asset_id, description, cost) in rows:
         if id not in assets:
             assets[id] = {
                 'id':id, 
                 'asset_id':asset_id, 
                 'description':description, 
-                'cost':None if cost is None else float(cost/precision),
+                'cost':None if cost is None else float(cost/cost_precision),
                 'location_counts':{},
                 'pictures':{},
                 'invoices':{},
-                'purchase_order':po_num,
+                'far':{}
             }
-        assets[id]['location_counts'][loc_id] = {
-            'description':loc_desc,
-            'count':loc_count,
-            'audit_date':loc_audit_date
-        }
+        assets[id]['location_counts'] = location_groups[id]
+        assets[id]['pictures'] = picture_groups[id]
 
-
-    precision = 10000000000
-    # ret = [
-    #     {
-    #         'id':id, 
-    #         'asset_id':asset_id, 
-    #         'description':description, 
-    #         'cost':None if cost is None else float(cost/precision),
-    #         'location':{
-    #             'id':loc_id,
-    #             'description':loc_desc
-    #         }
-    #     } 
-    #     for id, asset_id, description, cost, loc_id, loc_desc in rows]
     return assets

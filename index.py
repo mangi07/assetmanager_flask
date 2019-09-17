@@ -105,13 +105,16 @@ def list_assets(page=0):
         'cost_gt': float(cost_gt) if cost_gt else None,
         'cost_lt': float(cost_lt) if cost_lt else None,
     }
+
+    filters_arr = [f"{k}={v}" for k, v in filters.items() if v is not None]
+    filters_str = '?' + '&'.join(filters_arr) if len(filters_arr) > 0 else ''
     
     # execute query
     assets = asset_queries.get_assets(page, filters)
     
     # pagination links
-    prev = '/assets/' + str(max(page, 0))
-    next = '/assets/' + str(page + 1)
+    prev = '/assets/' + str(max(page, 0)) + filters_str
+    next = '/assets/' + str(page + 1) + filters_str
 
     return jsonify(
         msg='testing',
