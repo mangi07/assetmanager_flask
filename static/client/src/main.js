@@ -13,5 +13,5 @@ new Vue({
 }).$mount('#app')
 
 userUtils.getUser().then( (result) => {
-  store.commit('setUser', result)
+  store.dispatch('userModule/setUserAction', result)
 })

@@ -34,7 +34,7 @@ export default {
           vi.password = null
           vm.error = result.error;
           if (result.error == null) {
-            vi.$store.commit('setUser', result)
+            vi.$store.dispatch('userModule/setUserAction', result)
           }
         });
     }

@@ -20,7 +20,7 @@ export default {
   methods: {},
   computed: {
     user () {
-	    return this.$store.state.user
+	    return this.$store.state.userModule.user
     },
   },
 }

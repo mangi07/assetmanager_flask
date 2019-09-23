@@ -2,8 +2,6 @@
 
   <div>
     Home
-    <div>{{ user.username }}</div>
-    <div>{{ user.role }}</div>
   </div>
 </template>
 
@@ -12,10 +10,6 @@
 module.exports = {
   props: {},
   methods: {},
-  computed: {
-    user () {
-	    return this.$store.state.user
-    }
-  },
+  computed: {},
 }
 </script>

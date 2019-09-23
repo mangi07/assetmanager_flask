@@ -28,12 +28,12 @@ export default {
   methods: {
     logOut: function (event) {
       userUtils.logOut()
-      this.$store.commit('unsetUser')
+      this.$store.dispatch('userModule/unsetUserAction')
     }
   },
   computed: {
     user () {
-      return this.$store.state.user
+      return this.$store.state.userModule.user
     },
   },
 }
