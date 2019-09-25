@@ -25,6 +25,7 @@ function getPaginatedAssets(link='/assets/0') {
       });
   }).catch( (error) => {
     console.log(error)
+    return error
   })
 }
 
