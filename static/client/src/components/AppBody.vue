@@ -19,7 +19,7 @@ export default {
   props: {},
   methods: {},
   computed: {
-    user () {
+    user: function () {
 	    return this.$store.state.userModule.user
     },
   },

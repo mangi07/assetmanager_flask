@@ -7,7 +7,6 @@ export const assetsModule = {
     mutations: {
         appendAssets (state, assets) {
             Object.keys(assets).forEach(function(key) {
-                console.log(key, assets[key]);
                 var asset = assets[key]
                 state.assets.push(
                     asset
@@ -16,9 +15,8 @@ export const assetsModule = {
         },
     },
     actions: {
-        appendAssetsAction (context, assets) {
-            console.log(assets)
-            context.commit('appendAssets', assets)
+        appendAssetsAction (context, response) {
+            context.commit('appendAssets', response.data.assets)
         },
     },
 }
