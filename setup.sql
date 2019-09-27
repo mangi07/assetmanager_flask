@@ -196,6 +196,7 @@ CREATE TABLE IF NOT EXISTS "asset_invoice"
     [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     [asset] INTEGER NOT NULL,
     [invoice] INTEGER NOT NULL,
+    [cost] INTEGER, --- stored as cost * 10000000000, representing how much of the invoice that asset makes up
     
     FOREIGN KEY ([asset]) REFERENCES "asset" ([id])
       ON DELETE CASCADE ON UPDATE NO ACTION,
