@@ -187,6 +187,7 @@ CREATE TABLE IF NOT EXISTS "invoice"
     [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     [number] TEXT,
     [file_path] TEXT,
+    [total] INTEGER, --- stored as total * 10000000000
     CHECK (number IS NOT NULL OR file_path IS NOT NULL)
 );
 
