@@ -140,7 +140,8 @@ CREATE TABLE IF NOT EXISTS "far" -- line entry in fixed asset register
     [description] TEXT,
     [pdf] INTEGER, -- unique identifier for line in fixed asset register
     [life] INTEGER, -- asset life in years
-    [start_date] TEXT NOT NULL DEFAULT (datetime(current_timestamp)),
+    [start_date] TEXT DEFAULT NULL,
+    [amount] INTEGER -- stores total dollar amount of this FAR line * 10000000000
     
     FOREIGN KEY ([account]) REFERENCES "account" ([id])
       ON DELETE CASCADE ON UPDATE NO ACTION
