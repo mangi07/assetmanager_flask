@@ -100,11 +100,15 @@ def list_assets(page=0):
     # get filters - TODO: may want to move this to asset_queries (??) by passing request.args
     cost_gt = request.args.get('cost_gt', None)
     cost_lt = request.args.get('cost_lt', None)
-    filters = {
-        'location': request.args.get('location', None),
-        'cost_gt': float(cost_gt) if cost_gt else None,
-        'cost_lt': float(cost_lt) if cost_lt else None,
-    }
+
+    try:
+        filters = {
+            'location': request.args.get('location', None),
+            'cost_gt': float(cost_gt) if cost_gt else None,
+            'cost_lt': float(cost_lt) if cost_lt else None,
+        }
+    except:
+        return jsonify(error='Bad Request: malformed query params'), 400
 
     filters_arr = [f"{k}={v}" for k, v in filters.items() if v is not None]
     filters_str = '?' + '&'.join(filters_arr) if len(filters_arr) > 0 else ''

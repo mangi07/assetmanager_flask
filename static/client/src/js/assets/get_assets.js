@@ -21,7 +21,7 @@ function getPaginatedAssets(link='/assets/0') {
         return response;
       })
       .catch(function (error) {
-        return error;
+        return error.response.data;
       });
   }).catch( (error) => {
     console.log(error)
