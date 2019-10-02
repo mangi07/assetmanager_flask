@@ -40,6 +40,7 @@ export default {
       var vi = this;
 
       // TODO: refactor link setup to its own function
+      // TODO: only use params the user has filled in, to filter
       var link = `/assets/0?cost_lt=${vi.filters.cost_lt}`
       // TODO: setup link with filters supplied by user input
       assetGetter.getPaginatedAssets(link)
