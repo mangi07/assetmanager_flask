@@ -1,3 +1,4 @@
+
 <template>
   <div id="app">
     <navbar></navbar>
@@ -10,7 +11,6 @@ import navbar from './components/NavBar.vue'
 import appbody from './components/AppBody.vue'
 import Vuex from 'vuex'
 
-
 export default {
   name: 'app',
   components: {
@@ -19,4 +19,3 @@ export default {
   },
 }
 </script>
-

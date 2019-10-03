@@ -1,27 +1,19 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="navbar-brand">Asset Manager</div>
-    <button type="button" class="btn btn-dark" @click='logOut' v-if="user.loggedIn">Log Out</button>
+  <div>
+    <v-toolbar>
+      <v-toolbar-title>Asset Manager <span v-if="user.loggedIn">User: {{ user.username }}, Role: {{ user.role }}</span></v-toolbar-title>
 
+      <div class="flex-grow-1"></div>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  
-    <div v-if="user.loggedIn" class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
+      <v-toolbar-items v-if="user.loggedIn">
+        <v-btn text @click='logOut'>LOGOUT</v-btn>
+        <v-btn text>
           <router-link to="/asset-filter" class="nav-link">List Assets</router-link>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="#">User: {{ user.username }}</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Role: {{ user.role }}</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+        </v-btn>
+      </v-toolbar-items>
+
+    </v-toolbar>
+  </div>
 </template>
 
 <script>
