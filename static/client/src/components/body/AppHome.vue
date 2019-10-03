@@ -20,6 +20,7 @@
 
 <script>
 import assetGetter from '../../js/assets/get_assets';
+import getQueryString from '../../js/assets/query_params';
 
 export default {
   data: function () {
@@ -39,9 +40,8 @@ export default {
       var vm = this.ui.data;
       var vi = this;
 
-      // TODO: refactor link setup to its own function
-      // TODO: only use params the user has filled in, to filter
-      var link = `/assets/0?cost_lt=${vi.filters.cost_lt}`
+      var query_str = getQueryString(vi.filters)
+      var link = `/assets/0${query_str}`
       // TODO: setup link with filters supplied by user input
       assetGetter.getPaginatedAssets(link)
         .then(function(result){

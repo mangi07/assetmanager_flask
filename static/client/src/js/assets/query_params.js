@@ -11,38 +11,37 @@ function ParamException (message) {
 }
 
 function checkParam (label, value) {
-    // check param here
+    if (value == null) {
+        return false
+    }
+
     switch (label){
         case 'cost_lt':
-            if (typeof value != number || value < 0) {
+            if ( (typeof value != 'number') || (value < 0) ) {
                 throw new ParamException('cost_lt must be a number and greater than 0')
             }
     }
 
-    this.label = label
-    this.value = value
+    return true
 }
 
-export default function QueryString (filters) {
+
+export default function getQueryString(filters) {
     if (filters.length == 0) {
-        this.query_str = ''
+        return ''
     } else {
         // form query string
-        this.query_str = '?'
+        var query_str = '?'
 
         Object.keys(filters).forEach( function(key, index) {
-            checkParam( key, filters[key] )
-            this.query_str += `${key}=${filters[key]}&`
+            if (checkParam( key, filters[key] )) {
+                query_str += `${key}=${filters[key]}&`
+            }
         });
-    }   
 
-    
-    // var len = this.params.length
-    
-    //     for (var x = 0; x < len; x++) {
-    //         var p = this.params[x]
-    //         this.query_str += `${p.label}=${p.value}&`
-    //     }
-    // }
-    
+        if (query_str.endsWith('&')) {
+            query_str = query_str.slice(0, -1)
+        }
+        return query_str
+    } 
 }
