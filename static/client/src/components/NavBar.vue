@@ -11,6 +11,9 @@
     <div v-if="user.loggedIn" class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
+          <router-link to="/asset-filter" class="nav-link">List Assets</router-link>
+        </li>
+        <li class="nav-item active">
           <a class="nav-link" href="#">User: {{ user.username }}</a>
         </li>
         <li class="nav-item">
