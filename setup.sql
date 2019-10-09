@@ -1,13 +1,13 @@
 /*
-File: import.sql
+File: setup.sql
 
 Create: 8/12/2019
 
 Description: idea of how to flesh out the sqlite db
   
   Set up with the following commands:
-  > sqlite3 assetsdb.sqlite3
-  sqlite> .read import.sql
+  > sqlite3 db.sqlite3
+  sqlite> .read setup.sql
 */
 
 

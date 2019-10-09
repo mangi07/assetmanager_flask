@@ -1,7 +1,7 @@
 <template>
 
   <div>
-    <p>Filter Assets (Trying out routing)</p>
+    <p>Filter Assets</p>
     <div>
       <label for="cost-lt">Max Cost</label>
       <input id="cost-lt" type="number" placeholder="0.00" step="0.01" min="0" v-model="filters.cost_lt">
@@ -39,7 +39,7 @@ export default {
         .then(function(result){
           vm.error = result.error;
           if (result.error == null) {
-            vi.$store.dispatch('assetsModule/appendAssetsAction', result)
+            vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
             vi.$router.push('asset-list')
           }
         });

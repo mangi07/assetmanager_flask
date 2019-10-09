@@ -1,82 +1,88 @@
 <template>
-  <div>
-    <v-app-bar>
-      <v-app-bar-nav-icon>
-        <v-navigation-drawer
-          v-model="drawerRight"
-          app
-          clipped
-          right
-        >
-          <v-list dense>
-            <v-list-item @click.stop="right = !right">
-              <v-list-item-action>
-                <v-icon>mdi-exit-to-app</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>Open Temporary Drawer</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-navigation-drawer>
-      </v-app-bar-nav-icon>
+  <nav>
+    <v-app-bar color="primary" dark app>
 
+      <v-menu
+        left
+        bottom
+        v-if="user.loggedIn"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon @click="drawer = !drawer">mdi-menu</v-icon>
+          </v-btn>
+        </template>
+
+      </v-menu>
 
       <v-toolbar-title>
         Asset Manager
       </v-toolbar-title>
 
-      <div v-if="user.loggedIn">
-        <v-chip>
-          <v-icon left color="red">mdi-account</v-icon>
-          User: {{ user.username }}
-        </v-chip>
-        <v-chip>
-          <v-icon left color="red">mdi-information</v-icon>
-          Role: {{ user.role }}
-        </v-chip>
-      </div>
+    </v-app-bar>
 
-      <div class="flex-grow-1"></div>
-
-      <v-toolbar-items v-if="user.loggedIn">
-        <v-btn text @click='logOut'>LOGOUT</v-btn>
-        <v-btn text>
-          <router-link to="/asset-filter" class="nav-link">List Assets</router-link>
-        </v-btn>
-      </v-toolbar-items>
-
-      <v-menu
-        left
-        bottom
+    <v-navigation-drawer
+        v-model="drawer"
+        app
+        temporary
       >
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
+        <v-list-item>
+          <v-list-item-avatar>
+            <!-- <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img> -->
+            <v-icon color="info">mdi-account</v-icon>
+          </v-list-item-avatar>
 
-        <v-list>
+          <v-list-item-content>
+            <v-list-item-title>User: {{ user.username }}</v-list-item-title>
+            Role: {{ user.role }}
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list dense>
           <v-list-item
-            @click='logOut'
+            v-for="item in items"
+            :key="item.title"
+            :to="item.route"
+            link
           >
-            <v-list-item-title>LOGOUT</v-list-item-title>
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
         </v-list>
-      </v-menu>
 
-    </v-app-bar>
-  </div>
+        <template v-slot:append>
+          <div class="pa-2">
+            <v-btn block @click='logOut'>Logout</v-btn>
+          </div>
+        </template>
+
+      </v-navigation-drawer>
+  </nav>
 </template>
 
 <script>
 import userUtils from '../js/user/check_login'
 
 export default {
+  data: () => ({
+    drawer: false,
+    
+    items: [
+          { title: 'List Assets', icon: 'mdi-menu', route: "/asset-filter" },
+        ],
+  }),
   methods: {
     logOut: function (event) {
       userUtils.logOut()
       this.$store.dispatch('userModule/unsetUserAction')
+      this.$data.drawer = false
     }
   },
   computed: {

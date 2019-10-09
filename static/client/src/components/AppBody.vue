@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-content>
     <div>{{ user }}</div>
     <home v-if ="  user.loggedIn"></home>
     <login v-if="! user.loggedIn"></login>
-  </div>
+  </v-content>
 </template>
 
 <script>

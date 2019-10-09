@@ -1,9 +1,11 @@
 
 <template>
+  <v-app>
   <div id="app">
     <navbar></navbar>
     <appbody></appbody>
-</div>
+  </div>
+  </v-app>
 </template>
 
 <script>
