@@ -17,7 +17,8 @@ function checkParam (label, value) {
 
     switch (label){
         case 'cost_lt':
-            if ( (typeof value != 'number') || (value < 0) ) {
+            var value = parseFloat(value)
+            if ( (typeof value == 'NaN') || (value < 0) ) {
                 throw new ParamException('cost_lt must be a number and greater than 0')
             }
     }

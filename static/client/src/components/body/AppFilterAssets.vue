@@ -33,7 +33,11 @@ export default {
       var vm = this.ui.data;
       var vi = this;
 
-      var query_str = getQueryString(vi.filters)
+      try {
+        var query_str = getQueryString(vi.filters)
+      } catch (err) {
+        vm.error = err
+      }
       var link = `/assets/0${query_str}`
       assetGetter.getPaginatedAssets(link)
         .then(function(result){
