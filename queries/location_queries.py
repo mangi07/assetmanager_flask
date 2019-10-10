@@ -1,8 +1,9 @@
 import sqlite3
+from .db_path import DB_PATH
 
 
 def get_all_locations():
-    conn = sqlite3.connect("db.sqlite3")
+    conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
     query_select = """
@@ -10,9 +11,11 @@ def get_all_locations():
         FROM location
         """
 
+    print("got here")
     cur.execute(query_select)
     rows = cur.fetchall()
     conn.close()
+    print("didn't get here?")
     
     ret = [
         {

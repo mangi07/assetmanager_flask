@@ -1,7 +1,9 @@
 import sqlite3
+from .db_path import DB_PATH
+
 
 def get_asset_locations(ids):
-    conn = sqlite3.connect("db.sqlite3")
+    conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     query_select = """
         SELECT location_count.asset, location_count.id, location.id, location.description, location.parent, location_count.count, location_count.audit_date 
@@ -28,7 +30,7 @@ def get_asset_locations(ids):
 
 
 def get_asset_pictures(ids):
-    conn = sqlite3.connect("db.sqlite3")
+    conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     query_select = """
         select asset_picture.asset, picture.file_path from asset_picture
@@ -47,7 +49,7 @@ def get_asset_pictures(ids):
 
 
 def get_assets(page=0, filters=None):
-    conn = sqlite3.connect("db.sqlite3")
+    conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
     # TODO: extract query string formation out to testable function

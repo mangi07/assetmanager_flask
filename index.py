@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, jsonify, request
+from flask import Flask, send_from_directory, jsonify, request, send_file
 #from flask_jwt import JWT, jwt_required, current_identity
 from flask_jwt_extended import (
     JWTManager, jwt_required,
@@ -127,6 +127,15 @@ def list_assets(page=0):
         prev=prev,
         next=next
     )
+
+@app.route("/img/<path:path>")
+@jwt_required
+def get_image(path):
+    try:
+        return send_file(f"db/{path}", mimetype='image/jpg')
+    except:
+        return send_file("db/file_not_found.jpg", mimetype='image/jpg')
+
 
 #  ##############################################################
 @app.route("/locations")

@@ -22,3 +22,6 @@ curl -X GET http://localhost:5000/assets/0 -H "Authorization: Bearer eyJ0eXAiOiJ
 # asset listing with filtering
 # filter options: cost_gt, cost_lt, location (by id)
 curl -X GET "http://localhost:5000/assets/0?cost_gt=500&cost_lt=2000&location=10" -H "Authorization: Bearer $TOKEN"
+
+# get image
+curl -X GET "http://localhost:5000/img/assets/1.jpg" -H "Authorization: Bearer $TOKEN" --output "./temp"

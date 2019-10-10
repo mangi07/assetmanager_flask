@@ -5,7 +5,6 @@
 
     <v-container
       class="pa-2"
-      fluid
     >
       <v-row>
         <v-col
@@ -13,8 +12,8 @@
           :key="i"
         >
           <v-card
-            color="info"
-            dark
+            color="blue lighten-4"
+            width="1500px"
           >
             <v-list-item three-line>
               <v-list-item-content class="align-self-start">
@@ -30,7 +29,10 @@
                 size="125"
                 tile
               >
-                <v-img :src="asset.pictures[0]"></v-img>
+                <!-- <v-img :src="asset.pictures[0]"></v-img> -->
+                <!-- TODO: find out how to use a Promise to set img src,
+                because it seems that v-img src does not like Promise -->
+                <v-img :id="i" :src="getPic(asset, i)"></v-img>
               </v-list-item-avatar>
             </v-list-item>
           </v-card>
@@ -42,7 +44,20 @@
 </template>
 
 <script>
+import picAPI from '../../js/pictures/get_pictures'
+
 export default {
+  methods: {
+    getPic: function (asset, tag_id) {
+      // TODO: use external function to load image
+      var path = asset.pictures[0]
+      return picAPI.getPicture(path).then((result) => {
+        console.log(tag_id)
+        console.log(result)
+        return "https://picsum.photos/300/400?image=1"
+      })
+    }
+  },
   computed: {
     assets: function () {
 	    return this.$store.state.assetsModule.assets
