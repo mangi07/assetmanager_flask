@@ -32,7 +32,12 @@
                 <!-- <v-img :src="asset.pictures[0]"></v-img> -->
                 <!-- TODO: find out how to use a Promise to set img src,
                 because it seems that v-img src does not like Promise -->
-                <v-img :id="i" :src="getPic(asset, i)"></v-img>
+                <v-img 
+                  :id="i" 
+                  :src="asset.pictures[0]"
+
+                  lazy-src="https://picsum.photos/id/11/10/6"
+                ></v-img>
               </v-list-item-avatar>
             </v-list-item>
           </v-card>
@@ -51,16 +56,37 @@ export default {
     getPic: function (asset, tag_id) {
       // TODO: use external function to load image
       var path = asset.pictures[0]
-      return picAPI.getPicture(path).then((result) => {
+      picAPI.getPicture(path).then((result) => {
         console.log(tag_id)
-        console.log(result)
-        return "https://picsum.photos/300/400?image=1"
+        //console.log(result)
+        asset.pictures[0] = result
+        return result
       })
+    },
+    getSrc: function () {
+      return "https://picsum.photos/id/11/10/6"
+    },
+    onMutate: function (path) {
+
     }
   },
   computed: {
     assets: function () {
-	    return this.$store.state.assetsModule.assets
+      var a = this.$store.state.assetsModule.assets
+      //return this.$store.state.assetsModule.assets
+
+      var promise = Promise.resolve(a)
+      for (var idx = 0; idx < a.length; idx++) {
+        var path = a[idx].pictures[0]
+        a[idx].pictures[0] = "https://picsum.photos/id/1/300/400"
+        console.log('idx outside promise is ')
+        picAPI.getPicture(path).then((result) => {
+          a[idx].pictures[0] = result
+          //return result
+        })
+      }
+
+      return this.$store.state.assetsModule.assets
     },
   },
 }
