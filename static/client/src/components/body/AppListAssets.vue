@@ -34,7 +34,7 @@
                 because it seems that v-img src does not like Promise -->
                 <v-img 
                   :id="i" 
-                  :src="asset.pictures[0]"
+                  :src="asset.pictures[0]+'123'"
 
                   lazy-src="https://picsum.photos/id/11/10/6"
                 ></v-img>
@@ -75,15 +75,18 @@ export default {
       var a = this.$store.state.assetsModule.assets
       //return this.$store.state.assetsModule.assets
 
-      var promise = Promise.resolve(a)
-      for (var idx = 0; idx < a.length; idx++) {
-        var path = a[idx].pictures[0]
-        a[idx].pictures[0] = "https://picsum.photos/id/1/300/400"
-        console.log('idx outside promise is ')
-        picAPI.getPicture(path).then((result) => {
-          a[idx].pictures[0] = result
-          //return result
-        })
+      for (let idx = 0; idx < a.length; idx++) {
+        let path = a[idx].pictures[0]
+        let pic = "https://picsum.photos/id/1/300/400"
+        a[idx].pictures[0] = pic
+        (picAPI.getPicture(path).then((result) => {
+          //a[idx].pictures[0] = result
+          pic = result
+          path = pic
+          return result
+        }))()
+        console.log("first pic outside promise")
+        console.log(a[idx].pictures[0])
       }
 
       return this.$store.state.assetsModule.assets

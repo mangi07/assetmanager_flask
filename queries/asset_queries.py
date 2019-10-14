@@ -44,6 +44,7 @@ def get_asset_pictures(ids):
 
     pic_groups = {id:[] for id in ids}
     for id, path in rows:
+        # TODO: here, need to 
         pic_groups[id].append(path)
     return pic_groups
 
@@ -107,7 +108,6 @@ def get_assets(page=0, filters=None):
     import pprint
     asset_ids = [id for id, x, y, z in rows]
     location_groups = get_asset_locations(asset_ids)
-    # TODO: get pictures here
     picture_groups = get_asset_pictures(asset_ids)
 
     # combine rows per asset
