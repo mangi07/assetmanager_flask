@@ -11,7 +11,7 @@ from queries import (
     asset_queries,
     location_queries
 )
-from utils.file_access import FileGuardian
+from utils.file_access import FileGuardian, file_access_token_required
 
 ##############################################
 # INIT WEB APP
@@ -104,6 +104,9 @@ def list_assets(page=0):
     cost_gt = request.args.get('cost_gt', None)
     cost_lt = request.args.get('cost_lt', None)
 
+    # get file access token - if None, image links provided in this response may return 404 forbidden
+    file_access_token = request.args.get('file_access_token', None)
+
     try:
         filters = {
             'location': request.args.get('location', None),
@@ -131,13 +134,16 @@ def list_assets(page=0):
         next=next
     )
 
+
 @app.route("/img/<path:path>")
-@jwt_required
+@file_access_token_required
 def get_image(path):
     try:
-        return send_file(f"db/{path}", mimetype='image/jpg')
+        # This could result in sending a file as an image when the file is not really an image; 
+        # the server trusts that the requested file really is an image. 
+        return send_file(f"db/files/{path}", mimetype='image/jpg')
     except:
-        return send_file("db/file_not_found.jpg", mimetype='image/jpg')
+        return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
 
 
 #  ##############################################################

@@ -34,10 +34,12 @@
                 because it seems that v-img src does not like Promise -->
                 <v-img 
                   :id="i" 
-                  :src="asset.pictures[0]+'123'"
+                  :src="asset.pictures[0]"
 
                   lazy-src="https://picsum.photos/id/11/10/6"
                 ></v-img>
+                <!-- <img 
+                  src="http://localhost:5000/img/assets/2.JPG?file_access_token=gAAAAABdpsTMUQtEUFl3oOXjYZXVV7hVv0kzK5oLs1UFuye0ESxrPqgjwp32VKuD4MZ7gd3x2Ow5LvYNnScuyJ1hwMp-LZJkrW1qyqRTweSU8tEVoZzOqrQ="></img> -->
               </v-list-item-avatar>
             </v-list-item>
           </v-card>
@@ -49,47 +51,22 @@
 </template>
 
 <script>
-import picAPI from '../../js/pictures/get_pictures'
+import picAPI from '../../js/pictures/get_pictures' // TODO: may remove this - function no longer needed
+
 
 export default {
-  methods: {
-    getPic: function (asset, tag_id) {
-      // TODO: use external function to load image
-      var path = asset.pictures[0]
-      picAPI.getPicture(path).then((result) => {
-        console.log(tag_id)
-        //console.log(result)
-        asset.pictures[0] = result
-        return result
-      })
-    },
-    getSrc: function () {
-      return "https://picsum.photos/id/11/10/6"
-    },
-    onMutate: function (path) {
-
-    }
-  },
   computed: {
     assets: function () {
       var a = this.$store.state.assetsModule.assets
-      //return this.$store.state.assetsModule.assets
 
       for (let idx = 0; idx < a.length; idx++) {
-        let path = a[idx].pictures[0]
-        let pic = "https://picsum.photos/id/1/300/400"
-        a[idx].pictures[0] = pic
-        (picAPI.getPicture(path).then((result) => {
-          //a[idx].pictures[0] = result
-          pic = result
-          path = pic
-          return result
-        }))()
-        console.log("first pic outside promise")
-        console.log(a[idx].pictures[0])
+         let path = a[idx].pictures[0]
+         if (path) {
+          a[idx].pictures[0] = path + "?file_access_token=gAAAAABdpsTMUQtEUFl3oOXjYZXVV7hVv0kzK5oLs1UFuye0ESxrPqgjwp32VKuD4MZ7gd3x2Ow5LvYNnScuyJ1hwMp-LZJkrW1qyqRTweSU8tEVoZzOqrQ="
+         }
       }
 
-      return this.$store.state.assetsModule.assets
+      return a
     },
   },
 }

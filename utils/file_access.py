@@ -7,6 +7,7 @@
 #############################################################
 
 from cryptography.fernet import Fernet
+from flask import request, jsonify
 from datetime import datetime, timedelta
 
 class FileGuardian:
@@ -37,8 +38,22 @@ class FileGuardian:
             issued_at = datetime.strptime(issued_at, "%Y-%m-%d %H:%M:%S.%f")
             #issued_at = datetime.fromisoformat(issued_at)
         except:
-            return False
+            return False, 'Bad file access token.'
         age = now - issued_at
         allowed_age = timedelta(hours=24)
-        return age < allowed_age
+        return age < allowed_age, 'File access token has expired.'
+
+def file_access_token_required(func):
+    def inner(*args, **kwargs):
+        token = request.args.get('file_access_token', None)
+        if token is None:
+            return jsonify({'error':'Missing file access token.'}), 404
+        fg = FileGuardian()
+        allowed, reason = fg.access_allowed(token)
+        if not allowed:
+            return jsonify({'error':reason}), 404
+        print("Before execution")
+        return_val = func(*args, **kwargs)
+        return return_val
+    return inner
 
