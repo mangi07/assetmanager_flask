@@ -13,13 +13,15 @@ const requester = axios.create({
   //timeout: 1000,
 });
 
-function setTokens(access, refresh) {
+function setTokens(access, refresh, file_access_token) {
   if (access===undefined) {
     throw "In setTokens, access undefined.";
   } else if (refresh===undefined) {
     throw "In setTokens, refresh undefined.";
+  } else if (file_access_token===undefined) {
+    throw "In setTokens, file_access_token undefinded."
   }
-	var tokenData = {'access': access, 'refresh': refresh};
+	var tokenData = {'access': access, 'refresh': refresh, 'file_access_token':file_access_token};
   // save token on user's device
   window.sessionStorage.setItem('assetmanagerUserToken', JSON.stringify(tokenData));
 }
@@ -31,7 +33,8 @@ function getTokensFromStorage() {
 	}
 	var access = tokens.access;
   var refresh = tokens.refresh;
-  return {'access': access, 'refresh': refresh};
+  var file_access_token = tokens.file_access_token
+  return {'access': access, 'refresh': refresh, 'file_access_token':file_access_token};
 }
 
 function requestTokens(username, password) {
@@ -41,11 +44,12 @@ function requestTokens(username, password) {
 	    // handle success
 	    var accessToken = response.data.access_token;
       var refreshToken = response.data.refresh_token;
+      var fileAccessToken = response.data.file_access_token
 
 	    // save token on user's device (may overwrite tokens previously stored in local or session storage)
-	    setTokens(accessToken, refreshToken);
+	    setTokens(accessToken, refreshToken, fileAccessToken);
 
-	    return {'error': null, 'access': accessToken, 'refresh': refreshToken};
+	    return {'error': null, 'access': accessToken, 'refresh': refreshToken, 'file_access_token': fileAccessToken};
     })
     .catch(function (error) { // 400s errors
       return error.response.data;
@@ -92,8 +96,9 @@ function renewTokens(refresh) {
       }
       var accessToken = response.data.access_token;
       var refreshToken = response.data.refresh_token;
+      var fileAccessToken = response.data.file_access_token;
       
-      setTokens(accessToken, refreshToken);
+      setTokens(accessToken, refreshToken, fileAccessToken);
       return {access:accessToken};
     })
     .catch(function (error) {

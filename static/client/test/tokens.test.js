@@ -12,16 +12,18 @@ describe("tokens test", () => {
 
   describe("setTokens", () => {
     it("should save tokens in sessionStorage", () => {
-      tokenUtils.setTokens('fakeaccesstoken', 'fakerefreshtoken')
+      tokenUtils.setTokens('fakeaccesstoken', 'fakerefreshtoken', 'fakefileaccesstoken')
       var tokens = JSON.parse(window.sessionStorage.getItem('assetmanagerUserToken'));
       expect(tokens.access).to.equal('fakeaccesstoken')
       expect(tokens.refresh).to.equal('fakerefreshtoken')
+      expect(tokens.file_access_token).to.equal('fakefileaccesstoken')
     })
 
-    it("should throw error if either argument is undefined", () => {
+    it("should throw error if any argument is undefined", () => {
       expect( () => {tokenUtils.setTokens()}).to.throw()
       expect( () => {tokenUtils.setTokens('fakeaccesstoken')}).to.throw()
       expect( () => {tokenUtils.setTokens(undefined, 'fakerefreshtoken')}).to.throw()
+      expect( () => {tokenUtils.setTokens('fakeaccess', 'fakerefresh', undefined)}).to.throw()
     })
   })
 
@@ -29,24 +31,27 @@ describe("tokens test", () => {
     it('should get tokens from sessionStorage', function () {
       var access = 'test.access.token';
       var refresh = 'test.refresh.token';
-      var tokenData = {'access': access, 'refresh': refresh};
+      var fileAccessToken = 'fileaccesstoken';
+      var tokenData = {'access': access, 'refresh': refresh, 'file_access_token': fileAccessToken};
       window.sessionStorage.setItem('assetmanagerUserToken', JSON.stringify(tokenData));
 
       var tokens = tokenUtils.getTokensFromStorage();
       
       expect(tokens.access).to.equal(access);
       expect(tokens.refresh).to.equal(refresh);
+      expect(tokens.file_access_token).to.equal(fileAccessToken);
     });
   });
 
   describe('requestTokens', function () {
-    it('should return access and refresh token and error = null', function () {
+    it('should return access, refresh, and file access tokens and error = null', function () {
       var username = 'a'
       var password = 'a'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         expect(result.error).to.equal(null)
         expect(result).to.have.property('access')
         expect(result).to.have.property('refresh')
+        expect(result).to.have.property('file_access_token')
       })
     })
 
@@ -94,6 +99,7 @@ describe("tokens test", () => {
         MockDate.set(date.setDate(after_tomorrow)) // should force refresh token to be used
 
         return tokenUtils.getToken(access, refresh).then( (chosen) => {
+          console.log(chosen)
           expect(chosen.token).to.not.equal(access)
           expect(chosen.token).to.not.equal(refresh)
           

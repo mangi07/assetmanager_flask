@@ -29,17 +29,12 @@
                 size="125"
                 tile
               >
-                <!-- <v-img :src="asset.pictures[0]"></v-img> -->
-                <!-- TODO: find out how to use a Promise to set img src,
-                because it seems that v-img src does not like Promise -->
                 <v-img 
                   :id="i" 
                   :src="asset.pictures[0]"
-
                   lazy-src="https://picsum.photos/id/11/10/6"
+                  @click="showPics(i)"
                 ></v-img>
-                <!-- <img 
-                  src="http://localhost:5000/img/assets/2.JPG?file_access_token=gAAAAABdpsTMUQtEUFl3oOXjYZXVV7hVv0kzK5oLs1UFuye0ESxrPqgjwp32VKuD4MZ7gd3x2Ow5LvYNnScuyJ1hwMp-LZJkrW1qyqRTweSU8tEVoZzOqrQ="></img> -->
               </v-list-item-avatar>
             </v-list-item>
           </v-card>
@@ -47,22 +42,54 @@
       </v-row>
     </v-container>
 
+    <v-overlay :value="overlay">
+      <v-carousel>
+        <v-carousel-item
+          v-for="(picture, i) in assets[selected_asset].pictures"
+          :key="i"
+          :id="i"
+          :src="picture"
+          width="500"
+        ></v-carousel-item>
+      </v-carousel>
+      <v-btn
+        icon
+        @click="overlay = false"
+      >
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-overlay>
+
   </div>
 </template>
 
 <script>
-import picAPI from '../../js/pictures/get_pictures' // TODO: may remove this - function no longer needed
-
+//import picAPI from '../../js/pictures/get_pictures' // TODO: may remove this - function no longer needed
+import tokens from '../../js/user/tokens'
 
 export default {
+  data:  () => ({
+    overlay: false,
+    selected_asset: 0,
+  }),
+  methods: {
+    showPics: function (id) {
+      this.$data.selected_asset = id
+      if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
+        this.$data.overlay = true
+      }
+    }
+  },
   computed: {
     assets: function () {
       var a = this.$store.state.assetsModule.assets
+      var file_access_token = tokens.getTokensFromStorage().file_access_token
 
+      // TODO: may want to move this work to getPaginatedAssets
       for (let idx = 0; idx < a.length; idx++) {
          let path = a[idx].pictures[0]
          if (path) {
-          a[idx].pictures[0] = path + "?file_access_token=gAAAAABdpsTMUQtEUFl3oOXjYZXVV7hVv0kzK5oLs1UFuye0ESxrPqgjwp32VKuD4MZ7gd3x2Ow5LvYNnScuyJ1hwMp-LZJkrW1qyqRTweSU8tEVoZzOqrQ="
+          a[idx].pictures[0] = path + "?file_access_token=" + file_access_token
          }
       }
 

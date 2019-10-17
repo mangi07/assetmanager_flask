@@ -10,7 +10,7 @@ describe("get_picture test", () => {
   })
 
   describe("getPicture", () => {
-    it.only("should return a jpg image", () => {
+    it("should return a jpg image", () => {
       return tokenUtils.requestTokens('a', 'a').then( () => {
         pictureAPI.getPicture('assets/1.jpg').then( (result) => {
           var expected_img = fs.readFileSync('./test/1.jpg', 'utf8')
