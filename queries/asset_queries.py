@@ -1,3 +1,4 @@
+from flask import request
 import sqlite3
 from .db_path import DB_PATH
 
@@ -43,8 +44,10 @@ def get_asset_pictures(ids):
     conn.close()
 
     pic_groups = {id:[] for id in ids}
+
+    print(request.host_url)
     for id, path in rows:
-        pic_groups[id].append(path)
+        pic_groups[id].append(request.host_url + "img/" + path)
     return pic_groups
 
 
@@ -107,7 +110,6 @@ def get_assets(page=0, filters=None):
     import pprint
     asset_ids = [id for id, x, y, z in rows]
     location_groups = get_asset_locations(asset_ids)
-    # TODO: get pictures here
     picture_groups = get_asset_pictures(asset_ids)
 
     # combine rows per asset

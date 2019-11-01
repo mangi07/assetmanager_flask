@@ -29,14 +29,11 @@
                 size="125"
                 tile
               >
-                <!-- <v-img :src="asset.pictures[0]"></v-img> -->
-                <!-- TODO: find out how to use a Promise to set img src,
-                because it seems that v-img src does not like Promise -->
                 <v-img 
                   :id="i" 
                   :src="asset.pictures[0]"
-
                   lazy-src="https://picsum.photos/id/11/10/6"
+                  @click="showPics(i)"
                 ></v-img>
               </v-list-item-avatar>
             </v-list-item>
@@ -45,48 +42,58 @@
       </v-row>
     </v-container>
 
+    <v-overlay :value="overlay">
+      <v-carousel>
+        <v-carousel-item
+          v-for="(picture, i) in assets[selected_asset].pictures"
+          :key="i"
+          :id="i"
+          :src="picture"
+          width="500"
+        ></v-carousel-item>
+      </v-carousel>
+      <v-btn
+        icon
+        @click="overlay = false"
+      >
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-overlay>
+
   </div>
 </template>
 
 <script>
-import picAPI from '../../js/pictures/get_pictures'
+//import picAPI from '../../js/pictures/get_pictures' // TODO: may remove this - function no longer needed
+import tokens from '../../js/user/tokens'
 
 export default {
+  data:  () => ({
+    overlay: false,
+    selected_asset: 0,
+  }),
   methods: {
-    getPic: function (asset, tag_id) {
-      // TODO: use external function to load image
-      var path = asset.pictures[0]
-      picAPI.getPicture(path).then((result) => {
-        console.log(tag_id)
-        //console.log(result)
-        asset.pictures[0] = result
-        return result
-      })
-    },
-    getSrc: function () {
-      return "https://picsum.photos/id/11/10/6"
-    },
-    onMutate: function (path) {
-
+    showPics: function (id) {
+      this.$data.selected_asset = id
+      if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
+        this.$data.overlay = true
+      }
     }
   },
   computed: {
     assets: function () {
       var a = this.$store.state.assetsModule.assets
-      //return this.$store.state.assetsModule.assets
+      var file_access_token = tokens.getTokensFromStorage().file_access_token
 
-      var promise = Promise.resolve(a)
-      for (var idx = 0; idx < a.length; idx++) {
-        var path = a[idx].pictures[0]
-        a[idx].pictures[0] = "https://picsum.photos/id/1/300/400"
-        console.log('idx outside promise is ')
-        picAPI.getPicture(path).then((result) => {
-          a[idx].pictures[0] = result
-          //return result
-        })
+      // TODO: may want to move this work to getPaginatedAssets
+      for (let idx = 0; idx < a.length; idx++) {
+         let path = a[idx].pictures[0]
+         if (path) {
+          a[idx].pictures[0] = path + "?file_access_token=" + file_access_token
+         }
       }
 
-      return this.$store.state.assetsModule.assets
+      return a
     },
   },
 }

@@ -28,7 +28,6 @@
       >
         <v-list-item>
           <v-list-item-avatar>
-            <!-- <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img> -->
             <v-icon color="info">mdi-account</v-icon>
           </v-list-item-avatar>
 
@@ -75,7 +74,7 @@ export default {
     drawer: false,
     
     items: [
-          { title: 'List Assets', icon: 'mdi-menu', route: "/asset-filter" },
+          { title: 'Filter Assets', icon: 'mdi-menu', route: "/asset-filter" },
         ],
   }),
   methods: {

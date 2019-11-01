@@ -11,6 +11,7 @@ from queries import (
     asset_queries,
     location_queries
 )
+from utils.file_access import FileGuardian, file_access_token_required
 
 ##############################################
 # INIT WEB APP
@@ -55,7 +56,9 @@ def login():
     # Identity can be any data that is json serializable
     access_token = create_access_token(identity=username)
     refresh_token = create_refresh_token(identity=username)
-    return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+    fg = FileGuardian()
+    file_access_token = fg.issue_file_access_token()
+    return jsonify(access_token=access_token, refresh_token=refresh_token, file_access_token=file_access_token), 200
 
 
 @jwt.user_identity_loader
@@ -73,7 +76,12 @@ def refresh():
     try:
         access_token = create_access_token(identity=username)
         refresh_token = create_refresh_token(identity=username)
-        return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+        fg = FileGuardian()
+        file_access_token = fg.issue_file_access_token()
+        return jsonify(
+            access_token=access_token, 
+            refresh_token=refresh_token,
+            file_access_token=file_access_token), 200
     except:
         return jsonify({"error":"This user could not be found."})
 
@@ -100,6 +108,9 @@ def list_assets(page=0):
     # get filters - TODO: may want to move this to asset_queries (??) by passing request.args
     cost_gt = request.args.get('cost_gt', None)
     cost_lt = request.args.get('cost_lt', None)
+
+    # get file access token - if None, image links provided in this response may return 404 forbidden
+    file_access_token = request.args.get('file_access_token', None)
 
     try:
         filters = {
@@ -128,13 +139,16 @@ def list_assets(page=0):
         next=next
     )
 
+
 @app.route("/img/<path:path>")
-@jwt_required
+@file_access_token_required
 def get_image(path):
     try:
-        return send_file(f"db/{path}", mimetype='image/jpg')
+        # This could result in sending a file as an image when the file is not really an image; 
+        # the server trusts that the requested file really is an image. 
+        return send_file(f"db/files/{path}", mimetype='image/jpg')
     except:
-        return send_file("db/file_not_found.jpg", mimetype='image/jpg')
+        return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
 
 
 #  ##############################################################

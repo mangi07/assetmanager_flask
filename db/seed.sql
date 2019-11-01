@@ -54,4 +54,6 @@ insert into picture (id, file_path) values
 (3, 'assets\3.JPG');
 
 insert into asset_picture (asset, picture) values
-(1, 1), (2, 2), (3, 3);
+(1, 1), (1, 2), (1, 3), 
+(2, 2), 
+(3, 3);
