@@ -4,3 +4,4 @@ Tests use relative imports to import application modules tested.
 
 Run from project root:
 $ pytest tests
+
