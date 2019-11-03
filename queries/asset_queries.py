@@ -30,7 +30,13 @@ def get_asset_locations(ids):
     return asset_groups
 
 
+def _get_host_url():
+    return request.host_url
+
+
 def get_asset_pictures(ids):
+    host_url = _get_host_url()
+
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     query_select = """
@@ -45,9 +51,10 @@ def get_asset_pictures(ids):
 
     pic_groups = {id:[] for id in ids}
 
-    print(request.host_url)
+    #print(request.host_url)
     for id, path in rows:
-        pic_groups[id].append(request.host_url + "img/" + path)
+        #pic_groups[id].append(request.host_url + "img/" + path)
+        pic_groups[id].append(host_url + "img/" + path)
     return pic_groups
 
 
