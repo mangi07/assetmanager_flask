@@ -41,7 +41,11 @@ class FileGuardian:
             return False, 'Bad file access token.'
         age = now - issued_at
         allowed_age = timedelta(hours=24)
-        return age < allowed_age, 'File access token has expired.'
+        allowed = age < allowed_age
+        if allowed:
+            return allowed, f"File access granted with token issued at {issued_at}."
+        else:
+            return allowed, 'File access token has expired.'
 
 def file_access_token_required(func):
     def inner(*args, **kwargs):
