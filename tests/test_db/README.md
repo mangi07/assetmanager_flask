@@ -1,0 +1,1 @@
+This directory hosts test-specific database stuff.

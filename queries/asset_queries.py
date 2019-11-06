@@ -51,9 +51,7 @@ def get_asset_pictures(ids):
 
     pic_groups = {id:[] for id in ids}
 
-    #print(request.host_url)
     for id, path in rows:
-        #pic_groups[id].append(request.host_url + "img/" + path)
         pic_groups[id].append(host_url + "img/" + path)
     return pic_groups
 
