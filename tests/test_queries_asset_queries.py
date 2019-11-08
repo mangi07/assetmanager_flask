@@ -115,3 +115,150 @@ class TestAssetQueries:
             2: [f'host.com/img/{img1}', f'host.com/img/{img2}']
         }, "Expected dict with two key-value pairs and correct paths to images."
     
+    def test_get_asset_locations_1(self):
+        """Should return empyt dict given an empty id list"""
+        locs_per_id = asset_queries.get_asset_locations([])
+        assert locs_per_id == {}
+
+    def test_get_asset_locations_2(self, db_conn):
+        """Should return dict with key-val pair of id:[] given asset id with no associated locations."""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, 'assetone', 'something');
+            insert into location (id, description) values (1, 'loc 1');
+        """
+        db_conn.executescript(query)
+        db_conn.close()
+
+        locs_per_id = asset_queries.get_asset_locations([1])
+        assert locs_per_id == {1:[]}
+
+    def test_get_asset_locations_3(self, db_conn):
+        """Should return dict with one key-val pair 
+        where key is id and val is dict representing location_count
+        when given existing asset id with one location_count."""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, 'assetone', 'something');
+            insert into location (id, description) values (1, 'loc 1');
+            insert into location_count (id, asset, location, count, audit_date) values
+                (1, 1, 1, 1, '2019-01-01 00:00:00');
+        """
+        db_conn.executescript(query)
+        db_conn.close()
+
+        locs_per_id = asset_queries.get_asset_locations([1])
+        assert locs_per_id == {1:[
+            {
+                'count_id': 1,
+                'location_id': 1,
+                'description': 'loc 1',
+                'parent_id': None,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }
+        ]}
+
+    def test_get_asset_locations_4(self, db_conn):
+        """Given list of 2 ids where first exists and second doesn't,
+        should return dict with two key-val pairs 
+        where first pair is correct id:location_count
+        and second pair is id:[]"""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, 'assetone', 'something');
+            insert into location (id, description) values (1, 'loc 1');
+            insert into location_count (id, asset, location, count, audit_date) values
+                (1, 1, 1, 1, '2019-01-01 00:00:00');
+        """
+        db_conn.executescript(query)
+        db_conn.close()
+
+        locs_per_id = asset_queries.get_asset_locations([1, 2])
+        assert locs_per_id == {
+            1:[{
+                'count_id': 1,
+                'location_id': 1,
+                'description': 'loc 1',
+                'parent_id': None,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+                }],
+            2:[]
+        }
+
+    def test_get_asset_locations_5(self, db_conn):
+        """Given list of 2 existing ids,
+        should return dict with two key-val pairs 
+        where both pairs have the correct id:location_count"""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, 'assetone', 'something'),
+                (2, 'assettwo', 'something else');
+            insert into location (id, description) values (1, 'loc 1'), (2, 'loc 2');
+            insert into location_count (id, asset, location, count, audit_date) values
+                (1, 1, 1, 1, '2019-01-01 00:00:00'),
+                (2, 2, 2, 1, '2019-01-01 00:00:00');
+        """
+        db_conn.executescript(query)
+        db_conn.close()
+
+        locs_per_id = asset_queries.get_asset_locations([1, 2])
+        assert locs_per_id == {
+            1:[{
+                'count_id': 1,
+                'location_id': 1,
+                'description': 'loc 1',
+                'parent_id': None,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+                }],
+            2:[{
+                'count_id': 2,
+                'location_id': 2,
+                'description': 'loc 2',
+                'parent_id': None,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+
+    def test_get_asset_locations_6(self, db_conn):
+        """Given list of 1 existing asset id,
+        should return dict with one key-val pairs
+        where val is a list of 2 dicts,
+        each representing a location_count associated with the asset"""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, 'assetone', 'something');
+            insert into location (id, description) values (1, 'loc 1'), (2, 'loc 2');
+            insert into location_count (id, asset, location, count, audit_date) values
+                (1, 1, 1, 1, '2019-01-01 00:00:00'),
+                (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db_conn.executescript(query)
+        db_conn.close()
+
+        locs_per_id = asset_queries.get_asset_locations([1])
+        assert locs_per_id == {
+            1:[{
+                'count_id': 1,
+                'location_id': 1,
+                'description': 'loc 1',
+                'parent_id': None,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+                },
+                {
+                'count_id': 2,
+                'location_id': 2,
+                'description': 'loc 2',
+                'parent_id': None,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+    
+    def test_filters_to_sql_1(self, db_conn):
+        """Should return <todo>"""
+        pass

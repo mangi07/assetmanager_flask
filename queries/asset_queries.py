@@ -55,6 +55,10 @@ def get_asset_pictures(ids):
         pic_groups[id].append(host_url + "img/" + path)
     return pic_groups
 
+# TODO: functions: get_asset_fars, get_asset_invoices
+
+def filters_to_sql(filters):
+    return ""
 
 def get_assets(page=0, filters=None):
     conn = sqlite3.connect(DB_PATH)
