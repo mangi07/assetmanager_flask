@@ -20,3 +20,4 @@ delete from "invoice";
 delete from "asset_invoice";
 delete from "picture";
 delete from "asset_picture";
+delete from "sqlite_sequence";

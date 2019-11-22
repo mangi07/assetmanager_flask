@@ -1,3 +1,8 @@
+# ###################################
+# Get asset listings, with filters,
+# and with associated db entities.
+# ###################################
+
 from flask import request
 import sqlite3
 from .db_path import DB_PATH
@@ -57,6 +62,7 @@ def get_asset_pictures(ids):
 
 # TODO: functions: get_asset_fars, get_asset_invoices
 
+# TODO: refactor out 'if (filters)' clause from get_assets 
 def filters_to_sql(filters):
     return ""
 
@@ -112,6 +118,7 @@ def get_assets(page=0, filters=None):
     query_string = query_select + query_where + query_limit
     params = params_where + params_page
 
+    # TODO: extract db interaction out to separate function
     cur.execute(query_string, params)
     rows = cur.fetchall()
     conn.close()
