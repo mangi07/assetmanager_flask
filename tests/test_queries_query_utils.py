@@ -18,6 +18,7 @@ class TestQueryUtils:
         result = db.query("select * from asset;")
         assert len(result.fetchall()) == 1
 
+
     #######################################
     # test get_max_id
     #######################################
@@ -33,11 +34,10 @@ class TestQueryUtils:
         """
         db = query_utils.MyDB()
         db.query(query)
-        #db_conn.executescript(query)
-        #db_conn.close()
 
         max_id = query_utils.get_max_id('asset')
         assert max_id == 1
+
 
     def test_get_max_id_2(self, setup_mydb):
         """
@@ -50,11 +50,10 @@ class TestQueryUtils:
         """
         db = query_utils.MyDB()
         db.query(query)
-        #db_conn.executescript(query)
-        #db_conn.close()
 
         max_id = query_utils.get_max_id('asset')
         assert max_id == 3
+
 
     def test_get_max_id_3(self, setup_mydb):
         """
@@ -73,11 +72,10 @@ class TestQueryUtils:
         """
         db = query_utils.MyDB()
         db.query(query)
-        #db_conn.executescript(query)
-        #db_conn.close()
 
         cats = query_utils._list_categories('department', 'name')
         assert cats == [(2, 'FINANCE'), (3, 'MAINTENANCE'), (1, 'RECEIVING')]
+
 
     def test__list_categories_2(self, setup_mydb):
         """
@@ -85,6 +83,7 @@ class TestQueryUtils:
         """
         cats = query_utils._list_categories('department', 'name')
         assert cats == []
+
 
     ################################################
     # m2m inserts
@@ -101,7 +100,8 @@ class TestQueryUtils:
         assert cols == 'asset, cost'
         assert vals == [(1, 100)]
         assert prep == '?, ?'
-    
+
+
     def test__parse_db_args_dict_2(self):
         """
         Parses ('asset_invoice', [{'asset':1, 'cost':100}, {'asset':40, 'cost':150.29}])
@@ -113,7 +113,8 @@ class TestQueryUtils:
         assert cols == 'asset, cost'
         assert vals == [(1, 100), (40, 150.29)]
         assert prep == '?, ?'
-    
+
+
     def test__parse_db_args_dict_3(self):
         """
         Parses ('asset_invoice', [])
@@ -127,6 +128,7 @@ class TestQueryUtils:
             return
         assert False
 
+
     def test__parse_db_args_dict_4(self):
         """
         Parses ('asset_invoice', [{'asset':1, 'desc':'desc here'}, {'asset':40, 'desc':'desc here'}])
@@ -138,7 +140,8 @@ class TestQueryUtils:
         assert cols == 'asset, desc'
         assert vals == [(1, 'desc here'), (40, 'desc here')]
         assert prep == '?, ?'
-    
+
+
     def test__parse_db_args_dict_5(self):
         """
         Parses ('asset_invoice', [{'asset':1, 'cost':100}, {'cost':150.29, 'asset':40}])
@@ -151,7 +154,8 @@ class TestQueryUtils:
         assert cols == 'asset, cost'
         assert vals == [(1, 100), (40, 150.29)]
         assert prep == '?, ?'
-    
+
+
     def test__parse_db_args_dict_6(self):
         """
         Parses ('asset_invoice', [{'asset':1, 'cost':100}, {'assets':40, 'cost':150.29}])
@@ -165,6 +169,7 @@ class TestQueryUtils:
             return
         assert False
 
+
     def test__parse_db_args_dict_7(self):
         """
         Parses ('asset_invoice', [{'asset':1, 'cost':100}, {'assets':40}])
@@ -177,6 +182,7 @@ class TestQueryUtils:
             assert True
             return
         assert False
+
 
     def test_db_add_m2m_assoc_1(self, setup_mydb):
         new_row = ('invoice', 
@@ -194,7 +200,8 @@ class TestQueryUtils:
         result = db.query("select asset, cost from asset_invoice;")
         data = result.fetchall()
         assert data == [(23, 400000000000)]
-    
+
+
     def test_db_add_m2m_assoc_2(self, setup_mydb):
         new_row = ('invoice', 
             [{'number':3, 'file_path':'abc', 'total':100*10000000000, 'notes':'notes here'}])
