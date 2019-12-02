@@ -38,6 +38,7 @@ class MyDB(object):
         self._conn.commit()
 
     def __del__(self):
+        print("DEBUG: CLOSING CONNECTION TO DATABASE!!!")
         self._cursor.close()
         self._conn.close()
         
@@ -64,22 +65,22 @@ def _list_categories(table, order_column):
     return result.fetchall()
 
 def list_categories():
-    return _list_categories(db_path, 'category', 'name')
+    return _list_categories('category', 'name')
 
 def list_manufacturers():
-    return _list_categories(db_path, 'manufacturer', 'name')
+    return _list_categories('manufacturer', 'name')
 
 def list_suppliers():
-    return _list_categories(db_path, 'supplier', 'name')
+    return _list_categories('supplier', 'name')
 
 def list_purchase_orders():
-    return _list_categories(db_path, 'purchase_order', 'number')
+    return _list_categories('purchase_order', 'number')
 
 def list_departments():
-    return _list_categories(db_path, 'department', 'name')
+    return _list_categories('department', 'name')
 
 def list_accounts():
-    return _list_categories(db_path, 'account', 'number')
+    return _list_categories('account', 'number')
 
 
 ################################################

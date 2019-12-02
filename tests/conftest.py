@@ -25,10 +25,11 @@ def setup_mydb():
     
     yield db_path
 
-    sqlite3.connect = real_sqlite3_connect # recover real method
+    #sqlite3.connect = real_sqlite3_connect # recover real method
 
     with open(db_teardown_path) as f:
         db = MyDB() # may need to reconnect to db in case of errors while testing
         script = f.read()
         db._executescript(script)
 
+    sqlite3.connect = real_sqlite3_connect # recover real method

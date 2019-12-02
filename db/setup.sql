@@ -1,7 +1,7 @@
 /*
 File: setup.sql
 
-Create: 8/12/2019
+Created: 8/12/2019
 
 Description: idea of how to flesh out the sqlite db
   
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS "department"
 CREATE TABLE IF NOT EXISTS "user"
 (
     [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    [name] TEXT NOT NULL
+    [name] TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS "asset"
@@ -120,9 +120,9 @@ CREATE TABLE IF NOT EXISTS "checkout"
     [date_out] TEXT NOT NULL DEFAULT (datetime(current_timestamp)),
     [date_in] TEXT,
     
-    FOREIGN KEY ([asset]) REFERENCES "user" ([id])
+    FOREIGN KEY ([asset]) REFERENCES "asset" ([id])
       ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY ([user]) REFERENCES "asset" ([name])
+    FOREIGN KEY ([user]) REFERENCES "user" ([name])
       ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS "asset_picture"
 );
 
 
--- set up requisition lookup table
+-- set up requisition and receiving lookup tables
 insert into requisition (status) values ('awaiting invoice'),('partial payment'),('paid in full'),('donated');
 
 insert into receiving (status) values ('shipped'), ('received'), ('placed');
