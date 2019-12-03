@@ -14,8 +14,8 @@ def setup_mydb():
     db_teardown_path = os.path.join(wd, '../db/clear_tables.sql')
 
     real_sqlite3_connect = sqlite3.connect # save reference to real method
-    sqlite3.connect = Mock()
-    sqlite3.connect.return_value = real_sqlite3_connect(db_path)
+    sqlite3.connect = Mock(side_effect = lambda path : real_sqlite3_connect(db_path) )
+    #sqlite3.connect.return_value = real_sqlite3_connect(db_path)
 
     db = MyDB()
 
@@ -24,8 +24,6 @@ def setup_mydb():
         db._executescript(script)
     
     yield db_path
-
-    #sqlite3.connect = real_sqlite3_connect # recover real method
 
     with open(db_teardown_path) as f:
         db = MyDB() # may need to reconnect to db in case of errors while testing

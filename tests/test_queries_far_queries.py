@@ -4,19 +4,20 @@
 ###############################################################################
 
 from queries import far_queries
+from queries.query_utils import MyDB
 import sqlite3
 import pytest
 
 class TestFarQueries:
 
-    def test_list_fars_1(self, db_conn):
+    def test_list_fars_1(self, setup_mydb):
         """
         Given 0 fixed asset register entries, should return None.
         """
         fars = far_queries.list_fars()
         assert fars == []
 
-    def test_list_fars_2(self, db_conn):
+    def test_list_fars_2(self, setup_mydb):
         """
         Given 1 fixed asset register entry, should return correct fields.
         """
@@ -27,8 +28,8 @@ class TestFarQueries:
             insert into far (id, account, description, pdf, life, start_date, amount)
             values (1, 1, 'test', '123', 5, '2019-01-01 00:00:00', 10000000000);
         """
-        db_conn.executescript(query)
-        db_conn.close()
+        db = MyDB()
+        db._executescript(query)
 
         fars = far_queries.list_fars()
         assert fars == [{'id': 1, 'pdf': 123, 'description': 'test', 
@@ -36,7 +37,7 @@ class TestFarQueries:
             'account_id': 1, 'account_number': '16020', 'account_description': 'school'}]
 
 
-    def test_list_fars_3(self, db_conn):
+    def test_list_fars_3(self, setup_mydb):
         """
         Given 3 fixed asset register entries, should return correct fields in correct order.
         """
@@ -49,8 +50,8 @@ class TestFarQueries:
             (2, 1, 'first', '12', 5, '2019-01-01 00:00:00', 10000000000),
             (3, 2, 'second', '13', 5, '2019-01-02 00:00:00', 10000000000);
         """
-        db_conn.executescript(query)
-        db_conn.close()
+        db = MyDB()
+        db._executescript(query)
 
         fars = far_queries.list_fars()
         assert fars == [{'account_description': 'school',

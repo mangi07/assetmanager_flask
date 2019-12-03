@@ -54,8 +54,6 @@ class TestAssetQueries:
             insert into asset (id, asset_id, description) values (1, 'assetone', 'something');
             insert into picture (id, file_path) values (1, 'pic1.jpg'), (2, 'pic2.JPG');
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 
@@ -82,8 +80,6 @@ class TestAssetQueries:
             insert into picture (id, file_path) values (1, '{img1}'), (2, '{img2}');
             insert into asset_picture (asset, picture) values (1,2), (2, 1), (2, 2);
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 
@@ -111,8 +107,6 @@ class TestAssetQueries:
             insert into picture (id, file_path) values (1, '{img1}'), (2, '{img2}');
             insert into asset_picture (asset, picture) values (2, 1), (2, 2);
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 
@@ -135,8 +129,6 @@ class TestAssetQueries:
                 (1, 'assetone', 'something');
             insert into location (id, description) values (1, 'loc 1');
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 
@@ -154,8 +146,6 @@ class TestAssetQueries:
             insert into location_count (id, asset, location, count, audit_date) values
                 (1, 1, 1, 1, '2019-01-01 00:00:00');
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 
@@ -183,8 +173,6 @@ class TestAssetQueries:
             insert into location_count (id, asset, location, count, audit_date) values
                 (1, 1, 1, 1, '2019-01-01 00:00:00');
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 
@@ -214,8 +202,6 @@ class TestAssetQueries:
                 (1, 1, 1, 1, '2019-01-01 00:00:00'),
                 (2, 2, 2, 1, '2019-01-01 00:00:00');
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 
@@ -252,8 +238,6 @@ class TestAssetQueries:
                 (1, 1, 1, 1, '2019-01-01 00:00:00'),
                 (2, 1, 2, 1, '2019-01-01 00:00:00');
         """
-        #db_conn.executescript(query)
-        #db_conn.close()
         db = MyDB()
         db._executescript(query)
 

@@ -38,7 +38,6 @@ class MyDB(object):
         self._conn.commit()
 
     def __del__(self):
-        print("DEBUG: CLOSING CONNECTION TO DATABASE!!!")
         self._cursor.close()
         self._conn.close()
         
