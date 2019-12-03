@@ -8,6 +8,7 @@ from flask import request
 import sqlite3
 #from .db_path import DB_PATH
 
+cost_precision = 10000000000
 
 def get_asset_locations(ids):
     if len(ids) == 0:
@@ -74,12 +75,13 @@ def filters_to_sql(filters):
     """
     #print(filters)
     filter_str = ""
+    params_where = []
     one_or_more = False
 
     cost_gt = filters.get('cost_gt')
     if cost_gt:
         filter_str += " asset.cost > ? "
-        params_where.append(cost_gt * cost_precision)
+        params_where.append( str(int(cost_gt) * cost_precision) )
         one_or_more = True
 
     cost_lt = filters.get('cost_lt')
@@ -97,7 +99,7 @@ def filters_to_sql(filters):
         params_where.append(int(location_id))
         one_or_more = True
     # add more filters here in a similar manner
-    return ""
+    return params_where
 
 def get_assets(page=0, filters=None):
     #conn = sqlite3.connect(DB_PATH)
@@ -116,6 +118,7 @@ def get_assets(page=0, filters=None):
         SELECT asset.id, asset.asset_id, asset.description, asset.cost
         FROM asset
     """
+    
     query_where = ""
     cost_precision = 10000000000
     #################################################
@@ -164,7 +167,7 @@ def get_assets(page=0, filters=None):
     
     import pprint
     asset_ids = [id for id, x, y, z in rows]
-    location_groups = get_asset_locations(asset_ids)
+    location_groups = get_asset_locations(asset_ids) # TODO: modify to use dict of filters
     picture_groups = get_asset_pictures(asset_ids)
 
     # combine rows per asset
