@@ -26,7 +26,7 @@ def setup_mydb():
     yield db_path
 
     with open(db_teardown_path) as f:
-        db = MyDB() # may need to reconnect to db in case of errors while testing
+        #db = MyDB() # may need to reconnect to db in case of errors while testing
         script = f.read()
         db._executescript(script)
 

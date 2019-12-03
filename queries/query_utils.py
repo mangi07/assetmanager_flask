@@ -19,12 +19,18 @@ class MyDB(object):
         return cls.__instance
 
     def _query(self, funct, query, params=None):
+        #breakpoint()
         result = funct(query, params) if params is not None else funct(query)
         self._conn.commit()
         return result
         
     def query(self, query, params=None):
-        """Returns a connection upon which fetchone or fetchmany may be called."""
+        """
+        Returns a connection upon which fetchone or fetchmany may be called.
+        You may supply either:
+        (1) A prepared statement - query with question marks and corresponding params OR
+        (2) Just a query without params.
+        """
         if isinstance(params, tuple):
             return self._query(self._cursor.execute, query, params)
         elif isinstance(params, list):

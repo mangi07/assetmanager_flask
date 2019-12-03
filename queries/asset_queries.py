@@ -3,14 +3,16 @@
 # and with associated db entities.
 # ###################################
 
+from queries.query_utils import MyDB
 from flask import request
 import sqlite3
-from .db_path import DB_PATH
+#from .db_path import DB_PATH
 
 
 def get_asset_locations(ids):
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
+    if len(ids) == 0:
+        return {}
+
     query_select = """
         SELECT location_count.asset, location_count.id, location.id, location.description, location.parent, location_count.count, location_count.audit_date 
         FROM location_count
@@ -18,9 +20,10 @@ def get_asset_locations(ids):
         WHERE location_count.asset in ({});
     """.format(','.join('?'*len(ids)))
 
-    cur.execute(query_select, ids)
-    rows = cur.fetchall()
-    conn.close()
+    db = MyDB()
+    params = tuple(ids)
+    res = db.query(query_select, params)
+    rows = res.fetchall()
 
     asset_groups = {id:[] for id in ids}
     for asset_id, loc_cnt_id, loc_id, loc_desc, loc_par, loc_cnt, audit_date in rows:
@@ -40,19 +43,21 @@ def _get_host_url():
 
 
 def get_asset_pictures(ids):
+    if len(ids) == 0:
+        return {}
+    
     host_url = _get_host_url()
 
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
     query_select = """
         select asset_picture.asset, picture.file_path from asset_picture
         left join picture on asset_picture.picture = picture.id
         where asset_picture.asset in ({});
     """.format(','.join('?'*len(ids)))
 
-    cur.execute(query_select, ids)
-    rows = cur.fetchall()
-    conn.close()
+    db = MyDB()
+    params = tuple(ids)
+    res = db.query(query_select, params)
+    rows = res.fetchall()
 
     pic_groups = {id:[] for id in ids}
 
@@ -64,11 +69,39 @@ def get_asset_pictures(ids):
 
 # TODO: refactor out 'if (filters)' clause from get_assets 
 def filters_to_sql(filters):
+    """
+    filters: dict formed from GET params, example: "{'cost_gt':100}"
+    """
+    #print(filters)
+    filter_str = ""
+    one_or_more = False
+
+    cost_gt = filters.get('cost_gt')
+    if cost_gt:
+        filter_str += " asset.cost > ? "
+        params_where.append(cost_gt * cost_precision)
+        one_or_more = True
+
+    cost_lt = filters.get('cost_lt')
+    if cost_lt:
+        mand = " AND " if one_or_more else ""
+        filter_str += mand + " asset.cost < ? "
+        params_where.append(cost_lt * cost_precision)
+        one_or_more = True
+
+    location_id = filters.get('location')
+    if location_id:
+        loc = " AND " if one_or_more else ""
+        asset_select = "SELECT asset FROM location_count WHERE location = ?"
+        filter_str += loc + " asset.id in ({}) ".format(asset_select)
+        params_where.append(int(location_id))
+        one_or_more = True
+    # add more filters here in a similar manner
     return ""
 
 def get_assets(page=0, filters=None):
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
+    #conn = sqlite3.connect(DB_PATH)
+    #cur = conn.cursor()
 
     # TODO: extract query string formation out to testable function
 
@@ -85,6 +118,7 @@ def get_assets(page=0, filters=None):
     """
     query_where = ""
     cost_precision = 10000000000
+    #################################################
     if (filters):
         #print(filters)
         filter_str = ""
@@ -111,6 +145,7 @@ def get_assets(page=0, filters=None):
             params_where.append(int(location_id))
             one_or_more = True
         # add more filters here in a similar manner
+        #################################################
 
         if len(filter_str) > 0:
             query_where += " WHERE " + filter_str
@@ -119,9 +154,13 @@ def get_assets(page=0, filters=None):
     params = params_where + params_page
 
     # TODO: extract db interaction out to separate function
-    cur.execute(query_string, params)
-    rows = cur.fetchall()
-    conn.close()
+    db = MyDB()
+    res = db.query(query_string, params)
+    rows = res.fetchall()
+
+    #cur.execute(query_string, params)
+    #rows = cur.fetchall()
+    #conn.close()
     
     import pprint
     asset_ids = [id for id, x, y, z in rows]
