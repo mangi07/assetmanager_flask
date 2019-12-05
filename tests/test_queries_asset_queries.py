@@ -16,6 +16,14 @@ def host():
     asset_queries._get_host_url = Mock()
     asset_queries._get_host_url.return_value = 'host.com/'
 
+@pytest.fixture
+def pagination():
+    def wrap(page, limit):
+        real_pg = asset_queries._get_pagination
+        asset_queries._get_pagination = Mock(
+            side_effect = lambda page, limit : real_pg(page, limit))
+    return wrap
+
 class TestAssetQueries:
 
     def test_get_asset_pictures_1(self, setup_mydb, host):
@@ -261,49 +269,116 @@ class TestAssetQueries:
             }]
         }
     
+    def test_get_assets_1(self, setup_mydb):
+        """Should return [] since there are 0 assets in the database."""
+        res = asset_queries.get_assets()
+        assert res == {}
+
+    def test_get_assets_2(self, setup_mydb, host):
+        """Should return one asset in asset listing with only one asset in the database."""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, '1', 'one');
+        """
+        db = MyDB()
+        db._executescript(query)
+        res = asset_queries.get_assets()
+        assert len(res) == 1
+
+    def test_get_assets_3(self, setup_mydb, host):
+        """Should return two assets in asset listing with only two assets in the database."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one', 100), (2, '2', 'two', 350.50);
+        """
+        db = MyDB()
+        db._executescript(query)
+        res = asset_queries.get_assets()
+        assert len(res) == 2
     
-    # def test_filters_to_sql_1(self):
-    #     """Throws exception if argument is not a dict."""
-    #     filters = None
-    #     try:
-    #         sql = asset_queries.filters_to_sql(filters)
-    #     except:
-    #         assert True
-    #         return
-    #     assert False
+    def test_get_assets_4(self, setup_mydb, host):
+        """Should return asset with correct empty data structures."""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, '1', 'one'), (2, '2', 'two');
+        """
+        db = MyDB()
+        db._executescript(query)
+        res = asset_queries.get_assets()
+        assert res[1]['location_counts'] == []
+        assert res[1]['pictures'] == []
+        assert res[1]['invoices'] == []
+        assert res[1]['far'] == {}
 
-    # def test_filters_to_sql_2(self):
-    #     """Returns empty string given empty dict."""
-    #     filters = {}
-    #     sql = asset_queries.filters_to_sql(filters)
-    #     assert sql == ""
+    def test_get_assets_5_pagination(self, setup_mydb, host, pagination):
+        """Should return the first 5 assets in the database given a database of 6 assets."""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, '1', 'one'), (2, '2', 'two'), (3, '3', 'three'),
+                (4, '4', 'four'), (5, '5', 'five'), (6, '6', 'six');
+        """
+        db = MyDB()
+        db._executescript(query)
+        breakpoint()
+        page = 0
+        limit = 5
+        asset_queries._get_pagination = Mock(return_value=(page, limit))
+        res = asset_queries.get_assets()
+        assert len(res) == 5
+    
+    def test_get_assets_6_pagination(self, setup_mydb, host):
+        """Should return the first 5 assets in the database given a database of 6 assets."""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, '1', 'one'), (2, '2', 'two'), (3, '3', 'three'),
+                (4, '4', 'four'), (5, '5', 'five'), (6, '6', 'six');
+        """
+        db = MyDB()
+        db._executescript(query)
+        page = 0
+        limit = 4
+        real_pg = asset_queries._get_pagination
+        asset_queries._get_pagination = Mock(return_value=real_pg(page, limit))
+        res = asset_queries.get_assets()
+        assert len(res) == 4
+    
+    def test_get_assets_6_pagination(self, setup_mydb, host):
+        """Should return the next 2 assets in the database given a database of 6 assets."""
+        query = f"""
+            insert into asset (id, asset_id, description) values 
+                (1, '1', 'one'), (2, '2', 'two'), (3, '3', 'three'),
+                (4, '4', 'four'), (5, '5', 'five'), (6, '6', 'six');
+        """
+        db = MyDB()
+        db._executescript(query)
+        page = 0
+        limit = 4
+        asset_queries._get_pagination = Mock(return_value=(offset, limit))
+        res = asset_queries.get_assets()
+        assert len(res) == 4
+    
+    def blah():
+        assert res == {
+            1:{
+                'id':1, 
+                'asset_id':'1', 
+                'description':'one', 
+                'cost':100,
+                'location_counts':[],
+                'pictures':[],
+                'invoices':[],
+                'far':{}
+            },
+            2:{
+                'id':2, 
+                'asset_id':'2', 
+                'description':'two', 
+                'cost':350.50,
+                'location_counts':[],
+                'pictures':[],
+                'invoices':[],
+                'far':{}
+            }
+        }
 
-    # def test_filters_to_sql_3(self):
-    #     """Throws exception given incorrect filter name in the dict."""
-    #     filters = {'blah_blah':25}
-    #     sql = asset_queries.filters_to_sql(filters)
-    #     assert sql == ""
-
-    # def test_filters_to_sql_4(self):
-    #     """Throws exception given 1 filter with valid name but invalid value."""
-    #     filters = {'cost_gt':'this is not a number!'}
-    #     try:
-    #         sql = asset_queries.filters_to_sql(filters)
-    #     except:
-    #         assert True
-    #         return
-    #     assert False
-
-    # def test_filters_to_sql_5(self):
-    #     """Returns correct string given 1 valid filter in the dict."""
-    #     filters = {'cost_gt':1000}
-    #     sql = asset_queries.filters_to_sql(filters)
-    #     assert sql == ' asset.cost > 10000000000000'
-
-    # def test_filters_to_sql_6(self):
-    #     """Returns coorect string given 2 valid filters in dict, representing cost range."""
-    #     filters = {'cost_gt':1000, 'cost_lt':2000}
-    #     sql = asset_queries.filters_to_sql(filters)
-    #     assert sql == ' asset.cost > 10000000000000 AND  asset.cost < 20000000000000'
-        
     
