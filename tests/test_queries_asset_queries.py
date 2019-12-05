@@ -261,43 +261,49 @@ class TestAssetQueries:
             }]
         }
     
-    # TODO
-    def test_filters_to_sql_1(self):
-        """Throws exception if argument is not a dict."""
-        filters = None
-        try:
-            sql = asset_queries.filters_to_sql(filters)
-        except:
-            assert True
-            return
-        assert False
+    
+    # def test_filters_to_sql_1(self):
+    #     """Throws exception if argument is not a dict."""
+    #     filters = None
+    #     try:
+    #         sql = asset_queries.filters_to_sql(filters)
+    #     except:
+    #         assert True
+    #         return
+    #     assert False
 
-    def test_filters_to_sql_2(self):
-        """Returns empty string given empty dict."""
-        filters = {}
-        sql = asset_queries.filters_to_sql(filters)
-        assert sql == ""
+    # def test_filters_to_sql_2(self):
+    #     """Returns empty string given empty dict."""
+    #     filters = {}
+    #     sql = asset_queries.filters_to_sql(filters)
+    #     assert sql == ""
 
-    def test_filters_to_sql_3(self):
-        """Returns empty string given incorrect filter name in the dict."""
-        filters = {'blah_blah':25}
-        sql = asset_queries.filters_to_sql(filters)
-        assert sql == ""
+    # def test_filters_to_sql_3(self):
+    #     """Throws exception given incorrect filter name in the dict."""
+    #     filters = {'blah_blah':25}
+    #     sql = asset_queries.filters_to_sql(filters)
+    #     assert sql == ""
 
-    def test_filters_to_sql_4(self):
-        """Throws exception given 1 filter with valid name but invalid value."""
-        filters = {'cost_gt':'this is not a number!'}
-        try:
-            sql = asset_queries.filters_to_sql(filters)
-        except:
-            assert True
-            return
-        assert False
+    # def test_filters_to_sql_4(self):
+    #     """Throws exception given 1 filter with valid name but invalid value."""
+    #     filters = {'cost_gt':'this is not a number!'}
+    #     try:
+    #         sql = asset_queries.filters_to_sql(filters)
+    #     except:
+    #         assert True
+    #         return
+    #     assert False
 
-    def test_filters_to_sql_5(self):
-        """Returns correct string given 1 valid filter in the dict."""
-        filters = {'cost_gt':1000}
-        sql = asset_queries.filters_to_sql(filters)
-        print(sql)
+    # def test_filters_to_sql_5(self):
+    #     """Returns correct string given 1 valid filter in the dict."""
+    #     filters = {'cost_gt':1000}
+    #     sql = asset_queries.filters_to_sql(filters)
+    #     assert sql == ' asset.cost > 10000000000000'
+
+    # def test_filters_to_sql_6(self):
+    #     """Returns coorect string given 2 valid filters in dict, representing cost range."""
+    #     filters = {'cost_gt':1000, 'cost_lt':2000}
+    #     sql = asset_queries.filters_to_sql(filters)
+    #     assert sql == ' asset.cost > 10000000000000 AND  asset.cost < 20000000000000'
         
     

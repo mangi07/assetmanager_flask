@@ -8,7 +8,7 @@ from flask import request
 import sqlite3
 #from .db_path import DB_PATH
 
-cost_precision = 10000000000
+#cost_precision = 10000000000
 
 def get_asset_locations(ids):
     if len(ids) == 0:
@@ -68,45 +68,37 @@ def get_asset_pictures(ids):
 
 # TODO: functions: get_asset_fars, get_asset_invoices
 
-# TODO: refactor out 'if (filters)' clause from get_assets 
-def filters_to_sql(filters):
-    """
-    filters: dict formed from GET params, example: "{'cost_gt':100}"
-    """
-    #print(filters)
-    filter_str = ""
-    params_where = []
-    one_or_more = False
 
-    cost_gt = filters.get('cost_gt')
-    if cost_gt:
-        filter_str += " asset.cost > ? "
-        params_where.append( str(int(cost_gt) * cost_precision) )
-        one_or_more = True
+# # TODO: refactor out 'if (filters)' clause from get_assets 
+# def filters_to_sql(filters):
+#     """
+#     filters: dict formed from GET params, example: "{'cost_gt':100}"
+#     """
+#     #print(filters)
+#     filter_str = ""
+#     #params_where = []
+#     one_or_more = False
 
-    cost_lt = filters.get('cost_lt')
-    if cost_lt:
-        mand = " AND " if one_or_more else ""
-        filter_str += mand + " asset.cost < ? "
-        params_where.append(cost_lt * cost_precision)
-        one_or_more = True
+#     cost_gt = filters.get('cost_gt')
+#     if cost_gt:
+#         filter_str += " asset.cost > "
+#         #params_where.append( str(int(cost_gt) * cost_precision) )
+#         filter_str += str(int(cost_gt) * cost_precision)
+#         one_or_more = True
 
-    location_id = filters.get('location')
-    if location_id:
-        loc = " AND " if one_or_more else ""
-        asset_select = "SELECT asset FROM location_count WHERE location = ?"
-        filter_str += loc + " asset.id in ({}) ".format(asset_select)
-        params_where.append(int(location_id))
-        one_or_more = True
-    # add more filters here in a similar manner
-    return params_where
+#     cost_lt = filters.get('cost_lt')
+#     if cost_lt:
+#         mand = " AND " if one_or_more else ""
+#         filter_str += mand + " asset.cost < "
+#         #params_where.append(cost_lt * cost_precision)
+#         filter_str += str(int(cost_lt) * cost_precision)
+#         one_or_more = True
+
+#     # add more filters here in a similar manner
+#     return filter_str
+
 
 def get_assets(page=0, filters=None):
-    #conn = sqlite3.connect(DB_PATH)
-    #cur = conn.cursor()
-
-    # TODO: extract query string formation out to testable function
-
     # pagination
     limit = 5
     offset = page * limit
@@ -120,55 +112,29 @@ def get_assets(page=0, filters=None):
     """
     
     query_where = ""
-    cost_precision = 10000000000
+    #cost_precision = 10000000000
     #################################################
     if (filters):
-        #print(filters)
-        filter_str = ""
-        one_or_more = False
-
-        cost_gt = filters.get('cost_gt')
-        if cost_gt:
-            filter_str += " asset.cost > ? "
-            params_where.append(cost_gt * cost_precision)
-            one_or_more = True
-
-        cost_lt = filters.get('cost_lt')
-        if cost_lt:
-            mand = " AND " if one_or_more else ""
-            filter_str += mand + " asset.cost < ? "
-            params_where.append(cost_lt * cost_precision)
-            one_or_more = True
-
-        location_id = filters.get('location')
-        if location_id:
-            loc = " AND " if one_or_more else ""
-            asset_select = "SELECT asset FROM location_count WHERE location = ?"
-            filter_str += loc + " asset.id in ({}) ".format(asset_select)
-            params_where.append(int(location_id))
-            one_or_more = True
-        # add more filters here in a similar manner
-        #################################################
+        # TODO: pick up from here with query string formation for filters
+    
 
         if len(filter_str) > 0:
             query_where += " WHERE " + filter_str
+    #################################################
+    
     query_limit = " LIMIT ?, ?"
     query_string = query_select + query_where + query_limit
     params = params_where + params_page
 
-    # TODO: extract db interaction out to separate function
+    # Run db query
     db = MyDB()
     res = db.query(query_string, params)
     rows = res.fetchall()
-
-    #cur.execute(query_string, params)
-    #rows = cur.fetchall()
-    #conn.close()
     
     import pprint
     asset_ids = [id for id, x, y, z in rows]
-    location_groups = get_asset_locations(asset_ids) # TODO: modify to use dict of filters
-    picture_groups = get_asset_pictures(asset_ids)
+    location_groups = get_asset_locations(asset_ids, filters) # TODO: modify to use dict of filters
+    picture_groups = get_asset_pictures(asset_ids, filters)
 
     # combine rows per asset
     assets = {}

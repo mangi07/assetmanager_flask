@@ -89,6 +89,68 @@ def list_accounts():
 
 
 ################################################
+# filters - WHERE clause formation
+################################################
+def _parse_filter(k, v):
+    """
+    Takes a key, value pair and returns a tuple of (table, column, filter, value)
+    """
+    split = k.split('.')
+    table = split[0]
+    rem = split[1].split('__')
+    column = rem[0]
+    f = rem[1]
+    return table, column, f, v
+
+def _validate_filters(fs, filter_operators):
+    """
+    Takes an array of (table, column, filter, value) and valid filter operators
+    and compares each item against db schema to see if it makes sense.
+    """
+    # criteria
+    db = MyDB()
+    schemas = {}
+    for table in list(set([t for t, c, f, v in fs])):
+        schema = db.query(f"SELECT name, type from pragma_table_info('{table}')").fetchall()
+        assert schema != [], f"Table {table} not in database! Value"
+        schema = {k:v for k, v in schema}
+        schemas[table] = schema
+
+    # db data types
+    types = {'INTEGER':int, 'TEXT':str}
+
+    # validation
+    for t, c, f, v in fs:
+        assert f in filter_operators, f"No equivalent db operator found for filter {f}!"
+        assert c in schemas[t], f"Column {c} not in table {t}!"
+        expected = types[schemas[t][c]]
+        actual = type(v)
+        assert expected == actual, \
+            f"Value {str(v)} in table {t} is of type {str(actual)}.  Expected type {str(expected)}."
+
+
+def filters_to_sql(filters):
+    """
+    filters: dict formed from GET params, example: "{'asset.cost__gt':100}"
+    return: string to append to sql WHERE, example: ("asset.cost > ?", 1000000000000)
+    """
+    #cost_precision = 10000000000
+    filter_str = ""
+    params_where = []
+    one_or_more = False
+    filter_operators = {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN'}
+
+    fs = [_parse_filter(k, v) for k, v in filters.items()] if len(filters) > 0 else []
+    _validate_filters(fs, filter_operators)
+
+    for t, c, f, v in fs:
+        filter_str += f'{t}.{c} {filter_operators[f]} ? AND '
+        params_where.append(v)
+    filter_str = filter_str.strip(' AND ')
+
+    return filter_str, params_where
+
+################################################
 # m2m inserts
 ################################################
 def _parse_db_args_dict(args):

@@ -7,6 +7,11 @@ from queries import query_utils
 import sqlite3
 import pytest
 
+@pytest.fixture
+def filter_operators():
+    return {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN'}
+
+
 class TestQueryUtils:
     #######################################
     # test MyDB
@@ -18,7 +23,136 @@ class TestQueryUtils:
         result = db.query("select * from asset;")
         assert len(result.fetchall()) == 1
 
+    #######################################
+    # test filters WHERE clause formation
+    #######################################
+    def test__parse_filter_1(self):
+        """Throws exception if filter is not correct form."""
+        try:
+            query_utils._parse_filter('blahblah', 100)
+        except:
+            assert True
+            return
+        assert False
 
+    def test__parse_filter_2(self):
+        """Parses filter correctly."""
+        res = query_utils._parse_filter('table1.column1__filter1', 100)
+        assert res == ('table1', 'column1', 'filter1', 100)
+
+    def test__parse_filter_3(self):
+        """Throws exception if filter is in partially correct form."""
+        try:
+            query_utils._parse_filter('table1.column1.filter1', 100)
+        except:
+            assert True
+            return
+        assert False
+
+    def test__parse_filter_4(self):
+        """Throws exception if filter is in partially correct form."""
+        try:
+            query_utils._parse_filter('table1__column1.filter1', 100)
+        except:
+            assert True
+            return
+        assert False
+
+    def test__parse_filter_5(self):
+        """Throws exception if filter is in partially correct form."""
+        try:
+            query_utils._parse_filter('table_one.column1_filter1', 100)
+        except:
+            assert True
+            return
+        assert False
+
+
+    def test__validate_filters_1(self, filter_operators):
+        """Should raise AssertionError since 'blah' is not a table in the database."""
+        filters = [('blah', 'total', 'lt', '1000')]
+        
+        with pytest.raises(AssertionError, match='^Table'):
+            query_utils._validate_filters(filters, filter_operators)
+
+    def test__validate_filters_2(self, filter_operators):
+        """Should raise AssertionError since '1000' is not type int."""
+        filters = [('invoice', 'total', 'lt', '1000')]
+        with pytest.raises(AssertionError, match='^Value'):
+            query_utils._validate_filters(filters, filter_operators)
+
+    def test__validate_filters_3(self, filter_operators):
+        """Should raise AssertionError since column 'blah' is not in table 'asset'."""
+        filters = [('asset', 'blah', 'eq', 'first thing')]
+        with pytest.raises(AssertionError, match='^Column'):
+            query_utils._validate_filters(filters, filter_operators)
+
+    def test__validate_filters_4(self, filter_operators):
+        """Should not raise any errors since filters are correct."""
+        filters = [('asset', 'description', 'eq', 'first thing'), ('invoice', 'total', 'lt', 1000)]
+        query_utils._validate_filters(filters, filter_operators)
+
+    def test__validate_filters_5(self, filter_operators):
+        """Should not raise any errors since filters are correct."""
+        filters = [('asset', 'cost', 'gt', 100), ('asset', 'cost', 'lt', 1000), ('invoice', 'total', 'lt', 1000)]
+        query_utils._validate_filters(filters, filter_operators)
+
+    def test__validate_filters_5(self, filter_operators):
+        """Should raise AssertionError since one filter operator cannot be found."""
+        filters = [('asset', 'cost', 'gt', 100), ('asset', 'cost', '<', 1000), ('invoice', 'total', 'lt', 1000)]
+        with pytest.raises(AssertionError, match='^No equivalent'):
+            query_utils._validate_filters(filters, filter_operators)
+
+    def test_filters_to_sql_1(self):
+        """Throws exception if argument is not a dict."""
+        filters = None
+        try:
+            sql = query_utils.filters_to_sql(filters)
+        except:
+            assert True
+            return
+        assert False
+
+    def test_filters_to_sql_2(self):
+        """Returns empty string given empty dict."""
+        filters = {}
+        ret = query_utils.filters_to_sql(filters)
+        assert ret == ("", [])
+
+    def test_filters_to_sql_3(self):
+        """Throws exception given incorrect filter name in the dict."""
+        try:
+            filters = {'blah_blah':25}
+            ret = query_utils.filters_to_sql(filters)
+        except:
+            assert True
+            return
+        assert False
+
+    def test_filters_to_sql_4(self):
+        """Throws exception given 1 filter with valid name but invalid value."""
+        filters = {'asset.cost__gt':'this is not a number!'}
+        try:
+            sql = query_utils.filters_to_sql(filters)
+        except:
+            assert True
+            return
+        assert False
+
+    def test_filters_to_sql_5(self):
+        """Returns correct string given 1 valid filter in the dict."""
+        filters = {'asset.cost__gt':1000}
+        sql, params = query_utils.filters_to_sql(filters)
+        assert sql == 'asset.cost > ?'
+        assert params == [1000]
+
+    def test_filters_to_sql_6(self):
+        """Returns coorect string given 2 valid filters in dict, representing cost range."""
+        filters = {'asset.cost__gt':1000, 'asset.cost__lt':2000}
+        sql, params = query_utils.filters_to_sql(filters)
+        assert sql == 'asset.cost > ? AND asset.cost < ?'
+        assert params == [1000, 2000]
+    
     #######################################
     # test get_max_id
     #######################################
