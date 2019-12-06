@@ -31,6 +31,9 @@ def pagination():
 
 class TestAssetQueries:
 
+    ##########################################################
+    # PICTURE LISTINGS FROM ID LIST
+    ##########################################################
     def test_get_asset_pictures_1(self, setup_mydb, host):
         """
         Assumes request.host_url works as expected.
@@ -129,7 +132,12 @@ class TestAssetQueries:
             1: [],
             2: [f'host.com/img/{img1}', f'host.com/img/{img2}']
         }, "Expected dict with two key-value pairs and correct paths to images."
-    
+
+
+    ##########################################################
+    # LOCATION LISTINGS FROM ID LIST
+    ##########################################################
+
     def test_get_asset_locations_1(self):
         """Should return empyt dict given an empty id list"""
         locs_per_id = asset_queries.get_asset_locations([])
@@ -274,13 +282,43 @@ class TestAssetQueries:
             }]
         }
     
-    def test_get_assets_1(self, setup_mydb):
+
+    ##########################################################
+    # ASSET LISTINGS QUERY STRING FORMATION
+    ##########################################################
+
+    def test__get_asset_query_string_1(self):
+        sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
+            "FROM asset LIMIT ?, ?;"
+        params = (0, 5)
+
+        fsql, fparams = asset_queries._get_asset_query_string()
+        assert fsql == sql
+        assert fparams == params
+
+    def test__get_asset_query_string_2(self):
+        sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
+            "FROM asset WHERE asset.cost > ? LIMIT ?, ?;"
+        params = (100, 0, 5)
+
+        filters = {'asset.cost__gt':100}
+        fsql, fparams = asset_queries._get_asset_query_string(filters=filters)
+        assert fsql == sql
+        assert fparams == params
+
+    
+    ##########################################################
+    # ASSET LISTINGS
+    ##########################################################
+    def test_get_assets_1(self, setup_mydb, pagination):
         """Should return [] since there are 0 assets in the database."""
+        pagination(page=0, limit=5)
         res = asset_queries.get_assets()
         assert res == {}
 
-    def test_get_assets_2(self, setup_mydb, host):
+    def test_get_assets_2(self, setup_mydb, host, pagination):
         """Should return one asset in asset listing with only one asset in the database."""
+        pagination(page=0, limit=5)
         query = f"""
             insert into asset (id, asset_id, description) values 
                 (1, '1', 'one');
@@ -290,8 +328,9 @@ class TestAssetQueries:
         res = asset_queries.get_assets()
         assert len(res) == 1
 
-    def test_get_assets_3(self, setup_mydb, host):
+    def test_get_assets_3(self, setup_mydb, host, pagination):
         """Should return two assets in asset listing with only two assets in the database."""
+        pagination(page=0, limit=5)
         query = f"""
             insert into asset (id, asset_id, description, cost) values 
                 (1, '1', 'one', 100), (2, '2', 'two', 350.50);
@@ -301,8 +340,9 @@ class TestAssetQueries:
         res = asset_queries.get_assets()
         assert len(res) == 2
     
-    def test_get_assets_4(self, setup_mydb, host):
+    def test_get_assets_4(self, setup_mydb, host, pagination):
         """Should return asset with correct empty data structures."""
+        pagination(page=0, limit=5)
         query = f"""
             insert into asset (id, asset_id, description) values 
                 (1, '1', 'one'), (2, '2', 'two');
@@ -317,12 +357,12 @@ class TestAssetQueries:
 
     
     ##########################################################
-    # PAGINATION
+    # ASSET PAGINATION
     ##########################################################
     @pytest.mark.parametrize("page, limit, count", [
         (0, 5, 5), (0, 4, 4), (0, 6, 6), (1, 4, 2), (1, 5, 1), (1, 6, 0)
     ])
-    def test_get_assets_5_pagination(self, setup_mydb, host, pagination, page, limit, count):
+    def test_get_assets_pagination_1(self, setup_mydb, host, pagination, page, limit, count):
         """Should return the correct number of assets given pagination arguments."""
         query = f"""
             insert into asset (id, asset_id, description) values 
@@ -334,6 +374,16 @@ class TestAssetQueries:
         db._executescript(query)
         res = asset_queries.get_assets()
         assert len(res) == count
+
+    
+    ##########################################################
+    # TODO: ASSET FILTERING
+    ##########################################################
+
+
+    ##########################################################
+    # TODO: ASSET FILTERING WITH PAGINATION
+    ##########################################################
 
     def blah():
         assert res == {

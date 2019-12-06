@@ -9,6 +9,7 @@ import sqlite3
 
 
 def get_asset_locations(ids):
+    """Given a list of ids, get a list of corresponding location entries from db."""
     if len(ids) == 0:
         return {}
 
@@ -42,6 +43,7 @@ def _get_host_url():
 
 
 def get_asset_pictures(ids):
+    """Given a list of ids, get a list of corresponding pictures entries from db."""
     if len(ids) == 0:
         return {}
     
@@ -70,34 +72,40 @@ def _get_pagination(page, limit):
     offset = page * limit
     return offset, limit
 
-def get_assets(page=0, filters=None):
-    # query string formation with optional filters
+def _get_asset_query_string(page=0, filters=None):
     params_where = ()
     query_select = """
         SELECT asset.id, asset.asset_id, asset.description, asset.cost
         FROM asset
     """
-    
+
     query_where = ""
-    #################################################
     if (filters):
-        # TODO: pick up from here with query string formation for filters
         filter_str, params = filters_to_sql(filters)
         if len(filter_str) > 0:
             query_where += " WHERE " + filter_str
-            params_where += params
-    #################################################
-    
+            params_where += tuple(params)
+
     query_page = " LIMIT ?, ?"
     query_string = query_select + query_where + query_page
-    params = params_where + _get_pagination(page, 5)
+    params = params_where + _get_pagination(page, 5) # TODO: factor out 2nd arg - page limit (size)
+
+    query_string = ' '.join(query_string.split()) + ';'
+    return query_string, params
+
+
+def get_assets(page=0, filters=None):
+    """
+    page: page number to determine offset of paginated results
+    filters: dict of filters, example: {'asset.cost__gt':100} (see query_utils.filters_to_sql)
+    """
+    query_string, params = _get_asset_query_string(page, filters)
 
     # Run db query
     db = MyDB()
     res = db.query(query_string, params)
     rows = res.fetchall()
     
-    import pprint
     asset_ids = [id for id, x, y, z in rows]
     location_groups = get_asset_locations(asset_ids)
     picture_groups = get_asset_pictures(asset_ids)

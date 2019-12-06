@@ -19,7 +19,6 @@ class MyDB(object):
         return cls.__instance
 
     def _query(self, funct, query, params=None):
-        #breakpoint()
         result = funct(query, params) if params is not None else funct(query)
         self._conn.commit()
         return result
