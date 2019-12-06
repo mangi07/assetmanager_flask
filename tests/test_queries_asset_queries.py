@@ -16,13 +16,18 @@ def host():
     asset_queries._get_host_url = Mock()
     asset_queries._get_host_url.return_value = 'host.com/'
 
+
 @pytest.fixture
 def pagination():
-    def wrap(page, limit):
-        real_pg = asset_queries._get_pagination
-        asset_queries._get_pagination = Mock(
-            side_effect = lambda page, limit : real_pg(page, limit))
-    return wrap
+    real_pg = asset_queries._get_pagination
+
+    def _inner(page=0, limit=0):
+        offset, limit = asset_queries._get_pagination(page, limit)
+        asset_queries._get_pagination = Mock(return_value=(offset, limit))
+    
+    yield _inner
+    asset_queries._get_pagination = real_pg
+
 
 class TestAssetQueries:
 
@@ -310,53 +315,26 @@ class TestAssetQueries:
         assert res[1]['invoices'] == []
         assert res[1]['far'] == {}
 
-    def test_get_assets_5_pagination(self, setup_mydb, host, pagination):
-        """Should return the first 5 assets in the database given a database of 6 assets."""
+    
+    ##########################################################
+    # PAGINATION
+    ##########################################################
+    @pytest.mark.parametrize("page, limit, count", [
+        (0, 5, 5), (0, 4, 4), (0, 6, 6), (1, 4, 2), (1, 5, 1), (1, 6, 0)
+    ])
+    def test_get_assets_5_pagination(self, setup_mydb, host, pagination, page, limit, count):
+        """Should return the correct number of assets given pagination arguments."""
         query = f"""
             insert into asset (id, asset_id, description) values 
                 (1, '1', 'one'), (2, '2', 'two'), (3, '3', 'three'),
                 (4, '4', 'four'), (5, '5', 'five'), (6, '6', 'six');
         """
+        pagination(page, limit)
         db = MyDB()
         db._executescript(query)
-        breakpoint()
-        page = 0
-        limit = 5
-        asset_queries._get_pagination = Mock(return_value=(page, limit))
         res = asset_queries.get_assets()
-        assert len(res) == 5
-    
-    def test_get_assets_6_pagination(self, setup_mydb, host):
-        """Should return the first 5 assets in the database given a database of 6 assets."""
-        query = f"""
-            insert into asset (id, asset_id, description) values 
-                (1, '1', 'one'), (2, '2', 'two'), (3, '3', 'three'),
-                (4, '4', 'four'), (5, '5', 'five'), (6, '6', 'six');
-        """
-        db = MyDB()
-        db._executescript(query)
-        page = 0
-        limit = 4
-        real_pg = asset_queries._get_pagination
-        asset_queries._get_pagination = Mock(return_value=real_pg(page, limit))
-        res = asset_queries.get_assets()
-        assert len(res) == 4
-    
-    def test_get_assets_6_pagination(self, setup_mydb, host):
-        """Should return the next 2 assets in the database given a database of 6 assets."""
-        query = f"""
-            insert into asset (id, asset_id, description) values 
-                (1, '1', 'one'), (2, '2', 'two'), (3, '3', 'three'),
-                (4, '4', 'four'), (5, '5', 'five'), (6, '6', 'six');
-        """
-        db = MyDB()
-        db._executescript(query)
-        page = 0
-        limit = 4
-        asset_queries._get_pagination = Mock(return_value=(offset, limit))
-        res = asset_queries.get_assets()
-        assert len(res) == 4
-    
+        assert len(res) == count
+
     def blah():
         assert res == {
             1:{

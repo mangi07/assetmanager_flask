@@ -58,15 +58,8 @@ def get_max_id(table):
 
 
 def _list_categories(table, order_column):
-    #conn = sqlite3.connect(DB_PATH)
-    #c = conn.cursor()
-    #c.execute(f"select * from {table} order by {order_column}")
-    #categories = c.fetchall()
-    #conn.commit()
-    #conn.close()
     db = MyDB()
     result = db.query(f"select * from {table} order by {order_column}")
-    #return categories
     return result.fetchall()
 
 def list_categories():
