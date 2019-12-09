@@ -16,8 +16,8 @@ def get_asset_locations(ids):
     query_select = """
         SELECT location_count.asset, location_count.id, location.id, location.description, location.parent, location_count.count, location_count.audit_date 
         FROM location_count
-        left join location on location_count.location = location.id
-        WHERE location_count.asset in ({});
+        LEFT JOIN location ON location_count.location = location.id
+        WHERE location_count.asset IN ({});
     """.format(','.join('?'*len(ids)))
 
     db = MyDB()
@@ -99,6 +99,8 @@ def get_assets(page=0, filters=None):
     page: page number to determine offset of paginated results
     filters: dict of filters, example: {'asset.cost__gt':100} (see query_utils.filters_to_sql)
     """
+    # TODO: If filters contain location ids, modify query string in _get_asset_query_string
+    #  and params before returning it here...or filter them out on in python on the tail end of this function
     query_string, params = _get_asset_query_string(page, filters)
     
     # Run db query
