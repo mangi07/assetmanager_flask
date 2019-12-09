@@ -100,7 +100,7 @@ def get_assets(page=0, filters=None):
     filters: dict of filters, example: {'asset.cost__gt':100} (see query_utils.filters_to_sql)
     """
     query_string, params = _get_asset_query_string(page, filters)
-
+    
     # Run db query
     db = MyDB()
     res = db.query(query_string, params)

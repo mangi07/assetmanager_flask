@@ -152,6 +152,14 @@ class TestQueryUtils:
         sql, params = query_utils.filters_to_sql(filters)
         assert sql == 'asset.cost > ? AND asset.cost < ?'
         assert params == [1000, 2000]
+
+    def test_filters_to_sql_7(self):
+        """Returns correct string given valid search string in dict."""
+        filters = {'asset.description__contains':'this thing'}
+        sql, params = query_utils.filters_to_sql(filters)
+        assert sql == "asset.description LIKE ?"
+        assert params == ["%this thing%"]
+
     
     #######################################
     # test get_max_id

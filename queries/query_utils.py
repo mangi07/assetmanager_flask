@@ -104,7 +104,7 @@ def _validate_filters(fs, filter_operators):
     schemas = {}
     for table in list(set([t for t, c, f, v in fs])):
         schema = db.query(f"SELECT name, type from pragma_table_info('{table}')").fetchall()
-        assert schema != [], f"Table {table} not in database! Value"
+        assert schema != [], f"Table {table} not in database!"
         schema = {k:v for k, v in schema}
         schemas[table] = schema
 
@@ -115,16 +115,19 @@ def _validate_filters(fs, filter_operators):
     for t, c, f, v in fs:
         assert f in filter_operators, f"No equivalent db operator found for filter {f}!"
         assert c in schemas[t], f"Column {c} not in table {t}!"
-        expected = types[schemas[t][c]]
+        expected = types[schemas[t][c]] if f != 'includes' else list
         actual = type(v)
         assert expected == actual, \
-            f"Value {str(v)} in table {t} is of type {str(actual)}.  Expected type {str(expected)}."
+            f"Value {str(v)} in table {t} is of type {str(expected)}.  Actual: {str(actual)}."
 
 
 def filters_to_sql(filters):
     """
     filters: dict formed from GET params, example: "{'asset.cost__gt':100}"
     return: string to append to sql WHERE, example: ("asset.cost > ?", 1000000000000)
+    Note: dates are expected in format 'yyyy-mm-dd hh:mm:ss' in order to make correct comparisons.
+    If date formats are correct, the logic in string comparisons will work to make the correct comparison
+    since the parts in this format are ordered from most to least significant, left to right. 
     """
     #cost_precision = 10000000000
     filter_str = ""
@@ -136,10 +139,12 @@ def filters_to_sql(filters):
     _validate_filters(fs, filter_operators)
 
     for t, c, f, v in fs:
-        filter_str += f'{t}.{c} {filter_operators[f]} ? AND '
-        params_where.append(v)
+        v = f'%{v}%' if f == 'contains' else v
+        prepared = f"({', '.join('?'*len(v))})" if f == 'includes' else '?'
+        filter_str += f'{t}.{c} {filter_operators[f]} {prepared} AND '
+        params_where += v if type(v) is list else [v]
     filter_str = filter_str.strip(' AND ')
-
+    
     return filter_str, params_where
 
 ################################################

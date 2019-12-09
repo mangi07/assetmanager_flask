@@ -379,7 +379,229 @@ class TestAssetQueries:
     ##########################################################
     # TODO: ASSET FILTERING
     ##########################################################
+    @pytest.mark.parametrize("gt, count", [
+        (99, 6), (100, 5), (299, 4), (300, 3), (600, 0), 
+    ])
+    def test_get_assets_filtering_1(self, setup_mydb, host, pagination, gt, count):
+        """Should return the correct number of assets given gt filter on cost."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one', 100), (2, '2', 'two', 200), (3, '3', 'three', 300),
+                (4, '4', 'four', 400), (5, '5', 'five', 500), (6, '6', 'six', 600);
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.cost__gt':gt}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+    
 
+    @pytest.mark.parametrize("lt, count", [
+        (100, 0), (101, 1), (300, 2), (301, 3), (600, 5), (601, 6),
+    ])
+    def test_get_assets_filtering_2(self, setup_mydb, host, pagination, lt, count):
+        """Should return the correct number of assets given lt filter on cost."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one', 100), (2, '2', 'two', 200), (3, '3', 'three', 300),
+                (4, '4', 'four', 400), (5, '5', 'five', 500), (6, '6', 'six', 600);
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.cost__lt':lt}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+
+
+    @pytest.mark.parametrize("gt, lt, count", [
+        (99, 601, 6), (100, 601, 5), (100, 600, 4), 
+        (399, 400, 0), (399, 401, 1), 
+        (600, 100, 0), (599, 100, 0),
+    ])
+    def test_get_assets_filtering_3(self, setup_mydb, host, pagination, gt, lt, count):
+        """Should return the correct number of assets given cost range."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one', 100), (2, '2', 'two', 200), (3, '3', 'three', 300),
+                (4, '4', 'four', 400), (5, '5', 'five', 500), (6, '6', 'six', 600);
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.cost__gt':gt, 'asset.cost__lt':lt}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+
+
+    @pytest.mark.parametrize("contains, count", [
+        ('z', 0), ('o', 3), ('on', 1), ('thing', 4), ('things', 3), ('th', 4),
+    ])
+    def test_get_assets_filtering_4(self, setup_mydb, host, pagination, contains, count):
+        """Should return the correct number of assets given search for text in description."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one thing', 100), (2, '2', 'two things', 200), (3, '3', 'three things', 300),
+                (4, '4', 'four things', 400), (5, '5', 'five', 500), (6, '6', 'six', 600);
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.description__contains':contains}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+
+
+    @pytest.mark.parametrize("gt, lt, contains, count", [
+        (99, 601, 'th', 4), (99, 600, 'th', 4), (99, 400, 'th', 3),
+        (500, 1000, 'six', 1), (1, 1000, 'something', 0), (200, 600, 'things', 2)
+    ])
+    def test_get_assets_filtering_5(self, setup_mydb, host, pagination, gt, lt, contains, count):
+        """Should return the correct number of assets given 
+        cost range and search for text in description."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one thing', 100), (2, '2', 'two things', 200), (3, '3', 'three things', 300),
+                (4, '4', 'four things', 400), (5, '5', 'five', 500), (6, '6', 'six', 600);
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.cost__gt':gt, 'asset.cost__lt':lt,
+            'asset.description__contains':contains}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+
+
+    @pytest.mark.parametrize("contains1, contains2, count", [
+        ('things', 'twee', 1), ('things', 'tw', 2), ('things', 'e t', 3), ('things', 're t', 1)
+    ])
+    def test_get_assets_filtering_6(self, setup_mydb, host, pagination, contains1, contains2, count):
+        """Should return the correct number of assets given 
+        multiple searches for text in description."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one thing', 100), (2, '2', 'two things', 200), (3, '3', 'twee things', 300),
+                (4, '4', 'fore things', 400), (5, '5', 'five', 500), (6, '6', 'six', 600);
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.description__contains':contains1, 
+            'asset.description__contains':contains2}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+
+
+    @pytest.mark.parametrize("includes, count", [
+        ([1000], 0), ([100], 1), ([500, 600], 2), ([500, 600, 700], 2), ([200, 250, 300, 400], 3)
+    ])
+    def test_get_assets_filtering_7(self, setup_mydb, host, pagination, includes, count):
+        """Should return the correct number of assets that match the given set of costs."""
+        query = f"""
+            insert into asset (id, asset_id, description, cost) values 
+                (1, '1', 'one thing', 100), (2, '2', 'two things', 200), (3, '3', 'three things', 300),
+                (4, '4', 'four things', 400), (5, '5', 'five', 500), (6, '6', 'six', 600);
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.cost__includes':includes}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+    
+
+    @pytest.mark.parametrize("gt, count", [
+        ('2008-01-01 00:00:00', 6), ('2009-01-01 00:00:00', 5), ('2019-12-09 16:00:00', 0),
+        ('2010-02-27 00:00:00', 2), ('2010-02-26 23:59:99', 3)
+    ])
+    def test_get_assets_filtering_8(self, setup_mydb, host, pagination, gt, count):
+        """Should return the correct number of assets placed after a certain date."""
+        query = f"""
+            insert into asset (id, asset_id, description, date_placed) values 
+                (1, '1', 'one',   '2009-01-01 00:00:00'), 
+                (2, '2', 'two',   '2009-01-01 00:01:00'), 
+                (3, '3', 'three', '2010-01-01 00:00:00'),
+                (4, '4', 'four',  '2010-02-27 00:00:00'), 
+                (5, '5', 'five',  '2016-01-01 00:00:00'), 
+                (6, '6', 'six',   '2019-12-09 16:00:00');
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.date_placed__gt':gt}
+        # similar to: select * from asset where datetime(date_placed) > datetime(f'{gt}');
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+    
+
+    @pytest.mark.parametrize("gt, lt, count", [
+        ('2008-12-30 23:59:59', '2019-12-09 16:00:01', 6),
+        ('2008-01-01 00:00:00', '2019-12-09 16:00:00', 5), 
+        ('2008-01-01 00:00:00', '2016-01-01 00:00:00', 4),
+        ('2009-01-01 00:00:00', '2016-01-01 00:00:00', 3),
+    ])
+    def test_get_assets_filtering_9(self, setup_mydb, host, pagination, gt, lt, count):
+        """Should return the correct number of assets placed within a range of dates."""
+        query = f"""
+            insert into asset (id, asset_id, description, date_placed) values 
+                (1, '1', 'one',   '2009-01-01 00:00:00'), 
+                (2, '2', 'two',   '2009-01-01 00:01:00'), 
+                (3, '3', 'three', '2010-01-01 00:00:00'),
+                (4, '4', 'four',  '2010-02-27 00:00:00'), 
+                (5, '5', 'five',  '2016-01-01 00:00:00'), 
+                (6, '6', 'six',   '2019-12-09 16:00:00');
+        """
+        pagination(page=0, limit=6)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset.date_placed__gt':gt, 'asset.date_placed__lt':lt}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
+
+
+    @pytest.mark.parametrize("location, count", [
+        (7, 1)
+    ])
+    def test_get_assets_filtering_10(self, setup_mydb, host, pagination, location, count):
+        """Should return the correct number of assets based on location.
+        Example: There are 40 of asset id 6 and 3 of asset id 2 in 'building1'."""
+        # Locations as <loc_name>(<loc.id>:<asset.id>-<count>,<asset....):
+        #
+        #                           loc1(1)
+        #                          /       \
+        #                 building1(2)      building2(3:6-60)
+        #                 /       \                |
+        #           b1a(4:2-1)    b1b(5:6-40)     b2a(6)
+        #              /   \
+        # b1a_rm1(7:1-1)    b1a_rm2(8:2-2)
+        query = f"""
+            insert into location (id, description, parent) values
+                (1, 'loc1', NULL),
+                (2, 'building1', 1),
+                (3, 'building2', 1),
+                (4, 'b1a', 2),
+                (5, 'b1b', 2),
+                (6, 'b2a', 3),
+                (7, 'b1a_rm1', 4),
+                (8, 'b1a_rm2', 4);
+            
+            insert into asset (id, asset_id, description, bulk_count) values 
+                (1, '1', 'one', 1), (2, '2', 'two', 3), (3, '3', 'three', 1),
+                (4, '4', 'four', 1), (5, '5', 'five', 1), (6, '6', 'six', 100),
+                (7, '7', 'seven', 1);
+            
+            insert into location_count (id, asset, location, count) values
+                (1, 1, 7, 1), (2, 2, 8, 2), (3, 2, 4, 1), 
+                (4, 6, 3, 60), (5, 6, 5, 40);
+        """
+        pagination(page=0, limit=5)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'asset__location.id__includes':location}
+        res = asset_queries.get_assets(filters=filters)
+        assert len(res) == count
 
     ##########################################################
     # TODO: ASSET FILTERING WITH PAGINATION
