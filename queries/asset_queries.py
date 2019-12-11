@@ -4,6 +4,7 @@
 # ###################################
 
 from queries.query_utils import MyDB, filters_to_sql
+from queries.location_queries import Locations
 from flask import request
 import sqlite3
 
@@ -72,31 +73,54 @@ def _get_pagination(page, limit):
     offset = page * limit
     return offset, limit
 
-def _get_sql_for_location_filter(loc):
-    pass
+def _get_sql_for_location_filter(loc_id):
+    """
+    Finds all asset ids associated with any node of the subtree of the location being filtered.
+    The return value should be a tuple of (str, tuple): ('asset.id IN ({?,..})', ids)
+    """
+    locs = Locations()
+    loc_tree = locs.get_tree()
+    loc_ids = locs.get_subtree_ids(loc_id)
+    db = MyDB()
+    ids = db.query(f"""SELECT asset FROM location_count 
+        WHERE location IN ({', '.join('?'*len(loc_ids))})""", tuple(loc_ids))
+    ids = sorted({id for (id,) in ids})
+    
+    if len(ids) > 0:
+        prep = tuple(ids)
+        sql = f"asset.id IN ({', '.join('?'*len(ids))})"
+        return sql, tuple(ids)
+    return "asset.id IN (?)", (-1,)
 
 def _get_asset_query_string(page=0, filters=None):
     params_where = ()
+    query_where = ""
+
     query_select = """
         SELECT asset.id, asset.asset_id, asset.description, asset.cost
         FROM asset
     """
 
-    query_where = ""
     if (filters):
-        # TODO: if filters has keyword location, enter into a function dedicated to building
-        # an in-memory singleton location tree (one query) and travelling the nodes to find...
-        # (another query) all asset ids associated with any node of the subtree of the location being filtered
-        # The return value should be a tuple of (str, list): ('asset.id IN ({?,..})', ids) 
+        query_where = " WHERE "
+        if 'location' in filters:
+            loc_id = filters.pop('location')
+            loc_q, loc_p = _get_sql_for_location_filter(loc_id)
+            query_where += loc_q
+            params_where += loc_p
+        
         filter_str, params = filters_to_sql(filters)
-        if len(filter_str) > 0:
-            query_where += " WHERE " + filter_str
-            params_where += tuple(params)
+        
+        query_where += filter_str
+        params_where += tuple(params)
+
+        if query_where == " WHERE ":
+            query_where = ""
 
     query_page = " LIMIT ?, ?"
     query_string = query_select + query_where + query_page
     params = params_where + _get_pagination(page, 5) # TODO: factor out 2nd arg - page limit (size)
-
+    
     query_string = ' '.join(query_string.split()) + ';'
     return query_string, params
 

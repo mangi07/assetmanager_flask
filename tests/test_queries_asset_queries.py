@@ -561,10 +561,53 @@ class TestAssetQueries:
         assert len(res) == count
 
 
-    @pytest.mark.parametrize("location, count", [
-        (7, 1)
+    @pytest.mark.parametrize("loc_id, expected_sql, expected_params", [
+        (7, "asset.id IN (?)", (1,)), (4, "asset.id IN (?, ?)", (1, 2)),
+        (8, "asset.id IN (?)", (2,)), (5, "asset.id IN (?)", (6,)),
+        (2, "asset.id IN (?, ?, ?)", (1, 2, 6)), (6, "asset.id IN (?)", (-1,)), 
+        (3, "asset.id IN (?)", (6,)), (2, "asset.id IN (?, ?, ?)", (1, 2, 6)),
+        (1, "asset.id IN (?, ?, ?)", (1, 2, 6))
     ])
-    def test_get_assets_filtering_10(self, setup_mydb, host, pagination, location, count):
+    def test__get_sql_for_location_filter(self, setup_mydb, pagination, 
+        loc_id, expected_sql, expected_params):
+        """Should return correct sql and params to filter ids based on location."""
+        # Locations as <loc_name>(<loc.id>:<asset.id>-<count>,<asset....):
+        #
+        #                           loc1(1)
+        #                          /       \
+        #                 building1(2)      building2(3:6-60)
+        #                 /       \                |
+        #           b1a(4:2-1)    b1b(5:6-40)     b2a(6)
+        #              /   \
+        # b1a_rm1(7:1-1)    b1a_rm2(8:2-2)
+        query = f"""
+            insert into location (id, description, parent) values
+                (1, 'loc1', NULL),
+                (2, 'building1', 1),
+                (3, 'building2', 1),
+                (4, 'b1a', 2),
+                (5, 'b1b', 2),
+                (6, 'b2a', 3),
+                (7, 'b1a_rm1', 4),
+                (8, 'b1a_rm2', 4);
+            insert into asset (id, asset_id, description, bulk_count) values
+                (1, '1', 'a', 1), (2, '2', 'b', 3), (3, '3', 'c', 1),
+                (4, '4', 'd', 1), (5, '5', 'e', 1), (6, '6', 'f', 100);
+            insert into location_count (asset, location, count) values
+                (1, 7, 1), (2, 4, 1), (2, 8, 2), (6, 5, 40), (6, 3, 60);
+        """
+        db = MyDB()
+        db._executescript(query)
+        sql, params = asset_queries._get_sql_for_location_filter(loc_id)
+        assert sql == expected_sql
+        assert params == expected_params
+
+
+    @pytest.mark.parametrize("location, expected_ids", [
+        (7, [1]), (8, [2]), (4, [1, 2]), (5, [6]), (2, [1, 2, 6]),
+        (1, [1, 2, 6]), (3, [6]), (6, [])
+    ])
+    def test_get_assets_filtering_10(self, setup_mydb, host, pagination, location, expected_ids):
         """Should return the correct number of assets based on location.
         Example: There are 40 of asset id 6 and 3 of asset id 2 in 'building1'."""
         # Locations as <loc_name>(<loc.id>:<asset.id>-<count>,<asset....):
@@ -599,9 +642,12 @@ class TestAssetQueries:
         pagination(page=0, limit=5)
         db = MyDB()
         db._executescript(query)
-        filters = {'asset__location.id__includes':location}
+        filters = {'location':location}
         res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        #breakpoint()
+        ids = sorted([v['id'] for k, v in res.items()])
+        #assert len(res) == count
+        assert ids == expected_ids
 
     ##########################################################
     # TODO: ASSET FILTERING WITH PAGINATION
