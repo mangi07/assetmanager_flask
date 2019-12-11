@@ -72,6 +72,9 @@ def _get_pagination(page, limit):
     offset = page * limit
     return offset, limit
 
+def _get_sql_for_location_filter(loc):
+    pass
+
 def _get_asset_query_string(page=0, filters=None):
     params_where = ()
     query_select = """
@@ -81,6 +84,10 @@ def _get_asset_query_string(page=0, filters=None):
 
     query_where = ""
     if (filters):
+        # TODO: if filters has keyword location, enter into a function dedicated to building
+        # an in-memory singleton location tree (one query) and travelling the nodes to find...
+        # (another query) all asset ids associated with any node of the subtree of the location being filtered
+        # The return value should be a tuple of (str, list): ('asset.id IN ({?,..})', ids) 
         filter_str, params = filters_to_sql(filters)
         if len(filter_str) > 0:
             query_where += " WHERE " + filter_str

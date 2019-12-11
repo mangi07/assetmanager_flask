@@ -3,3 +3,4 @@ flask-jwt-extended==3.21.0
 Flask-CORS==3.0.8
 pytest==5.2.1
 cryptography==2.7
+treelib==1.5.5
