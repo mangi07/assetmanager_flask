@@ -123,8 +123,9 @@ def _validate_filters(fs, filter_operators):
 
 def filters_to_sql(filters):
     """
-    filters: dict formed from GET params, example: "{'asset.cost__gt':100}"
-    return: string to append to sql WHERE, example: ("asset.cost > ?", 1000000000000)
+    filters: dict formed from GET params ...Example: "{'asset.cost__gt':100}"
+    return: (string to append to sql WHERE, params) ...Example: ("asset.cost > ?", 100)
+    
     Note: dates are expected in format 'yyyy-mm-dd hh:mm:ss' in order to make correct comparisons.
     If date formats are correct, the logic in string comparisons will work to make the correct comparison
     since the parts in this format are ordered from most to least significant, left to right. 

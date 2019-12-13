@@ -9,6 +9,7 @@ from flask import request
 import sqlite3
 
 
+# TODO: mark this function for possible future removal if not used
 def get_asset_locations(ids):
     """Given a list of ids, get a list of corresponding location entries from db."""
     if len(ids) == 0:
@@ -34,6 +35,35 @@ def get_asset_locations(ids):
             'description': loc_desc,
             'parent_id': loc_par,
             'count': loc_cnt,
+            'audit_date': audit_date
+        })
+    return asset_groups
+
+def get_location_counts(filters=None):
+    """
+    filters: dict of filters
+    Accepted filters: location_count.<column>__<operator from query_utils.filters_to_sql>
+        Example: {'location_count.location__includes':'1,2,3',
+            'location_count.audit_date__gt':'2000-05-01 14:00:00'} 
+    """
+    query = "SELECT asset, location, count, audit_date FROM location_count"
+    params = None
+    if filters:
+        filters = {k:v for k,v in filters.items() if 'location' in k}
+        q, p = filters_to_sql(filters)
+        if q != '':
+            query += " WHERE " + q
+            params = tuple(p)
+    #breakpoint()
+    db = MyDB()
+    res = db.query(query, params)
+    rows = res.fetchall()
+
+    asset_groups = {row[0]:[] for row in rows}
+    for asset_id, location_id, count, audit_date in rows:
+        asset_groups[asset_id].append({
+            'location_id': location_id,
+            'count': count,
             'audit_date': audit_date
         })
     return asset_groups
@@ -82,6 +112,7 @@ def _get_sql_for_location_filter(loc_id):
     loc_tree = locs.get_tree()
     loc_ids = locs.get_subtree_ids(loc_id)
     db = MyDB()
+    # TODO: refactor to filter on more than just location id
     ids = db.query(f"""SELECT asset FROM location_count 
         WHERE location IN ({', '.join('?'*len(loc_ids))})""", tuple(loc_ids))
     ids = sorted({id for (id,) in ids})
@@ -106,7 +137,7 @@ def _get_asset_query_string(page=0, filters=None):
         if 'location' in filters:
             loc_id = filters.pop('location')
             loc_q, loc_p = _get_sql_for_location_filter(loc_id)
-            query_where += loc_q
+            query_where += loc_q + ' AND '
             params_where += loc_p
         
         filter_str, params = filters_to_sql(filters)

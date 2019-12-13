@@ -135,7 +135,7 @@ class TestAssetQueries:
 
 
     ##########################################################
-    # LOCATION LISTINGS FROM ID LIST
+    # LOCATION LISTINGS FROM ID LIST TODO: might not use this
     ##########################################################
 
     def test_get_asset_locations_1(self):
@@ -284,6 +284,303 @@ class TestAssetQueries:
     
 
     ##########################################################
+    # TODO: LOCATION LISTINGS FROM FILTERS
+    ##########################################################
+    
+    def test_get_locations_from_filters_1(self, setup_mydb):
+        """Should return all records in location_count, since there are no filters."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts()
+        assert location_counts == {
+            1:[{
+                'location_id': 1,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+                },
+                {
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+
+    def test_get_locations_from_filters_2(self, setup_mydb):
+        """Should return all records in location_count without error,
+        given filters where none are relevant to location filtering."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(filters={'asset.id__includes':[999]})
+        assert location_counts == {
+            1:[{
+                'location_id': 1,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+                },
+                {
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+
+    def test_get_locations_from_filters_3(self, setup_mydb):
+        """Should return all records in location_count without error,
+        given filters where some are relevant to location filtering and some aren't."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'asset.id__includes':[999],
+                'location_count.id__eq':2
+            }
+        )
+        assert location_counts == {
+            1:[
+                {
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+
+    def test_get_locations_from_filters_4(self, setup_mydb):
+        """Should return all records in location_count without error,
+        given filters where all are relevant to location filtering."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.id__eq':2
+            }
+        )
+        assert location_counts == {
+            1:[
+                {
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+
+    def test_get_locations_from_filters_5(self, setup_mydb):
+        """Should return all records in location_count without error,
+        given all records' audit_dates are past audit_date__gt filter."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__gt':'2018-12-31 23:59:59'
+            }
+        )
+        assert location_counts == {
+            1:[{
+                'location_id': 1,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+                },
+                {
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+    
+    def test_get_locations_from_filters_6(self, setup_mydb):
+        """Should return all records in location_count without error,
+        given all records' audit_dates are before audit_date__lt filter."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__lt':'2019-01-01 00:00:01'
+            }
+        )
+        assert location_counts == {
+            1:[{
+                'location_id': 1,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+                },
+                {
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+    
+    def test_get_locations_from_filters_7(self, setup_mydb):
+        """Should not return any records, given all records' audit_dates are 
+        before audit_date__gt filter."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__gt':'2019-01-01 00:00:01'
+            }
+        )
+        assert location_counts == {}
+
+    def test_get_locations_from_filters_8(self, setup_mydb):
+        """Should not return any records, given all of the records' audit_dates are 
+        after audit_date__lt filter."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__lt':'2018-12-31 23:59:59'
+            }
+        )
+        assert location_counts == {}
+    
+    def test_get_locations_from_filters_9(self, setup_mydb):
+        """Should return both records since they are both within the date range."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-02-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__gt':'2018-12-31 23:59:59',
+                'location_count.audit_date__lt':'2019-02-01 00:00:01'
+            }
+        )
+        assert location_counts == {
+            1:[{
+                'location_id': 1,
+                'count': 1,
+                'audit_date': '2019-02-01 00:00:00'
+                },
+                {
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+
+    def test_get_locations_from_filters_10(self, setup_mydb):
+        """Should not return either record, since neither are within the date range."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-02-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__gt':'2019-02-01 00:00:01',
+                'location_count.audit_date__lt':'2020-01-01 00:00:00'
+            }
+        )
+        assert location_counts == {}
+    
+    def test_get_locations_from_filters_11(self, setup_mydb):
+        """Should only return the record that is within the date range."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-02-01 00:00:00'),
+            (2, 1, 2, 1, '2019-01-01 00:00:00');
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__gt':'2018-12-31 24:59:59',
+                'location_count.audit_date__lt':'2019-02-01 00:00:00'
+            }
+        )
+        assert location_counts == {
+            1:[{
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }]
+        }
+
+    def test_get_locations_from_filters_12(self, setup_mydb):
+        """Should only return the records that are within the date range
+        and match the location filters."""
+        query = """
+        insert into location_count (id, asset, location, count, audit_date) values
+            (1, 1, 1, 1, '2019-01-01 00:00:00'),
+            (2, 2, 2, 1, '2019-01-01 00:00:00'),
+            (3, 3, 2, 1, '2024-01-01 00:00:00'),
+            (4, 4, 3, 1, '2019-01-01 00:00:00'),
+            (5, 5, 2, 1, '2020-01-01 00:00:00')
+            ;
+        """
+        db = MyDB()
+        db._executescript(query)
+        location_counts = asset_queries.get_location_counts(
+            filters={
+                'location_count.audit_date__gt':'2018-01-01 00:00:00',
+                'location_count.audit_date__lt':'2021-01-01 00:00:00',
+                'location_count.location__includes':[2, 3]
+            }
+        )
+        assert location_counts == {
+            2:[{
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }],
+            4:[{
+                'location_id': 3,
+                'count': 1,
+                'audit_date': '2019-01-01 00:00:00'
+            }],
+            5:[{
+                'location_id': 2,
+                'count': 1,
+                'audit_date': '2020-01-01 00:00:00'
+            }],
+        }
+
+    ##########################################################
     # ASSET LISTINGS QUERY STRING FORMATION
     ##########################################################
 
@@ -377,7 +674,7 @@ class TestAssetQueries:
 
     
     ##########################################################
-    # TODO: ASSET FILTERING
+    # ASSET FILTERING
     ##########################################################
     @pytest.mark.parametrize("gt, count", [
         (99, 6), (100, 5), (299, 4), (300, 3), (600, 0), 
@@ -643,14 +940,138 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'location':location}
+        breakpoint()
         res = asset_queries.get_assets(filters=filters)
-        #breakpoint()
         ids = sorted([v['id'] for k, v in res.items()])
-        #assert len(res) == count
+        assert ids == expected_ids
+
+    ###############################################################################
+    # TODO: ASSET FILTERING WITH COMBINATION OF ASSET FILTERS AND A LOCATION FILTER 
+    ###############################################################################
+    @pytest.mark.parametrize("location, cost, date, count, expected_ids", [
+        # Only asset ids 1, 2, and 6 have assigned locations.
+        # Asset ids 2, 3, 4 have cost 250 and ids 5, 6, and 7 have cost 1000.
+        # Asset id 1 has cost 100.
+        (1,  250, '2010-01-01 00:00:00', 0, []),
+        (1,  250, '2010-01-02 00:00:00', 0, [2]), 
+        (1,  250, '2010-01-02 00:00:00', 3, []), 
+        (1,  250, '2010-01-02 00:00:00', 2, [2]),
+        (1, 1000, '2010-01-02 00:00:00', 100, []),
+        (1, 1000, '2010-01-02 00:00:00', 99, [6]),
+        (1,  100, '2010-05-15 00:00:00', 0, []),
+        (1,  100, '2010-05-15 00:00:01', 0, [1]),
+        (2,  250, '2010-01-01 00:00:01', 2, [2]),
+        (2, 1000, '2005-12-25 00:00:01', 99, [6]),
+    ])
+    def test_get_assets_filtering_11(self, setup_mydb, host, pagination, 
+        location, cost, date, count, expected_ids):
+        """Should return correct ids based on asset filters and location filters:
+        location.id = ..., cost = ..., date_placed < ..., bulk_count > ..."""
+        # Locations as <loc_name>(<loc.id>:<asset.id>-<count>,<asset....):
+        #
+        #                           loc1(1)
+        #                          /       \
+        #                 building1(2)      building2(3:6-60)
+        #                 /       \                |
+        #           b1a(4:2-1)    b1b(5:6-40)     b2a(6)
+        #              /   \
+        # b1a_rm1(7:1-1)    b1a_rm2(8:2-2)
+        query = f"""
+            insert into location (id, description, parent) values
+                (1, 'loc1', NULL),
+                (2, 'building1', 1),
+                (3, 'building2', 1),
+                (4, 'b1a', 2),
+                (5, 'b1b', 2),
+                (6, 'b2a', 3),
+                (7, 'b1a_rm1', 4),
+                (8, 'b1a_rm2', 4);
+            
+            insert into asset (id, asset_id, description, cost, date_placed, bulk_count) values 
+                (1, '1', 'one',    100, '2010-05-15 00:00:00', 1), 
+                (2, '2', 'two',    250, '2010-01-01 00:00:00', 3), 
+                (3, '3', 'three',  250, '2009-08-11 00:00:00', 1),
+                (4, '4', 'four',   250, '2009-01-01 00:00:00', 1), 
+                (5, '5', 'five',  1000, '2001-01-31 00:00:00', 1), 
+                (6, '6', 'six',   1000, '2005-12-25 00:00:00', 100),
+                (7, '7', 'seven', 1000, '2007-10-09 00:00:00', 1);
+            
+            insert into location_count (id, asset, location, count) values
+                (1, 1, 7, 1), (2, 2, 8, 2), (3, 2, 4, 1), 
+                (4, 6, 3, 60), (5, 6, 5, 40);
+        """
+        pagination(page=0, limit=5)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'location':location, 'asset.cost__eq':cost, 
+            'asset.date_placed__lt':date, 'asset.bulk_count__gt':count}
+        res = asset_queries.get_assets(filters=filters)
+        ids = sorted([v['id'] for k, v in res.items()])
+        assert ids == expected_ids
+
+    @pytest.mark.parametrize("location, cost, date, count, expected_ids", [
+        # Only asset ids 1, 2, and 6 have assigned locations.
+        # Asset ids 2, 3, 4 have cost 250 and ids 5, 6, and 7 have cost 1000.
+        # Asset id 1 has cost 100.
+        (1,  250, '2010-01-01 00:00:00', 0, []),
+        (1,  250, '2010-01-02 00:00:00', 0, [2]), 
+        (1,  250, '2010-01-02 00:00:00', 3, []), 
+        (1,  250, '2010-01-02 00:00:00', 2, [2]),
+        (1, 1000, '2010-01-02 00:00:00', 100, []),
+        (1, 1000, '2010-01-02 00:00:00', 99, [6]),
+        (1,  100, '2010-05-15 00:00:00', 0, []),
+        (1,  100, '2010-05-15 00:00:01', 0, [1]),
+        (2,  250, '2010-01-01 00:00:01', 2, [2]),
+        (2, 1000, '2005-12-25 00:00:01', 99, [6]),
+    ])
+    def test_get_assets_filtering_11(self, setup_mydb, host, pagination, 
+        location, cost, date, count, expected_ids):
+        """Should return correct ids based on asset filters and location filters:
+        location.id = ..., cost = ..., date_placed < ..., bulk_count > ..."""
+        # Locations as <loc_name>(<loc.id>:<asset.id>-<count>,<asset....):
+        #
+        #                           loc1(1)
+        #                          /       \
+        #                 building1(2)      building2(3:6-60)
+        #                 /       \                |
+        #           b1a(4:2-1)    b1b(5:6-40)     b2a(6)
+        #              /   \
+        # b1a_rm1(7:1-1)    b1a_rm2(8:2-2)
+        query = f"""
+            insert into location (id, description, parent) values
+                (1, 'loc1', NULL),
+                (2, 'building1', 1),
+                (3, 'building2', 1),
+                (4, 'b1a', 2),
+                (5, 'b1b', 2),
+                (6, 'b2a', 3),
+                (7, 'b1a_rm1', 4),
+                (8, 'b1a_rm2', 4);
+            
+            insert into asset (id, asset_id, description, cost, date_placed, bulk_count) values 
+                (1, '1', 'one',    100, '2010-05-15 00:00:00', 1), 
+                (2, '2', 'two',    250, '2010-01-01 00:00:00', 3), 
+                (3, '3', 'three',  250, '2009-08-11 00:00:00', 1),
+                (4, '4', 'four',   250, '2009-01-01 00:00:00', 1), 
+                (5, '5', 'five',  1000, '2001-01-31 00:00:00', 1), 
+                (6, '6', 'six',   1000, '2005-12-25 00:00:00', 100),
+                (7, '7', 'seven', 1000, '2007-10-09 00:00:00', 1);
+            
+            insert into location_count (id, asset, location, count) values
+                (1, 1, 7, 1), (2, 2, 8, 2), (3, 2, 4, 1), 
+                (4, 6, 3, 60), (5, 6, 5, 40);
+        """
+        pagination(page=0, limit=5)
+        db = MyDB()
+        db._executescript(query)
+        filters = {'location':location, 'asset.cost__eq':cost, 
+            'asset.date_placed__lt':date, 'asset.bulk_count__gt':count}
+        res = asset_queries.get_assets(filters=filters)
+        ids = sorted([v['id'] for k, v in res.items()])
         assert ids == expected_ids
 
     ##########################################################
-    # TODO: ASSET FILTERING WITH PAGINATION
+    # TODO: ASSET FILTERING WITH PAGINATION 
     ##########################################################
 
     def blah():
