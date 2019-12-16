@@ -43,18 +43,29 @@ def get_location_counts(filters=None):
     """
     filters: dict of filters
     Accepted filters: location_count.<column>__<operator from query_utils.filters_to_sql>
-        Example: {'location_count.location__includes':'1,2,3',
+        Example: {'location_count.location__includes':[1,2,3],
             'location_count.audit_date__gt':'2000-05-01 14:00:00'} 
     """
     query = "SELECT asset, location, count, audit_date FROM location_count"
     params = None
+    loc_filters = {}
     if filters:
-        filters = {k:v for k,v in filters.items() if 'location' in k}
-        q, p = filters_to_sql(filters)
+        loc_filters = {k:v for k,v in filters.items() if 'location' in k}
+        for k, v in loc_filters.items():
+            filters.pop(k)
+        if 'location_count.location__eq' in loc_filters:
+            locs = Locations()
+            loc_tree = locs.get_tree()
+            loc_root_id = loc_filters['location_count.location__eq']
+            loc_ids = locs.get_subtree_ids(loc_root_id)
+            loc_filters.pop('location_count.location__eq')
+            loc_filters['location_count.location__includes'] = loc_ids
+    if loc_filters:
+        q, p = filters_to_sql(loc_filters)
         if q != '':
             query += " WHERE " + q
             params = tuple(p)
-    #breakpoint()
+    
     db = MyDB()
     res = db.query(query, params)
     rows = res.fetchall()
@@ -143,6 +154,7 @@ def _get_asset_query_string(page=0, filters=None):
         filter_str, params = filters_to_sql(filters)
         
         query_where += filter_str
+        query_where = query_where.strip(' AND ')
         params_where += tuple(params)
 
         if query_where == " WHERE ":
@@ -156,13 +168,18 @@ def _get_asset_query_string(page=0, filters=None):
     return query_string, params
 
 
-def get_assets(page=0, filters=None):
+def get_assets(page=0, filters={}):
     """
     page: page number to determine offset of paginated results
     filters: dict of filters, example: {'asset.cost__gt':100} (see query_utils.filters_to_sql)
     """
     # TODO: If filters contain location ids, modify query string in _get_asset_query_string
     #  and params before returning it here...or filter them out on in python on the tail end of this function
+    location_groups = {}
+    if [f for f in filters.keys() if 'location' in f]:
+        location_groups = get_location_counts(filters)
+        filters['asset.id__includes'] = list(location_groups.keys())
+    
     query_string, params = _get_asset_query_string(page, filters)
     
     # Run db query
@@ -171,7 +188,8 @@ def get_assets(page=0, filters=None):
     rows = res.fetchall()
     
     asset_ids = [id for id, x, y, z in rows]
-    location_groups = get_asset_locations(asset_ids)
+    #location_groups = get_asset_locations(asset_ids)
+    #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
     # TODO: invoices and fars
 
@@ -184,12 +202,12 @@ def get_assets(page=0, filters=None):
                 'asset_id':asset_id, 
                 'description':description, 
                 'cost':cost,
-                'location_counts':[],
+                'location_counts':{},
                 'pictures':[],
                 'invoices':[],
                 'far':{}
             }
-        assets[id]['location_counts'] = location_groups[id]
+        assets[id]['location_counts'] = location_groups[id] if id in location_groups else {}
         assets[id]['pictures'] = picture_groups[id]
 
     return assets
