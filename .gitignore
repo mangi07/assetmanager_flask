@@ -1,2 +1,6 @@
 *.pyc
 swagger/*
+
+server/secrets/*
+server/nginx_config/etc/nginx/sites-available/*
+
