@@ -86,11 +86,10 @@ export default {
       var file_access_token = tokens.getTokensFromStorage().file_access_token
 
       // TODO: may want to move this work to getPaginatedAssets
-      for (let idx = 0; idx < a.length; idx++) {
-         let path = a[idx].pictures[0]
-         if (path) {
-          a[idx].pictures[0] = path + "?file_access_token=" + file_access_token
-         }
+      for (let i = 0; i < a.length; i++) {
+        for (let j = 0; j < a[i].pictures.length; j++) {
+          a[i].pictures[j] += "?file_access_token=" + file_access_token
+        }
       }
 
       return a

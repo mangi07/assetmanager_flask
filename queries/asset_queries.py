@@ -175,6 +175,7 @@ def get_assets(page=0, filters={}):
     page: page number to determine offset of paginated results
     filters: dict of filters, example: {'asset.cost__gt':100} (see query_utils.filters_to_sql)
     """
+    filters = {k:v for k,v in filters.items() if v is not None}
     # TODO: If filters contain location ids, modify query string in _get_asset_query_string
     #  and params before returning it here...or filter them out on in python on the tail end of this function
     location_groups = {}
@@ -203,7 +204,7 @@ def get_assets(page=0, filters={}):
                 'id':id, 
                 'asset_id':asset_id, 
                 'description':description, 
-                'cost':cost,
+                'cost':cost/config.get_precision_factor(),
                 'location_counts':{},
                 'pictures':[],
                 'invoices':[],

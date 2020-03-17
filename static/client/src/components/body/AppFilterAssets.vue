@@ -4,7 +4,7 @@
     <p>Filter Assets</p>
     <div>
       <label for="cost-lt">Max Cost</label>
-      <input id="cost-lt" type="number" placeholder="0.00" step="0.01" min="0" v-model="filters.cost_lt">
+      <input id="cost-lt" type="number" placeholder="0.00" step="0.01" min="0" v-model="filters.cost__lt">
     </div>
     <div><button id="submit" @click="getAssets">List Assets</button></div>
     <div>{{ ui.data.error }}</div>
@@ -19,7 +19,7 @@ export default {
   data: function () {
     return {
       filters: {
-        cost_lt: null,
+        cost__lt: null,
       },
       ui: {
         data: {

@@ -12,6 +12,7 @@ from queries import (
     location_queries
 )
 from utils.file_access import FileGuardian, file_access_token_required
+import config
 
 ##############################################
 # INIT WEB APP
@@ -106,8 +107,8 @@ def send_static_files(path):
 @jwt_required 
 def list_assets(page=0):
     # get filters - TODO: may want to move this to asset_queries (??) by passing request.args
-    cost_gt = request.args.get('cost_gt', None)
-    cost_lt = request.args.get('cost_lt', None)
+    cost__gt = request.args.get('cost__gt', None)
+    cost__lt = request.args.get('cost__lt', None)
 
     # get file access token - if None, image links provided in this response may return 404 forbidden
     file_access_token = request.args.get('file_access_token', None)
@@ -115,8 +116,8 @@ def list_assets(page=0):
     try:
         filters = {
             'location': request.args.get('location', None),
-            'cost_gt': float(cost_gt) if cost_gt else None,
-            'cost_lt': float(cost_lt) if cost_lt else None,
+            'asset.cost__gt': int(float(cost__gt)*config.get_precision_factor()) if cost__gt else None,
+            'asset.cost__lt': int(float(cost__lt)*config.get_precision_factor()) if cost__lt else None,
         }
     except:
         return jsonify(error='Bad Request: malformed query params'), 400

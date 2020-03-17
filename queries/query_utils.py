@@ -83,6 +83,7 @@ def list_accounts():
 ################################################
 # filters - WHERE clause formation
 ################################################
+# TODO: better validation needed on filters from the client: eg 'cost_lt' key should not cause internal server error 500
 def _parse_filter(k, v):
     """
     Takes a key, value pair and returns a tuple of (table, column, filter, value)
@@ -131,6 +132,7 @@ def filters_to_sql(filters):
     since the parts in this format are ordered from most to least significant, left to right. 
     """
     #cost_precision = 10000000000
+    filters = {k:v for k,v in filters.items() if v is not None}
     filter_str = ""
     params_where = []
     one_or_more = False
