@@ -7,6 +7,7 @@ from queries.query_utils import MyDB, filters_to_sql
 from queries.location_queries import Locations
 from flask import request
 import sqlite3
+import config
 
 
 # TODO: mark this function for possible future removal if not used
@@ -110,7 +111,8 @@ def get_asset_pictures(ids):
 
 # TODO: functions: get_asset_fars, get_asset_invoices
 
-def _get_pagination(page, limit):
+def _get_pagination(page):
+    limit = config.get_pagination_limit()
     offset = page * limit
     return offset, limit
 
@@ -162,7 +164,7 @@ def _get_asset_query_string(page=0, filters=None):
 
     query_page = " LIMIT ?, ?"
     query_string = query_select + query_where + query_page
-    params = params_where + _get_pagination(page, 5) # TODO: factor out 2nd arg - page limit (size)
+    params = params_where + _get_pagination(page)
     
     query_string = ' '.join(query_string.split()) + ';'
     return query_string, params

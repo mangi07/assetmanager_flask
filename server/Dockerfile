@@ -9,6 +9,12 @@ RUN apt-get update -y && apt-get upgrade -y
 #RUN apt-get install software-properties-common -y # may need for production build?
 #RUN apt-get update # may need for production build?
 
+# ###############################################
+# optional editing tools
+RUN if [ "$MODE" = "development" ] ; then \
+	apt install neovim -y ; \
+	fi
+
 
 # ###############################################
 # install ssl for nginx
@@ -17,24 +23,17 @@ RUN if [ "$MODE" = "production" ] ; then \
 	apt install python-certbot-nginx -y ; \
 	fi
 
-# install nginx
+# ###############################################
+# install and configure nginx
 # RUN apt install systemd # may not work in docker container because of how docker runs
 RUN apt install nginx -y
-
-
-# ###############################################
-# optional editing tools
-RUN if [ "$MODE" = "development" ] ; then \
-	apt install neovim -y ; \
-	fi
-
-# ###############################################
 RUN mkdir -p /var/www/assetmanager/html
 RUN chmod -R 755 /var/www/assetmanager
 #COPY ./index.html /var/www/assetmanager/html/index.html
 COPY ./nginx_config/etc/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./nginx_config/etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-available/assetmanager.conf
 RUN ln -s /etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-enabled/
+RUN rm /etc/nginx/sites-enabled/default
 # TODO: Will the following line be good for production mode as well?
 COPY ./nginx_config/etc/nginx/dhparam.pem /etc/nginx/dhparam.pem
 

@@ -7,6 +7,7 @@ from unittest.mock import Mock
 import sqlite3
 import pytest
 
+import config
 from queries import asset_queries
 from queries.query_utils import MyDB
 
@@ -21,12 +22,23 @@ def host():
 def pagination():
     real_pg = asset_queries._get_pagination
 
-    def _inner(page=0, limit=0):
-        offset, limit = asset_queries._get_pagination(page, limit)
+    def _inner(page, limit):
+        offset = page * limit
         asset_queries._get_pagination = Mock(return_value=(offset, limit))
     
     yield _inner
     asset_queries._get_pagination = real_pg
+
+
+@pytest.fixture
+def page_limit():
+    real_limit = config.get_pagination_limit
+
+    def _inner(limit):
+        config.get_pagination_limit = Mock(return_value=(limit))
+    
+    yield _inner
+    config.get_pagination_limit = real_limit
 
 
 class TestAssetQueries:
@@ -584,19 +596,23 @@ class TestAssetQueries:
     # ASSET LISTINGS QUERY STRING FORMATION
     ##########################################################
 
-    def test__get_asset_query_string_1(self):
+    def test__get_asset_query_string_1(self, page_limit):
         sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
             "FROM asset LIMIT ?, ?;"
-        params = (0, 5)
+        limit = 5
+        page_limit(limit)
+        params = (0, limit)
 
         fsql, fparams = asset_queries._get_asset_query_string()
         assert fsql == sql
         assert fparams == params
 
-    def test__get_asset_query_string_2(self, setup_mydb):
+    def test__get_asset_query_string_2(self, page_limit, setup_mydb):
         sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
             "FROM asset WHERE asset.cost > ? LIMIT ?, ?;"
-        params = (100, 0, 5)
+        limit = 5
+        page_limit(limit)
+        params = (100, 0, limit)
 
         filters = {'asset.cost__gt':100}
         fsql, fparams = asset_queries._get_asset_query_string(filters=filters)
@@ -671,6 +687,16 @@ class TestAssetQueries:
         db._executescript(query)
         res = asset_queries.get_assets()
         assert len(res) == count
+
+
+    @pytest.mark.parametrize("page, offset, limit", [
+        (0, 0, 4), (1, 4, 4), (2, 8, 4), (2, 50, 25)
+    ])
+    def test__get_pagination(self, page_limit, page, offset, limit):
+        """Should return the correct (offset, limit) tuple."""
+        page_limit(limit)
+        O, L = asset_queries._get_pagination(page)
+        assert (O, L) == (offset, limit)
 
     
     ##########################################################

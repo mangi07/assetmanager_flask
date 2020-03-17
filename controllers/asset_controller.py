@@ -16,7 +16,7 @@ class AssetController:
         
     def getAsset(self):
         # ###########################
-        # refactor to obtain the following from sql queries
+        # TODO: refactor to obtain the following from sql queries
         # select * from asset limit <pagination offset>, <how many to fetch>;
         self._getAssetRows(0, 10)
         
@@ -32,7 +32,8 @@ class AssetController:
         pic2.filepath = "media/logo.png"
         asset_pics = [pic1, pic2]
         
-        # Add locations before this point so recursive __str__ works on Location obj
+        # ###########################
+        # TODO: Add locations before this point so recursive __str__ works on Location obj
         # sql query for all locations
         loc_count1 = models.LocationCount() # obtain from sql
         
