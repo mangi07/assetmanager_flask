@@ -75,29 +75,29 @@ class TestQueryUtils:
         with pytest.raises(AssertionError, match='^Table'):
             query_utils._validate_filters(filters, filter_operators)
 
-    def test__validate_filters_2(self, filter_operators):
+    def test__validate_filters_2(self, filter_operators, setup_mydb):
         """Should raise AssertionError since '1000' is not type int."""
         filters = [('invoice', 'total', 'lt', '1000')]
         with pytest.raises(AssertionError, match='^Value'):
             query_utils._validate_filters(filters, filter_operators)
 
-    def test__validate_filters_3(self, filter_operators):
+    def test__validate_filters_3(self, filter_operators, setup_mydb):
         """Should raise AssertionError since column 'blah' is not in table 'asset'."""
         filters = [('asset', 'blah', 'eq', 'first thing')]
         with pytest.raises(AssertionError, match='^Column'):
             query_utils._validate_filters(filters, filter_operators)
 
-    def test__validate_filters_4(self, filter_operators):
+    def test__validate_filters_4(self, filter_operators, setup_mydb):
         """Should not raise any errors since filters are correct."""
         filters = [('asset', 'description', 'eq', 'first thing'), ('invoice', 'total', 'lt', 1000)]
         query_utils._validate_filters(filters, filter_operators)
 
-    def test__validate_filters_5(self, filter_operators):
+    def test__validate_filters_5(self, filter_operators, setup_mydb):
         """Should not raise any errors since filters are correct."""
         filters = [('asset', 'cost', 'gt', 100), ('asset', 'cost', 'lt', 1000), ('invoice', 'total', 'lt', 1000)]
         query_utils._validate_filters(filters, filter_operators)
 
-    def test__validate_filters_5(self, filter_operators):
+    def test__validate_filters_6(self, filter_operators, setup_mydb):
         """Should raise AssertionError since one filter operator cannot be found."""
         filters = [('asset', 'cost', 'gt', 100), ('asset', 'cost', '<', 1000), ('invoice', 'total', 'lt', 1000)]
         with pytest.raises(AssertionError, match='^No equivalent'):
@@ -139,21 +139,21 @@ class TestQueryUtils:
             return
         assert False
 
-    def test_filters_to_sql_5(self):
+    def test_filters_to_sql_5(self, setup_mydb):
         """Returns correct string given 1 valid filter in the dict."""
         filters = {'asset.cost__gt':1000}
         sql, params = query_utils.filters_to_sql(filters)
         assert sql == 'asset.cost > ?'
         assert params == [1000]
 
-    def test_filters_to_sql_6(self):
-        """Returns coorect string given 2 valid filters in dict, representing cost range."""
+    def test_filters_to_sql_6(self, setup_mydb):
+        """Returns correct string given 2 valid filters in dict, representing cost range."""
         filters = {'asset.cost__gt':1000, 'asset.cost__lt':2000}
         sql, params = query_utils.filters_to_sql(filters)
         assert sql == 'asset.cost > ? AND asset.cost < ?'
         assert params == [1000, 2000]
 
-    def test_filters_to_sql_7(self):
+    def test_filters_to_sql_7(self, setup_mydb):
         """Returns correct string given valid search string in dict."""
         filters = {'asset.description__contains':'this thing'}
         sql, params = query_utils.filters_to_sql(filters)

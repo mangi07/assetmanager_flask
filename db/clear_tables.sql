@@ -9,7 +9,6 @@ delete from "purchase_order";
 delete from "department";
 delete from "user";
 delete from "asset";
-delete from "category";
 delete from "checkout";
 delete from "account";
 delete from "far";

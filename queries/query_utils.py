@@ -5,7 +5,7 @@
 import sqlite3
 from .db_path import DB_PATH
 
-
+# TODO: optionally cache database schema 
 class MyDB(object):
     __instance = None
 

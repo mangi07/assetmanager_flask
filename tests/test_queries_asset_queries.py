@@ -593,7 +593,7 @@ class TestAssetQueries:
         assert fsql == sql
         assert fparams == params
 
-    def test__get_asset_query_string_2(self):
+    def test__get_asset_query_string_2(self, setup_mydb):
         sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
             "FROM asset WHERE asset.cost > ? LIMIT ?, ?;"
         params = (100, 0, 5)
