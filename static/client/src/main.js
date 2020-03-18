@@ -9,6 +9,22 @@ import vuetify from './plugins/vuetify'
 
 Vue.config.productionTip = false
 
+/* modified from: https://stackoverflow.com/questions/43208012/how-do-i-format-currencies-in-a-vue-component on March 18, 2020 */
+Vue.filter('currency', function (value) {
+  if (value === null) {
+    return '$--.--'
+  }
+  if (typeof value !== "number") {
+    return 'error';
+  }
+  var formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  });
+  return formatter.format(value);
+})
+
 new Vue({
   store,
   router,

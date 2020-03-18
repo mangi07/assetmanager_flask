@@ -12,45 +12,99 @@
           :key="i"
         >
           <v-card
-            color="blue lighten-4"
+            color="blue-grey lighten-4"
             width="1500px"
           >
-            <v-list-item three-line>
-              <v-list-item-content class="align-self-start">
-                <v-list-item-title
-                  class="headline mb-2"
-                  v-text="asset.description"
-                ></v-list-item-title>
+            <v-card-title>
+              <v-chip class="ma-2" color="red darken-4" label text-color="white">
+                <v-icon large left>
+                  mdi-pound-box
+                </v-icon>
+                <span class="title font-weight-light">{{ asset.asset_id }}</span>
+              </v-chip>
+              <v-chip class="ma-2" color="black lighten-4" label text-color="white">DESCRIPTION: </v-chip>
+              <span class="title font-weight-light"> {{ asset.description }}</span>
+            </v-card-title>
 
-                <v-list-item-subtitle v-text="asset.cost"></v-list-item-subtitle>
-              </v-list-item-content>
+            <v-divider></v-divider>
 
-              <v-list-item-avatar
+            <v-icon large left>
+              mdi-tag
+            </v-icon>
+            <v-chip class="ma-2" color="blue-grey" label text-color="white">
+              <span class="title font-weight-light">(Est.) Total Cost......{{ asset.cost | currency }}</span>
+            </v-chip>
+            <v-chip class="ma-2" color="blue-grey lighten-1" label text-color="white">
+              <span class="title font-weight-light">Cost Brand New......{{ asset.cost | currency }}</span>
+            </v-chip>
+            <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="white">
+              <span class="title font-weight-light">Shipping Cost......{{ asset.shipping | currency }}</span>
+            </v-chip>
+
+            <v-divider></v-divider>
+
+            <v-avatar
+              class="profile"
+              color="grey"
+              size="164"
+              tile
+            >
+              <v-img 
+                :id="i" 
+                :src="asset.pictures[0]"
                 size="125"
-                tile
-              >
-                <v-img 
-                  :id="i" 
-                  :src="asset.pictures[0]"
-                  lazy-src="https://picsum.photos/id/11/10/6"
-                  @click="showPics(i)"
-                ></v-img>
-              </v-list-item-avatar>
-            </v-list-item>
+                lazy-src="https://picsum.photos/id/11/10/6"
+                @click="showPics(i)"
+              ></v-img>
+            </v-avatar>
+
+            <v-expand-transition>
+              <div v-show="show_details">
+                <v-divider></v-divider>
+
+                <v-card-text>
+                  I'm a thing. But, like most politicians, he promised more than he could deliver. You won't have time for sleeping, soldier, not with all the bed making you'll be doing. Then we'll go with that data file! Hey, you add a one and two zeros to that or we walk! You're going to do his laundry? I've got to find a way to escape.
+                </v-card-text>
+              </div>
+            </v-expand-transition>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
 
     <v-overlay :value="overlay">
-      <v-carousel>
+      <!-- <v-carousel>
         <v-carousel-item
           v-for="(picture, i) in assets[selected_asset].pictures"
           :key="i"
           :id="i"
           :src="picture"
-          width="500"
+          class="full-width"
         ></v-carousel-item>
+      </v-carousel> -->
+      <v-carousel
+        cycle
+        height="400"
+        hide-delimiter-background
+        show-arrows-on-hover
+      >
+        <v-carousel-item
+          v-for="(slide, i) in ['one', 'two', 'three']"
+          :key="i"
+        >
+          <v-sheet
+            :color="red"
+            height="100%"
+          >
+            <v-row
+              class="fill-height"
+              align="center"
+              justify="center"
+            >
+              <div class="display-3">Slide</div>
+            </v-row>
+          </v-sheet>
+        </v-carousel-item>
       </v-carousel>
       <v-btn
         icon
@@ -71,6 +125,7 @@ export default {
   data:  () => ({
     overlay: false,
     selected_asset: 0,
+    show_details: true
   }),
   methods: {
     showPics: function (id) {
@@ -91,10 +146,21 @@ export default {
           a[i].pictures[j] += "?file_access_token=" + file_access_token
         }
       }
-
+      console.log(a)
       return a
     },
   },
 }
 </script>
+
+<style>
+  .full-width {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+</style>
 

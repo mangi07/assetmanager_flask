@@ -3,7 +3,12 @@
 # and with associated db entities.
 # ###################################
 
-from queries.query_utils import MyDB, filters_to_sql
+from queries.query_utils import (MyDB, filters_to_sql,
+list_categories,
+list_manufacturers,
+list_suppliers,
+list_purchase_orders,
+list_departments)
 from queries.location_queries import Locations
 from flask import request
 import sqlite3
@@ -140,8 +145,31 @@ def _get_asset_query_string(page=0, filters=None):
     params_where = ()
     query_where = ""
 
-    query_select = """
-        SELECT asset.id, asset.asset_id, asset.description, asset.cost
+    query_select = f"""
+        SELECT asset.id, asset.asset_id, asset.description,
+        asset.cost/{config.get_precision_factor()},
+        asset.cost_brand_new/{config.get_precision_factor()}, 
+        asset.shipping/{config.get_precision_factor()},
+        asset.is_current,
+        asset.requisition,
+        asset.receiving,
+        asset.category_1,
+        asset.category_2,
+        asset.model_number,
+        asset.serial_number,
+        asset.bulk_count,
+        asset.bulk_count_removed,
+        asset.date_placed,
+        asset.date_removed,
+        asset.date_record_created,
+        asset.date_warranty_expires,
+        asset.manufacturer,
+        asset.supplier,
+        asset.purchase_order,
+        asset.life_expectancy_years,
+        asset.notes,
+        asset.department,
+        asset.maint_dir
         FROM asset
     """
 
@@ -190,7 +218,8 @@ def get_assets(page=0, filters={}):
     res = db.query(query_string, params)
     rows = res.fetchall()
     
-    asset_ids = [id for id, x, y, z in rows]
+    #asset_ids = [id for id, x, y, z in rows]
+    asset_ids = [row[0] for row in rows]
     #location_groups = get_asset_locations(asset_ids)
     #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
@@ -198,13 +227,20 @@ def get_assets(page=0, filters={}):
 
     # combine rows per asset
     assets = {}
-    for (id, asset_id, description, cost) in rows:
+    for (id, asset_id, description, cost, cost_brand_new, shipping,
+        is_current, requisition, receiving, category_1, category_2,
+        model_number, serial_number, bulk_count, bulk_count_removed,
+        date_placed, date_removed, date_record_created, date_warranty_expires,
+        manufacturer, supplier, purchase_order,
+        life_expectancy_years, notes, department, maint_dir) in rows:
         if id not in assets:
             assets[id] = {
                 'id':id, 
                 'asset_id':asset_id, 
                 'description':description, 
-                'cost':cost/config.get_precision_factor(),
+                'cost':cost, 'cost_brand_new':cost_brand_new, 'shipping':shipping,
+                'is_current':is_current == 1,
+                
                 'location_counts':{},
                 'pictures':[],
                 'invoices':[],

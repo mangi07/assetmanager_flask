@@ -65,15 +65,31 @@ def list_categories():
     return _list_categories('category', 'name')
 
 def list_manufacturers():
+    """
+    Returns:
+        An array of (int, str) tuples: (mnf id, name)
+    """
     return _list_categories('manufacturer', 'name')
 
 def list_suppliers():
+    """
+    Returns:
+        An array of (int, str) tuples: (supplier id, name)
+    """
     return _list_categories('supplier', 'name')
 
 def list_purchase_orders():
+    """
+    Returns:
+        An array of (int, str) tuples: (id, purchase order)
+    """
     return _list_categories('purchase_order', 'number')
 
 def list_departments():
+    """
+    Returns:
+        An array of (int, str) tuples: (department id, name)
+    """
     return _list_categories('department', 'name')
 
 def list_accounts():
