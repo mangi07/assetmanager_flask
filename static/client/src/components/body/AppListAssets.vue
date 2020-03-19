@@ -46,17 +46,40 @@
             <v-avatar
               class="profile"
               color="grey"
-              size="164"
+              size="25%"
               tile
             >
               <v-img 
                 :id="i" 
                 :src="asset.pictures[0]"
-                size="125"
+                size="25vw"
                 lazy-src="https://picsum.photos/id/11/10/6"
                 @click="showPics(i)"
+                class="contain"
               ></v-img>
             </v-avatar>
+
+            <v-overlay :value="overlay" contain>
+              <v-carousel height="90vh">
+                <v-carousel-item
+                  v-for="(picture, i) in assets[selected_asset].pictures"
+                  :key="i"
+                  :id="i"
+                  :src="picture"
+                  width="90vw"
+                  max-width="100%"
+                  max-height="100%"
+                  contain
+                ></v-carousel-item>
+              </v-carousel>
+                            
+              <v-btn
+                icon
+                @click="overlay = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-overlay>
 
             <v-expand-transition>
               <div v-show="show_details">
@@ -72,47 +95,7 @@
       </v-row>
     </v-container>
 
-    <v-overlay :value="overlay">
-      <!-- <v-carousel>
-        <v-carousel-item
-          v-for="(picture, i) in assets[selected_asset].pictures"
-          :key="i"
-          :id="i"
-          :src="picture"
-          class="full-width"
-        ></v-carousel-item>
-      </v-carousel> -->
-      <v-carousel
-        cycle
-        height="400"
-        hide-delimiter-background
-        show-arrows-on-hover
-      >
-        <v-carousel-item
-          v-for="(slide, i) in ['one', 'two', 'three']"
-          :key="i"
-        >
-          <v-sheet
-            :color="red"
-            height="100%"
-          >
-            <v-row
-              class="fill-height"
-              align="center"
-              justify="center"
-            >
-              <div class="display-3">Slide</div>
-            </v-row>
-          </v-sheet>
-        </v-carousel-item>
-      </v-carousel>
-      <v-btn
-        icon
-        @click="overlay = false"
-      >
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
-    </v-overlay>
+    
 
   </div>
 </template>
@@ -133,7 +116,7 @@ export default {
       if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
         this.$data.overlay = true
       }
-    }
+    },
   },
   computed: {
     assets: function () {
@@ -152,15 +135,4 @@ export default {
   },
 }
 </script>
-
-<style>
-  .full-width {
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-  }
-</style>
 
