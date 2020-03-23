@@ -62,6 +62,10 @@ def _list_categories(table, order_column):
     return result.fetchall()
 
 def list_categories():
+    """
+    Returns:
+        An array of (int, str) tuples: (cateogory id, name)
+    """
     return _list_categories('category', 'name')
 
 def list_manufacturers():
@@ -93,7 +97,26 @@ def list_departments():
     return _list_categories('department', 'name')
 
 def list_accounts():
+    """
+    Returns:
+        An array of (int, str, str) tuples: (department id, name, description)
+    """
     return _list_categories('account', 'number')
+
+def list_requisition_statuses():
+    """
+    Returns:
+        An array of (int, str) tuples: (status id, status)
+    """
+    return _list_categories('requisition', 'id')
+
+def list_receiving_statuses():
+    """
+    Returns:
+        An array of (int, str) tuples: (receiving id, status)
+    """
+    return _list_categories('receiving', 'id')
+
 
 
 ################################################
@@ -147,7 +170,6 @@ def filters_to_sql(filters):
     If date formats are correct, the logic in string comparisons will work to make the correct comparison
     since the parts in this format are ordered from most to least significant, left to right. 
     """
-    #cost_precision = 10000000000
     filters = {k:v for k,v in filters.items() if v is not None}
     filter_str = ""
     params_where = []

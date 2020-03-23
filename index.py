@@ -92,6 +92,7 @@ def user():
     current_identity = get_jwt_identity()
     return jsonify(current_identity)
 
+# TODO: This may not be neccessary if serving front end through a serparate server
 rel_path = 'static/client/dist'
 @app.route("/")
 def index():
@@ -152,7 +153,7 @@ def get_image(path):
         return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
 
 
-#  ##############################################################
+# LOCATIONS ##############################################################
 @app.route("/locations")
 @jwt_required 
 def list_locations():

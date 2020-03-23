@@ -8,7 +8,9 @@ list_categories,
 list_manufacturers,
 list_suppliers,
 list_purchase_orders,
-list_departments)
+list_departments,
+list_requisition_statuses,
+list_receiving_statuses)
 from queries.location_queries import Locations
 from flask import request
 import sqlite3
@@ -224,6 +226,11 @@ def get_assets(page=0, filters={}):
     #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
     # TODO: invoices and fars
+    # TODO: requisition and receiving statuses
+    requisition_statuses = dict(list_requisition_statuses())
+    print(requisition_statuses)
+    receiving_statuses = dict(list_receiving_statuses())
+    print(receiving_statuses)
 
     # combine rows per asset
     assets = {}
@@ -240,7 +247,8 @@ def get_assets(page=0, filters={}):
                 'description':description, 
                 'cost':cost, 'cost_brand_new':cost_brand_new, 'shipping':shipping,
                 'is_current':is_current == 1,
-                
+                'requisition':requisition_statuses[requisition],
+                'receiving':receiving_statuses[receiving],
                 'location_counts':{},
                 'pictures':[],
                 'invoices':[],

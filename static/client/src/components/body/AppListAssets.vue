@@ -16,6 +16,12 @@
             width="1500px"
           >
             <v-card-title>
+              <div v-if="! asset.is_current">
+                <v-icon>
+                  mdi-alert
+                </v-icon>
+                PREVIOUS ASSET
+              </div>
               <v-chip class="ma-2" color="red darken-4" label text-color="white">
                 <v-icon large left>
                   mdi-pound-box
@@ -40,25 +46,45 @@
             <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="white">
               <span class="title font-weight-light">Shipping Cost......{{ asset.shipping | currency }}</span>
             </v-chip>
+            <v-divider></v-divider>
+
+            <v-badge 
+              :icon="assetStyles[i].requisitionIcon.icon"
+              left
+              overlap
+              :color="assetStyles[i].requisitionIcon.color"
+            >
+              <v-chip class="ma-2" color="blue-grey lighten-3" label text-color="black">
+                  Requisition: {{ asset.requisition }}
+              </v-chip>
+            </v-badge>
+            <v-badge 
+              :icon="assetStyles[i].receivingIcon.icon"
+              left
+              overlap
+              :color="assetStyles[i].receivingIcon.color"
+            >
+              <v-chip class="ma-2" color="blue-grey lighten-3" label text-color="black">
+                Receiving: {{ asset.receiving }}
+              </v-chip>
+            </v-badge>
 
             <v-divider></v-divider>
 
             <v-avatar
               class="profile"
               color="grey"
-              size="25%"
+              size="10vw"
               tile
             >
-              <v-img 
+              <v-img
                 :id="i" 
                 :src="asset.pictures[0]"
-                size="25vw"
                 lazy-src="https://picsum.photos/id/11/10/6"
                 @click="showPics(i)"
                 class="contain"
               ></v-img>
             </v-avatar>
-
             <v-overlay :value="overlay" contain>
               <v-carousel height="90vh">
                 <v-carousel-item
@@ -117,13 +143,57 @@ export default {
         this.$data.overlay = true
       }
     },
+    getReceivingIcon: function (asset) {
+      let color, icon
+      switch (asset.receiving) {
+        case "shipped":
+          icon = "mdi-airplane-takeoff"
+          color = "blue"
+          break
+        case "received":
+          icon = "mdi-airplane-landing"
+          color = "green"
+          break
+        case "placed":
+          icon = "mdi-check"
+          color = "purple"
+          break
+        default:
+          icon = "mdi-minus-circle-outline"
+          color = "grey"
+      } 
+      return {icon:icon, color:color}
+    },
+    getRequisitionIcon: function (asset) {
+      let color, icon
+      switch (asset.requisition) {
+        case "awaiting invoice":
+          color = "red"
+          icon = "mdi-clock"
+          break
+        case "partial payment":
+          color = "grey"
+          icon = "mdi-circle-slice-4"
+          break
+        case "paid in full":
+          color = "green"
+          icon = "mdi-check-circle"
+          break
+        case "donated":
+          color = "pink"
+          icon = "mdi-heart"
+        default:
+          color = "grey"
+          icon = "mdi-help"
+      }
+      return {icon:icon, color:color}
+    }
   },
   computed: {
     assets: function () {
       var a = this.$store.state.assetsModule.assets
       var file_access_token = tokens.getTokensFromStorage().file_access_token
 
-      // TODO: may want to move this work to getPaginatedAssets
       for (let i = 0; i < a.length; i++) {
         for (let j = 0; j < a[i].pictures.length; j++) {
           a[i].pictures[j] += "?file_access_token=" + file_access_token
@@ -132,6 +202,17 @@ export default {
       console.log(a)
       return a
     },
+    assetStyles: function () {
+      let a = this.$store.state.assetsModule.assets
+      let b = new Array(a.length).fill({})
+      for (let i = 0; i < a.length; i++) {
+        b[i].requisitionIcon = this.getRequisitionIcon(a[i])
+        b[i].receivingIcon = this.getReceivingIcon(a[i])
+      }
+      console.log(b)
+      return b
+    },
+
   },
 }
 </script>
