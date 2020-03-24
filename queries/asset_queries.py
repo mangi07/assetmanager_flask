@@ -220,17 +220,16 @@ def get_assets(page=0, filters={}):
     res = db.query(query_string, params)
     rows = res.fetchall()
     
-    #asset_ids = [id for id, x, y, z in rows]
     asset_ids = [row[0] for row in rows]
     #location_groups = get_asset_locations(asset_ids)
     #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
     # TODO: invoices and fars
-    # TODO: requisition and receiving statuses
     requisition_statuses = dict(list_requisition_statuses())
-    print(requisition_statuses)
     receiving_statuses = dict(list_receiving_statuses())
-    print(receiving_statuses)
+    categories = dict(list_categories())
+    manufacturers = dict(list_manufacturers())
+    suppliers = dict(list_suppliers())
 
     # combine rows per asset
     assets = {}
@@ -247,8 +246,17 @@ def get_assets(page=0, filters={}):
                 'description':description, 
                 'cost':cost, 'cost_brand_new':cost_brand_new, 'shipping':shipping,
                 'is_current':is_current == 1,
-                'requisition':requisition_statuses[requisition],
-                'receiving':receiving_statuses[receiving],
+                'requisition':requisition_statuses[requisition] if requisition in requisition_statuses else None,
+                'receiving':receiving_statuses[receiving] if receiving in receiving_statuses else None,
+                'category_1':categories[category_1] if category_1 in categories else None,
+                'category_2':categories[category_2] if category_2 in categories else None,
+                
+                'model_number':model_number,
+                'serial_number':serial_number,
+                'manufacturer':manufacturers[manufacturer] if manufacturer in manufacturers else None,
+                'supplier':suppliers[supplier] if supplier in suppliers else None,
+                'date_warranty_expires':date_warranty_expires,
+
                 'location_counts':{},
                 'pictures':[],
                 'invoices':[],

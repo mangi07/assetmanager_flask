@@ -34,20 +34,22 @@
 
             <v-divider></v-divider>
 
+            <!--FINANCES / COSTS-->
             <v-icon large left>
               mdi-tag
             </v-icon>
-            <v-chip class="ma-2" color="blue-grey" label text-color="white">
-              <span class="title font-weight-light">(Est.) Total Cost......{{ asset.cost | currency }}</span>
+            <v-chip class="ma-1" color="blue-grey" label text-color="white">
+              <span class="font-weight-light">(Est.) Total Cost......{{ asset.cost | currency }}</span>
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-1" label text-color="white">
-              <span class="title font-weight-light">Cost Brand New......{{ asset.cost | currency }}</span>
+              <span class="font-weight-light">Cost Brand New......{{ asset.cost | currency }}</span>
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="white">
-              <span class="title font-weight-light">Shipping Cost......{{ asset.shipping | currency }}</span>
+              <span class="font-weight-light">Shipping Cost......{{ asset.shipping | currency }}</span>
             </v-chip>
             <v-divider></v-divider>
 
+            <!--REQUISITION AND RECEIVING-->
             <v-badge 
               :icon="assetStyles[i].requisitionIcon.icon"
               left
@@ -69,8 +71,34 @@
               </v-chip>
             </v-badge>
 
+            <!--CATEGORIES-->
+            <v-chip class="ma-2" color="grey" label text-color="black">
+              Category 1: {{ asset.category_1 || "--" }}
+            </v-chip>
+            <v-chip class="ma-2" color="grey" label text-color="black">
+              Category 2: {{ asset.category_2 || "--" }}
+            </v-chip>
+
+            <!--MANUFACTURING DETAILS-->
+            <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+              Model Number: {{ asset.model_number || "--" }}
+            </v-chip>
+            <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+              Serial Number: {{ asset.serial_number || "--" }}
+            </v-chip>
+            <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+              Manufacturer: {{ asset.manufacturer || "--" }}
+            </v-chip>
+            <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+              Supplier: {{ asset.supplier || "--" }}
+            </v-chip>
+            <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+              Date Warranty Expires: {{ asset.date_warranty_expires || "--" }}
+            </v-chip>
+
             <v-divider></v-divider>
 
+            <!--ASSET PICTURES-->
             <v-avatar
               class="profile"
               color="grey"
@@ -106,6 +134,7 @@
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-overlay>
+
 
             <v-expand-transition>
               <div v-show="show_details">
@@ -182,14 +211,21 @@ export default {
         case "donated":
           color = "pink"
           icon = "mdi-heart"
+          break
         default:
           color = "grey"
           icon = "mdi-help"
       }
       return {icon:icon, color:color}
+    },
+
+    getPicCountIcon: function (asset) {
+      return {picLen:asset.pictures.length, picColor:"green"}
     }
   },
+
   computed: {
+
     assets: function () {
       var a = this.$store.state.assetsModule.assets
       var file_access_token = tokens.getTokensFromStorage().file_access_token
@@ -202,12 +238,19 @@ export default {
       console.log(a)
       return a
     },
+    
     assetStyles: function () {
       let a = this.$store.state.assetsModule.assets
-      let b = new Array(a.length).fill({})
+      let b = new Array(a.length)
       for (let i = 0; i < a.length; i++) {
-        b[i].requisitionIcon = this.getRequisitionIcon(a[i])
-        b[i].receivingIcon = this.getReceivingIcon(a[i])
+        let requisitionIcon = this.getRequisitionIcon(a[i])
+        let receivingIcon = this.getReceivingIcon(a[i])
+        let picCountIcon = this.getPicCountIcon(a[i])
+        b[i] = {
+          requisitionIcon:requisitionIcon,
+          receivingIcon:receivingIcon,
+          picCountIcon:picCountIcon
+        }
       }
       console.log(b)
       return b

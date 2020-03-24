@@ -6,6 +6,7 @@
 from unittest.mock import Mock
 import sqlite3
 import pytest
+import re
 
 import config
 from queries import asset_queries
@@ -17,6 +18,10 @@ def host():
     asset_queries._get_host_url = Mock()
     asset_queries._get_host_url.return_value = 'host.com/'
 
+@pytest.fixture
+def precision():
+    config.get_precision_factor = Mock()
+    config.get_precision_factor.return_value = 10000000000
 
 @pytest.fixture
 def pagination():
@@ -595,30 +600,100 @@ class TestAssetQueries:
     ##########################################################
     # ASSET LISTINGS QUERY STRING FORMATION
     ##########################################################
+    def test__get_asset_query_string_1(self, page_limit, precision):
+        
+        sql = f"""SELECT asset.id, asset.asset_id, asset.description,
+        asset.cost/{config.get_precision_factor()},
+        asset.cost_brand_new/{config.get_precision_factor()}, 
+        asset.shipping/{config.get_precision_factor()},
+        asset.is_current,
+        asset.requisition,
+        asset.receiving,
+        asset.category_1,
+        asset.category_2,
+        asset.model_number,
+        asset.serial_number,
+        asset.bulk_count,
+        asset.bulk_count_removed,
+        asset.date_placed,
+        asset.date_removed,
+        asset.date_record_created,
+        asset.date_warranty_expires,
+        asset.manufacturer,
+        asset.supplier,
+        asset.purchase_order,
+        asset.life_expectancy_years,
+        asset.notes,
+        asset.department,
+        asset.maint_dir
+        FROM asset LIMIT ?, ?;
+        """
 
-    def test__get_asset_query_string_1(self, page_limit):
-        sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
-            "FROM asset LIMIT ?, ?;"
+        #sql = """SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
+        #    "FROM asset LIMIT ?, ?;"
         limit = 5
         page_limit(limit)
         params = (0, limit)
 
         fsql, fparams = asset_queries._get_asset_query_string()
+        fsql = fsql.replace("\n", "").strip()
+        sql = sql.replace("\n", "").strip()
+        fsql = re.sub(r' {2,}', ' ', fsql)
+        sql = re.sub(r' {2,}', ' ', sql)
         assert fsql == sql
         assert fparams == params
 
     def test__get_asset_query_string_2(self, page_limit, setup_mydb):
-        sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
-            "FROM asset WHERE asset.cost > ? LIMIT ?, ?;"
+
+        sql = f"""SELECT asset.id, asset.asset_id, asset.description,
+        asset.cost/{config.get_precision_factor()},
+        asset.cost_brand_new/{config.get_precision_factor()}, 
+        asset.shipping/{config.get_precision_factor()},
+        asset.is_current,
+        asset.requisition,
+        asset.receiving,
+        asset.category_1,
+        asset.category_2,
+        asset.model_number,
+        asset.serial_number,
+        asset.bulk_count,
+        asset.bulk_count_removed,
+        asset.date_placed,
+        asset.date_removed,
+        asset.date_record_created,
+        asset.date_warranty_expires,
+        asset.manufacturer,
+        asset.supplier,
+        asset.purchase_order,
+        asset.life_expectancy_years,
+        asset.notes,
+        asset.department,
+        asset.maint_dir
+        FROM asset
+        WHERE asset.cost > ?
+        LIMIT ?, ?;
+        """
+        #sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
+        #    "FROM asset WHERE asset.cost > ? LIMIT ?, ?;"
         limit = 5
         page_limit(limit)
         params = (100, 0, limit)
 
         filters = {'asset.cost__gt':100}
         fsql, fparams = asset_queries._get_asset_query_string(filters=filters)
+
+        fsql, fparams = asset_queries._get_asset_query_string()
+        fsql = fsql.replace("\n", "").strip()
+        sql = sql.replace("\n", "").strip()
+        fsql = re.sub(r' {2,}', ' ', fsql)
+        sql = re.sub(r' {2,}', ' ', sql)
+        print()
+        print(fsql)
+        print()
+        print(sql)
+        print()
         assert fsql == sql
         assert fparams == params
-
     
     ##########################################################
     # ASSET LISTINGS
