@@ -47,6 +47,9 @@
             <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="white">
               <span class="font-weight-light">Shipping Cost......{{ asset.shipping | currency }}</span>
             </v-chip>
+            <v-chip class="ma-2" color="yellow-grey" label text-color="black">
+              <span class="font-weight-light">Life Expectancy: {{ asset.life_expectancy_years || '--' }} years</span>
+            </v-chip>
             <v-divider></v-divider>
 
             <!--REQUISITION AND RECEIVING-->
@@ -93,7 +96,20 @@
               Supplier: {{ asset.supplier || "--" }}
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
-              Date Warranty Expires: {{ asset.date_warranty_expires || "--" }}
+              Date Warranty Expires: {{ asset.date_warranty_expires | date }}
+            </v-chip>
+
+            <!--AUDIT AND LOCATIONS-->
+            <v-chip class="ma-2"  label color="grey" text-color="black">
+              Counts (this entry)...Orig. count: {{ asset.bulk_count || "--" }}, 
+              Removed: {{ asset.bulk_count_removed || "--" }}, 
+              Remaining: {{ asset.bulk_count - asset.bulk_count_removed || "--" }}    
+            </v-chip>
+            <v-chip class="ma-2"  label color="grey" text-color="black">
+              Date Placed: {{ asset.date_placed | date }}
+            </v-chip>
+            <v-chip class="ma-2"  label color="grey" text-color="black">
+              Date Removed: {{ asset.date_removed | date }}
             </v-chip>
 
             <v-divider></v-divider>

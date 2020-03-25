@@ -25,6 +25,13 @@ Vue.filter('currency', function (value) {
   return formatter.format(value);
 })
 
+Vue.filter('date', function (value) {
+	if (value === null) {
+		return '--'	
+	}
+	return new Date(value).toDateString()
+})
+
 new Vue({
   store,
   router,

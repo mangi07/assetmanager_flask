@@ -683,11 +683,6 @@ class TestAssetQueries:
         sql = sql.replace("\n", "").strip()
         fsql = re.sub(r' {2,}', ' ', fsql)
         sql = re.sub(r' {2,}', ' ', sql)
-        print()
-        print(fsql)
-        print()
-        print(sql)
-        print()
         assert fsql == sql
         assert fparams == params
     

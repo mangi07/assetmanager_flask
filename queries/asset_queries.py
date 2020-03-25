@@ -209,6 +209,7 @@ def get_assets(page=0, filters={}):
     # TODO: If filters contain location ids, modify query string in _get_asset_query_string
     #  and params before returning it here...or filter them out on in python on the tail end of this function
     location_groups = {}
+    import pdb; pdb.set_trace() # debug
     if [f for f in filters.keys() if 'location' in f]:
         location_groups = get_location_counts(filters)
         filters['asset.id__includes'] = list(location_groups.keys())
@@ -221,7 +222,7 @@ def get_assets(page=0, filters={}):
     rows = res.fetchall()
     
     asset_ids = [row[0] for row in rows]
-    #location_groups = get_asset_locations(asset_ids)
+    location_groups = get_asset_locations(asset_ids)
     #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
     # TODO: invoices and fars
@@ -250,7 +251,8 @@ def get_assets(page=0, filters={}):
                 'receiving':receiving_statuses[receiving] if receiving in receiving_statuses else None,
                 'category_1':categories[category_1] if category_1 in categories else None,
                 'category_2':categories[category_2] if category_2 in categories else None,
-                
+                'life_expectancy_years':life_expectancy_years,
+
                 'model_number':model_number,
                 'serial_number':serial_number,
                 'manufacturer':manufacturers[manufacturer] if manufacturer in manufacturers else None,
@@ -258,11 +260,16 @@ def get_assets(page=0, filters={}):
                 'date_warranty_expires':date_warranty_expires,
 
                 'location_counts':{},
+                'bulk_count':bulk_count,
+                'bulk_count_removed':bulk_count_removed,
+                'date_placed':date_placed,
+                'date_removed':date_removed,
+
                 'pictures':[],
                 'invoices':[],
                 'far':{}
             }
-        assets[id]['location_counts'] = location_groups[id] if id in location_groups else {}
+        assets[id]['location_counts'] = location_groups[id]
         assets[id]['pictures'] = picture_groups[id]
 
     return assets
