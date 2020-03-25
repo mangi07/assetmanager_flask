@@ -629,8 +629,6 @@ class TestAssetQueries:
         FROM asset LIMIT ?, ?;
         """
 
-        #sql = """SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
-        #    "FROM asset LIMIT ?, ?;"
         limit = 5
         page_limit(limit)
         params = (0, limit)
@@ -673,8 +671,7 @@ class TestAssetQueries:
         WHERE asset.cost > ?
         LIMIT ?, ?;
         """
-        #sql = "SELECT asset.id, asset.asset_id, asset.description, asset.cost " \
-        #    "FROM asset WHERE asset.cost > ? LIMIT ?, ?;"
+
         limit = 5
         page_limit(limit)
         params = (100, 0, limit)
@@ -682,7 +679,6 @@ class TestAssetQueries:
         filters = {'asset.cost__gt':100}
         fsql, fparams = asset_queries._get_asset_query_string(filters=filters)
 
-        fsql, fparams = asset_queries._get_asset_query_string()
         fsql = fsql.replace("\n", "").strip()
         sql = sql.replace("\n", "").strip()
         fsql = re.sub(r' {2,}', ' ', fsql)
