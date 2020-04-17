@@ -12,22 +12,39 @@ describe("get_locations test", () => {
     it("should list all locations", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
         return locationsAPI.getAllLocations().then( (result) => {
+          expect(result.data.locations).to.be.an.instanceof(Object)
           expect(result.data).to.have.property('locations')
-          expect(result.data.locations).to.be.an.instanceof(Array)
-          
-          result.data.locations.forEach(location => {
-              expect(location).to.have.property('id')
-              expect(location).to.have.property('description')
-              expect(location).to.have.property('parent')
-
-              expect(location.id).to.be.a('number')
-              expect(location.description).to.be.a('string')
-              if (location.id == 1) {
-                  expect(location.parent).to.be.null
-              } else {
-                expect(location.parent).to.be.a('number')
-              }
-          });
+         
+					let expectedLocations = 
+						{"1":
+							{"children":[ 
+								{"2":{
+									"children":[
+										{"4":{
+											"data":"subA-1"
+										}}
+									],
+									"data":"subA"
+								}},
+								{"3":{
+									"children":[
+										{"5":{
+											"data":"subB-1"
+										}},
+										{"6":{
+											"data":"subB-2"
+										}}
+									],
+									"data":"subB"
+								}}
+							],
+							"data":"root"
+							}
+						}
+					
+					let locations = JSON.stringify(result.data.locations)
+					expectedLocations = JSON.stringify(expectedLocations)
+					expect(locations).to.equal(expectedLocations)
         })
       })
     })

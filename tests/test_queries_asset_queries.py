@@ -729,7 +729,7 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         res = asset_queries.get_assets()
-        assert res[1]['location_counts'] == {}
+        assert res[1]['location_counts'] == []
         assert res[1]['pictures'] == []
         assert res[1]['invoices'] == []
         assert res[1]['far'] == {}
@@ -1184,25 +1184,25 @@ class TestAssetQueries:
         expected_location_counts""", [
         # Only asset ids 1, 2, and 6 have assigned locations.
         (1, '2018-01-01 00:00:00', 1, 
-            [[{'location_id': 8, 'count': 2, 'audit_date': '2019-01-01 00:00:00'}], 
-            [{'location_id': 3, 'count': 60, 'audit_date': '2019-01-01 00:00:00'}, 
-             {'location_id': 5, 'count': 40, 'audit_date': '2019-01-01 00:00:00'}]]
+            [[{'count_id': 2, 'location_id': 8, 'description': 'b1a_rm2', 'parent_id': 4, 'count': 2, 'audit_date': '2019-01-01 00:00:00'},
+             {'count_id': 3, 'location_id': 4, 'description': 'b1a', 'parent_id': 2, 'count': 1, 'audit_date': '2020-01-01 00:00:00'}],
+            [{'count_id': 4, 'location_id': 3, 'description': 'building2', 'parent_id': 1, 'count': 60, 'audit_date': '2019-01-01 00:00:00'},
+             {'count_id': 5, 'location_id': 5, 'description': 'b1b', 'parent_id': 2, 'count': 40, 'audit_date': '2019-01-01 00:00:00'}]]
         ),
         (1, '2018-01-01 00:00:00', 3,
-            [[{'location_id': 3, 'count': 60, 'audit_date': '2019-01-01 00:00:00'},
-              {'location_id': 5, 'count': 40, 'audit_date': '2019-01-01 00:00:00'}]]
+            [[{'count_id': 4, 'location_id': 3, 'description': 'building2', 'parent_id': 1, 'count': 60, 'audit_date': '2019-01-01 00:00:00'}, {'count_id': 5, 'location_id': 5, 'description': 'b1b', 'parent_id': 2, 'count': 40, 'audit_date': '2019-01-01 00:00:00'}]]
         ),
         (1, '2018-01-01 00:00:00', 40,
-            [[{'location_id': 3, 'count': 60, 'audit_date': '2019-01-01 00:00:00'}]]
+            [[{'count_id': 4, 'location_id': 3, 'description': 'building2', 'parent_id': 1, 'count': 60, 'audit_date': '2019-01-01 00:00:00'}, {'count_id': 5, 'location_id': 5, 'description': 'b1b', 'parent_id': 2, 'count': 40, 'audit_date': '2019-01-01 00:00:00'}]]
         ),
         (2, '2018-01-01 00:00:00', 3,
-            [[{'location_id': 5, 'count': 40, 'audit_date': '2019-01-01 00:00:00'}]]
+            [[{'count_id': 4, 'location_id': 3, 'description': 'building2', 'parent_id': 1, 'count': 60, 'audit_date': '2019-01-01 00:00:00'}, {'count_id': 5, 'location_id': 5, 'description': 'b1b', 'parent_id': 2, 'count': 40, 'audit_date': '2019-01-01 00:00:00'}]]
         ),
     ])
     def test_get_assets_filtering_13(self, setup_mydb, host, pagination, 
         location, audit_date, count, expected_location_counts):
-        """Should return correct ids based on asset filters and location filters:
-        location.id = ..., cost = ..., date_placed < ..., bulk_count > ..."""
+        """Should return correct asset ids based on asset filters and location filters:
+        location_count.location = ..., location_count.audit_date > ..., location_count.count > ..."""
         # Locations as <loc_name>(<loc.id>:<asset.id>-<count>,<year>):
         #
         #                           loc1(1)
@@ -1245,6 +1245,7 @@ class TestAssetQueries:
         filters = {'location_count.location__eq':location, 
             'location_count.audit_date__gt':audit_date, 
             'location_count.count__gt':count}
+        #import pdb; pdb.set_trace()
         res = asset_queries.get_assets(filters=filters)
 
         loc_groups = [v['location_counts'] for k, v in res.items()]

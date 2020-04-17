@@ -45,15 +45,16 @@ class TestLocationQueries:
                 [{2: {'children': 
                     [{4: {'children': 
                         [{7: {'data': 'b1a_rm1'}}, 
-                        {8: {'data': 'b1a_rm2'}}], 
+                         {8: {'data': 'b1a_rm2'}}], 
                         'data': 'b1a'}}, 
-                    {5: {'data': 'b1b'}}], 
+                     {5: {'data': 'b1b'}}], 
                     'data': 'building1'}}, 
-                {3: {'children': 
-                    [{6: {'data': 'b2a'}}], 'data': 'building2'}}], 
-                    'data': 'loc1'
-                }
+                 {3: {'children': 
+                    [{6: {'data': 'b2a'}}], 'data': 'building2'}}
+                ], 
+               'data': 'loc1'
             }
+        }
 
 
     @pytest.mark.parametrize("root, expected_ids", [

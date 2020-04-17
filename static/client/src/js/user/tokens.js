@@ -41,15 +41,15 @@ function requestTokens(username, password) {
 	var data = {username:username, password:password};
 	return requester.post('login', data)
     .then(function (response) {      
-	    // handle success
-	    var accessToken = response.data.access_token;
+			// handle success
+			var accessToken = response.data.access_token;
       var refreshToken = response.data.refresh_token;
       var fileAccessToken = response.data.file_access_token
 
-	    // save token on user's device (may overwrite tokens previously stored in local or session storage)
-	    setTokens(accessToken, refreshToken, fileAccessToken);
+			// save token on user's device (may overwrite tokens previously stored in local or session storage)
+			setTokens(accessToken, refreshToken, fileAccessToken);
 
-	    return {'error': null, 'access': accessToken, 'refresh': refreshToken, 'file_access_token': fileAccessToken};
+			return {'error': null, 'access': accessToken, 'refresh': refreshToken, 'file_access_token': fileAccessToken};
     })
     .catch(function (error) { // 400s errors
       return error.response.data;
@@ -106,9 +106,11 @@ function renewTokens(refresh) {
     });
 }
 
+
 function deleteTokens() {
   window.sessionStorage.clear();
 }
+
 export default {
 	setTokens,
 	getTokensFromStorage,

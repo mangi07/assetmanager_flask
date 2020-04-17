@@ -32,7 +32,7 @@ describe("get_assets test", () => {
     // assumes db on server is seeded sufficiently
     it("should apply cost filter to list only assets over $1000", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
-        var link = '/assets/0?cost_gt=1000'
+        var link = '/assets/0?cost__gt=1000'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
           expect(result.data.assets).to.be.an.instanceof(Object)
@@ -48,7 +48,7 @@ describe("get_assets test", () => {
     // assumes db on server is seeded sufficiently
     it("should apply cost filter to list only assets under $500", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
-        var link = '/assets/0?cost_lt=500'
+        var link = '/assets/0?cost__lt=500'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
           expect(result.data.assets).to.be.an.instanceof(Object)
@@ -64,7 +64,7 @@ describe("get_assets test", () => {
     // assumes db on server is seeded sufficiently
     it("should apply cost filter to list only assets between $500 and $1000", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
-        var link = '/assets/0?cost_gt=500&cost_lt=1000'
+        var link = '/assets/0?cost__gt=500&cost__lt=1000'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
           expect(result.data.assets).to.be.an.instanceof(Object)
@@ -81,7 +81,7 @@ describe("get_assets test", () => {
     // assumes db on server is seeded sufficiently
     it("should list assets with location per asset", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
-        var link = '/assets/0?location=10'
+        var link = '/assets/0?location__eq=10'
         return assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
           expect(result.data.assets).to.be.an.instanceof(Object)

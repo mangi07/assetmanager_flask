@@ -209,7 +209,6 @@ def get_assets(page=0, filters={}):
     # TODO: If filters contain location ids, modify query string in _get_asset_query_string
     #  and params before returning it here...or filter them out on in python on the tail end of this function
     location_groups = {}
-    import pdb; pdb.set_trace() # debug
     if [f for f in filters.keys() if 'location' in f]:
         location_groups = get_location_counts(filters)
         filters['asset.id__includes'] = list(location_groups.keys())
