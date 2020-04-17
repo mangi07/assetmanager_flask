@@ -22,6 +22,7 @@ function getPicture(link) {
         return response.data;
       })
       .catch(function (error) {
+				console.log(error.response.data)
         return error.response.data;
       });
   }).catch( (error) => {
@@ -33,3 +34,4 @@ function getPicture(link) {
 export default {
   getPicture,
 }
+

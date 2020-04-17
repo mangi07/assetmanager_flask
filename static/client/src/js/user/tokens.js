@@ -4,7 +4,11 @@ Description: utlitity functions to manage api tokens
 Documentation: https://flask-jwt-extended.readthedocs.io/en/latest
 Note:
 ************************************************************** */
+
+/* eslint-disable no-unused-vars */
+
 'use strict';
+
 import axios from 'axios';
 import atob from 'atob'
 

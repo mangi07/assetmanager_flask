@@ -99,7 +99,7 @@ describe("tokens test", () => {
         MockDate.set(date.setDate(after_tomorrow)) // should force refresh token to be used
 
         return tokenUtils.getToken(access, refresh).then( (chosen) => {
-          console.log(chosen)
+          //console.log(chosen)
           expect(chosen.token).to.not.equal(access)
           expect(chosen.token).to.not.equal(refresh)
           

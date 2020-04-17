@@ -2,7 +2,7 @@
 File: get_assets.js
 Library to search and list assets on server.
 * **************************************************************/
-
+ 
 'use strict';
 
 import axios from 'axios';
@@ -24,7 +24,6 @@ function getPaginatedAssets(link='/assets/0') {
         return error.response.data;
       });
   }).catch( (error) => {
-    console.log(error)
     return error
   })
 }

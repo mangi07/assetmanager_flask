@@ -2,7 +2,7 @@
 File: query_params.js
 Library to form query params used to filter assets on server.
 * **************************************************************/
-
+/* eslint-disable no-unused-vars */
 'use strict';
 
 function ParamException (message) {
@@ -17,8 +17,9 @@ function checkParam (label, value) {
 
     switch (label){
         case 'cost_lt':
-            var value = parseFloat(value)
-            if ( (typeof value == 'NaN') || (value < 0) ) {
+            value = parseFloat(value)
+            //if ( (typeof value == 'NaN') || (value < 0) ) {
+            if ( isNaN(value) || (value < 0) ) {
                 throw new ParamException('cost_lt must be a number and greater than 0')
             }
     }
