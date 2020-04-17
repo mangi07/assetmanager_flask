@@ -56,7 +56,6 @@ def file_access_token_required(func):
         allowed, reason = fg.access_allowed(token)
         if not allowed:
             return jsonify({'error':reason}), 404
-        print("Before execution")
         return_val = func(*args, **kwargs)
         return return_val
     return inner

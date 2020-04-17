@@ -99,6 +99,8 @@ def get_asset_pictures(ids):
     
     host_url = _get_host_url()
 
+    # TODO: fix bug - duplicates being returned because of left join,
+    # not because of ids list: ids list looks okay
     query_select = """
         select asset_picture.asset, picture.file_path from asset_picture
         left join picture on asset_picture.picture = picture.id
@@ -114,6 +116,7 @@ def get_asset_pictures(ids):
 
     for id, path in rows:
         pic_groups[id].append(host_url + "img/" + path)
+    print(pic_groups)
     return pic_groups
 
 # TODO: functions: get_asset_fars, get_asset_invoices

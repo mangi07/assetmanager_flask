@@ -1,21 +1,18 @@
-from flask import Flask, send_from_directory, jsonify, request, send_file
-#from flask_jwt import JWT, jwt_required, current_identity
-from flask_jwt_extended import (
-    JWTManager, jwt_required,
-    create_access_token, create_refresh_token, jwt_refresh_token_required,
-    get_jwt_identity
-)
-from models.user import User
+from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
-from queries import (
-    asset_queries,
-    location_queries
-)
-from utils.file_access import FileGuardian, file_access_token_required
+#from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import (JWTManager, create_access_token,
+                                create_refresh_token, get_jwt_identity,
+                                jwt_refresh_token_required, jwt_required)
+
 import config
+from models.user import User
+from queries import asset_queries, location_queries
+from utils.file_access import FileGuardian, file_access_token_required
 
 ##############################################
 # INIT WEB APP
+# import web_pdb; web_pdb.set_trace() # TODO: remove?
 app = Flask(__name__)
 
 # TODO: switch debug to False in production
@@ -64,6 +61,7 @@ def login():
 
 @jwt.user_identity_loader
 def identity(username):
+    """get user identity"""
     user = User.get(username)
     return user
 
@@ -120,6 +118,7 @@ def list_assets(page=0):
             'asset.cost__gt': int(float(cost__gt)*config.get_precision_factor()) if cost__gt else None,
             'asset.cost__lt': int(float(cost__lt)*config.get_precision_factor()) if cost__lt else None,
         }
+        print(filters)
     except:
         return jsonify(error='Bad Request: malformed query params'), 400
 
@@ -159,7 +158,9 @@ def get_image(path):
 def list_locations():
    
     # execute query
-    locations = location_queries.get_all_locations()
+    locs = location_queries.Locations()
+    #ids = locs.get_subtree_ids(root)
+    locations = locs.get_tree()
     
     # create location tree
     return jsonify(
