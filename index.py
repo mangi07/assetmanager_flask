@@ -141,13 +141,24 @@ def list_assets(page=0):
     )
 
 
-@app.route("/img/<path:path>")
+@app.route("/img/<path:path>", endpoint='get_image')
 @file_access_token_required
 def get_image(path):
     try:
         # This could result in sending a file as an image when the file is not really an image; 
         # the server trusts that the requested file really is an image. 
         return send_file(f"db/files/{path}", mimetype='image/jpg')
+    except:
+        return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
+
+
+@app.route("/file/<path:path>", endpoint='get_file')
+@file_access_token_required
+def get_file(path):
+    try:
+        # This could result in sending a file as an image when the file is not really an image; 
+        # the server trusts that the requested file really is an image. 
+        return send_file(f"db/files/{path}")
     except:
         return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
 

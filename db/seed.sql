@@ -4,6 +4,9 @@ delete from category;
 delete from department;
 delete from asset;
 delete from picture;
+delete from asset_picture;
+delete from invoice;
+delete from asset_invoice;
 delete from location;
 delete from location_count;
 update sqlite_sequence set seq = 0;
@@ -24,37 +27,37 @@ values
     1000.25*10000000000, 20*10000000000, 1000.25*10000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    2, '000003', 'test 3', 1, 5, 2, 1, 4,
+    2, '000002', 'test 2 - far 1', 1, 5, 2, 1, 4,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, null, 'Replacement cost estimated.', 1, 0
 ),
 (
-    3, '000004', 'test 4', 1, 2, 3, 1, null,
+    3, '000003', 'test 3 - far 2', 1, 2, 3, 1, null,
     '38KCE009118', '1302770188', 3, '2019-01-01 15:00:01', 1, 1, null,
     1000*10000000000, null, 10000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    4, '000005', 'test 5', 1, 3, null, 1, null,
+    4, '000004', 'test 4', 1, 3, null, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    5, '000006', 'test 6', 1, 3, 3, 1, null,
+    5, '000005', 'test 5', 1, 3, 3, 1, null,
     '38KCE009118', '1302770188', 1, '2019-01-01 15:00:01', 1, 1, null,
     1000*10000000000, null, 10000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    6, '000007', 'test 7', 1, null, null, 1, null,
+    6, '000006', 'test 6', 1, null, null, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    7, '000008', 'test 8', 1, null, null, 1, null,
+    7, '000007', 'test 7', 1, null, null, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    8, '000009', 'test 9', 1, null, null, 1, null,
+    8, '000008', 'test 8', 1, null, null, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 );
@@ -98,10 +101,10 @@ insert into invoice (id, number, total, file_path, notes) values
 (2, '200', 200*10000000000, 'invoices\1a2b.pdf',  'Testing invoice 2'),
 (3, '300', 250*10000000000, 'invoices\1a2b3c.pdf',  'Testing invoice 3'),
 (4, '400', 250*10000000000, 'invoices\1a2b3c4d.pdf', 'Testing invoice 4'),
-(5, '500', 500*10000000000, 'invoices\1a2b3c4d5e.pdf', 'Testing invoice 5'),
-(6, '600', 500*10000000000, 'invoices\1a2b3c4d5e6f.pdf', 'Testing invoice 6'),
-(7, '700', 5000*10000000000, 'invoices\1a2b3c4d5e6f7g.pdf', 'Testing invoice 7'),
-(8, '800', 1000*10000000000, 'invoices\1a2b3c4d5e6f7g8h.pdf', 'Testing invoice 8');
+(5, '500', 500*10000000000, 'invoices\1a2b3c4d5e.png', 'Testing invoice 5'),
+(6, '600', 500*10000000000, 'invoices\1a2b3c4d5e6f.png', 'Testing invoice 6'),
+(7, '700', 5000*10000000000, 'invoices\1a2b3c4d5e6f7g.png', 'Testing invoice 7'),
+(8, '800', 1000*10000000000, 'invoices\1a2b3c4d5e6f7g8h.png', 'Testing invoice 8');
 
 insert into asset_invoice (asset, invoice, cost) values
 -- TODO: translate these cases into tests for (1) validating asset invoice associations,
@@ -126,3 +129,14 @@ insert into asset_invoice (asset, invoice, cost) values
 (8, 8, 500*10000000000);
 -- CASE 7: asset has no invoices
 -- CASE 8: invoice has no assets
+
+
+-- ########################################################################
+-- TODO: FIXED ASSET REGISTER ASSOCIATIONS 
+-- insert into far (id, account, description, pdf, life,  start_date, amount) values
+-- (1, 60261, 'test account 1', 100, 5, '2020-02-02 00:00:00', 2000*10000000000),
+-- (2, 60262, 'test account 2', 101, 8, '2000-02-02 00:00:00', 4000.61*10000000000);
+-- 
+-- insert into asset_far (id, asset, far) values
+-- (1, 2, 1), (2, 3, 2); 
+

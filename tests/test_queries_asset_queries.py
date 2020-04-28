@@ -403,12 +403,12 @@ class TestAssetQueries:
         result = asset_queries.get_asset_invoices([1])
         print(result)
         assert list(result[1][0].values()) == \
-            [1,                # invoice  id
-             '1',              # invoice number
-             'invoices/1.pdf', # invoice file path 
-             100,              # invoice total
-             50,               # amount of invoice total given to asset
-             '']               # notes
+            [1,                              # invoice  id
+             '1',                            # invoice number
+             'host.com/file/invoices/1.pdf', # invoice file path 
+             100,                            # invoice total
+             50,                             # amount of invoice total given to asset
+             '']                             # notes
 
 
     ##########################################################

@@ -152,15 +152,45 @@
             </v-overlay>
 
 
-            <v-expand-transition>
-              <div v-show="show_details">
-                <v-divider></v-divider>
+            <v-expansion-panels>
+              <v-expansion-panel>
+                <v-expansion-panel-header>Details</v-expansion-panel-header>
+                <v-expansion-panel-content>
 
-                <v-card-text>
-                  I'm a thing. But, like most politicians, he promised more than he could deliver. You won't have time for sleeping, soldier, not with all the bed making you'll be doing. Then we'll go with that data file! Hey, you add a one and two zeros to that or we walk! You're going to do his laundry? I've got to find a way to escape.
-                </v-card-text>
-              </div>
-            </v-expand-transition>
+                  <v-expansion-panels>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header>Invoices</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <v-card
+                          class="mx-auto"
+                          max-width="344"
+                          outlined
+                          v-for="(invoice, i) in asset.invoices"
+                          :key="i"
+                        >
+                          <v-list-item three-line>
+                            <v-list-item-content>
+                              <!--<div class="overline mb-4">{{ invoice }}</div>-->
+                              <div class="overline mb-4">Invoice Total: {{ invoice.total | currency }}</div>
+                              <div class="overline mb-4">Asset Amount: {{ invoice.asset_amount | currency }}</div>
+                              <v-list-item-title class="headline mb-1">Inv. # {{ invoice.number }}</v-list-item-title>
+                              <v-list-item-subtitle>Note: {{ invoice.notes }}</v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+
+                          <v-card-actions>
+                            <v-btn text v-if="invoice.file_path">
+                              <a :href="invoice.file_path">File Link</a>
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
           </v-card>
         </v-col>
       </v-row>
@@ -172,14 +202,12 @@
 </template>
 
 <script>
-//import picAPI from '../../js/pictures/get_pictures' // TODO: may remove this - function no longer needed
 import tokens from '../../js/user/tokens'
 
 export default {
   data:  () => ({
     overlay: false,
     selected_asset: 0,
-    show_details: true
   }),
   methods: {
     showPics: function (id) {
@@ -250,8 +278,11 @@ export default {
         for (let j = 0; j < a[i].pictures.length; j++) {
           a[i].pictures[j] += "?file_access_token=" + file_access_token
         }
+        for (let j = 0; j < a[i].invoices.length; j++) {
+          a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
+        }
       }
-      console.log(a)
+      //console.log(a)
       return a
     },
     
@@ -268,7 +299,7 @@ export default {
           picCountIcon:picCountIcon
         }
       }
-      console.log(b)
+      //console.log(b)
       return b
     },
 

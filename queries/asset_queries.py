@@ -119,7 +119,7 @@ def get_asset_pictures(ids):
     print(pic_groups)
     return pic_groups
 
-# TODO: functions: get_asset_fars, get_asset_invoices
+# TODO: functions: get_asset_fars
 def get_asset_invoices(ids):
     """Given a list of ids, get a list of corresponding invoice entries from db."""
     if len(ids) == 0:
@@ -146,7 +146,7 @@ def get_asset_invoices(ids):
         invoice = {
             'id':i_id,
             'number':number,
-            'file_path':file_path,
+            'file_path':host_url + "file/" + file_path,
             'total':total/config.get_precision_factor(),
             'asset_amount':asset_amount/config.get_precision_factor(),
             'notes':notes,
@@ -261,8 +261,8 @@ def get_assets(page=0, filters={}):
     location_groups = get_asset_locations(asset_ids)
     #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
-    # TODO: invoices and fars
-    #invoices = 
+    # TODO: fars
+    invoice_groups = get_asset_invoices(asset_ids)
     requisition_statuses = dict(list_requisition_statuses())
     receiving_statuses = dict(list_receiving_statuses())
     categories = dict(list_categories())
@@ -308,5 +308,6 @@ def get_assets(page=0, filters={}):
             }
         assets[id]['location_counts'] = location_groups[id]
         assets[id]['pictures'] = picture_groups[id]
+        assets[id]['invoices'] = invoice_groups[id]
 
     return assets
