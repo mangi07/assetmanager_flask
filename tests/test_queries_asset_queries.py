@@ -152,7 +152,7 @@ class TestAssetQueries:
 
 
     ##########################################################
-    # LOCATION LISTINGS FROM ID LIST TODO: might not use this
+    # LOCATION LISTINGS FROM ID LIST 
     ##########################################################
 
     def test_get_asset_locations_1(self):
@@ -298,7 +298,118 @@ class TestAssetQueries:
                 'audit_date': '2019-01-01 00:00:00'
             }]
         }
-    
+
+
+    @pytest.mark.parametrize("assets, invoices, relations, ids, expected_invoice_ids", [
+        # no assets, no invoices, no associations --> asset id 1: no invoices
+        ([], [], [], [1], {1:[]}),
+        # 1 asset, no invoices, no associations --> asset id 1: no invoices
+        ([(1, 'a', 'a'),], [], [], [1], {1:[]}),
+        # 1 asset has 1 invoice --> asset id 1: list with 1 dict of the invoice info
+        ([(1, 'a', 'a'),],              # assets 
+         [(1, '1', '1.pdf', 100, ''),], # invoices 
+         [(1,1,100),],                  # associations,
+         [1],                           # asset ids for which to get invoices
+         {1:[1,]}                       # expected asset-invoice matchings
+        ),
+        # 2 assets but only second (id 2) has invoice association
+        # --> dict with asset id 1 the key of an empyt list and 
+        #               asset id 2 the key of a list that has one invoice dict 
+        ([(1, 'a', 'a'), (2, 'b','b'),], # assets
+         [(1, '1', '1.pdf',100, ''),],   # invoices
+         [(2,1,100),],                   # associations
+         [1,2],                          # asset ids for which to get invoices
+         {1:[],2:[1,]}                   # expected asset-invoice matchings
+        ),
+        # 2 assets, both with the same invoice associations
+        ([(1, 'a', 'a'), (2, 'b','b'),], # assets
+         [(1, '1', '1.pdf',100, ''),],   # invoices
+         [(1,1,50),(2,1,50)],            # associations
+         [1,2],                          # asset ids for which to get invoices
+         {1:[1,],2:[1,]}                 # expected asset-invoice matchings
+        ),
+        # 2 assets, both with different invoice associations
+        ([(1, 'a', 'a'), (2, 'b','b'),], # assets
+         [(1, '1', '1.pdf',100, ''),     # invoices
+          (2, '2', '2.pdf',100, '')],
+         [(1,2,100),(2,1,100)],          # associations
+         [1,2],                          # asset ids for which to get invoices
+         {1:[2,],2:[1,]}                 # expected asset-invoice matchings
+        ),
+        # 1 asset has 2 invoices
+        ([(1, 'a', 'a'),],              # assets 
+         [(1, '1', '1.pdf', 100, ''),   # invoices 
+          (2, '2', '2.pdf', 100, '')],
+         [(1,1,100),(1,2,100)],         # associations,
+         [1],                           # asset ids for which to get invoices
+         {1:[1,2]}                      # expected asset-invoice matchings
+        ),
+    ])
+    def test_get_asset_invoices_1(self, setup_mydb, host,
+            assets, invoices, relations, ids, expected_invoice_ids):
+        """Given asset-invoice associations and list of asset ids (ids param),
+        return the correct invoices per asset."""
+        db = MyDB()
+        if assets:
+            query = f"""insert into asset (id, asset_id, description) values 
+                {str(assets)[1:-1]};"""
+            db._executescript(query)
+        if invoices:
+            query = f"""insert into invoice (id, number, file_path, total, notes) values
+                {str(invoices)[1:-1]};"""
+            db._executescript(query)
+        if relations:
+            query = f"""insert into asset_invoice (asset, invoice, cost) values
+                {str(relations)[1:-1]};"""
+            db._executescript(query)
+        result = asset_queries.get_asset_invoices(ids)
+        invoice_ids_per_asset = {k:[vv['id'] for vv in v] for k,v in result.items()}
+        assert invoice_ids_per_asset == expected_invoice_ids
+
+
+    def test_get_asset_invoices_2(self, setup_mydb, host,):
+        """Check that the correct keys are returned for an invoice attached to an asset,
+        for a query asking for an asset's invoices."""
+        db = MyDB()
+        query = f"""insert into asset (id, asset_id, description) values 
+            (1, 'a', 'a');
+
+            insert into invoice (id, number, file_path, total, notes) values
+            (1, '1', 'invoices/1.pdf', 100, '');
+
+            insert into asset_invoice (asset, invoice, cost) values
+            (1, 1, 50); 
+        """
+        db._executescript(query)
+        result = asset_queries.get_asset_invoices([1])
+        assert list(result[1][0].keys()) == \
+            ['id','number','file_path','total','asset_amount','notes']
+
+
+    def test_get_asset_invoices_3(self, setup_mydb, host, precision):
+        """Check that the correct values are returned for an invoice attached to an asset,
+        for a query asking for an asset's invoices."""
+        db = MyDB()
+        query = f"""insert into asset (id, asset_id, description) values 
+            (1, 'a', 'a');
+
+            insert into invoice (id, number, file_path, total, notes) values
+            (1, '1', 'invoices/1.pdf', 100*{config.get_precision_factor()}, '');
+
+            insert into asset_invoice (asset, invoice, cost) values
+            (1, 1, 50*{config.get_precision_factor()}); 
+        """
+        db._executescript(query)
+        result = asset_queries.get_asset_invoices([1])
+        print(result)
+        assert list(result[1][0].values()) == \
+            [1,                # invoice  id
+             '1',              # invoice number
+             'invoices/1.pdf', # invoice file path 
+             100,              # invoice total
+             50,               # amount of invoice total given to asset
+             '']               # notes
+
 
     ##########################################################
     # TODO: LOCATION LISTINGS FROM FILTERS

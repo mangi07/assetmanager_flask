@@ -3,21 +3,23 @@
 # and with associated db entities.
 # ###################################
 
-from queries.query_utils import (MyDB, filters_to_sql,
-list_categories,
-list_manufacturers,
-list_suppliers,
-list_purchase_orders,
-list_departments,
-list_requisition_statuses,
-list_receiving_statuses)
+from queries.query_utils import (
+    MyDB,
+    filters_to_sql,
+    list_categories,
+    list_manufacturers,
+    list_suppliers,
+    list_purchase_orders,
+    list_departments,
+    list_requisition_statuses,
+    list_receiving_statuses,
+)
 from queries.location_queries import Locations
 from flask import request
 import sqlite3
 import config
 
 
-# TODO: mark this function for possible future removal if not used
 def get_asset_locations(ids):
     """Given a list of ids, get a list of corresponding location entries from db."""
     if len(ids) == 0:
@@ -99,8 +101,6 @@ def get_asset_pictures(ids):
     
     host_url = _get_host_url()
 
-    # TODO: fix bug - duplicates being returned because of left join,
-    # not because of ids list: ids list looks okay
     query_select = """
         select asset_picture.asset, picture.file_path from asset_picture
         left join picture on asset_picture.picture = picture.id
@@ -120,6 +120,40 @@ def get_asset_pictures(ids):
     return pic_groups
 
 # TODO: functions: get_asset_fars, get_asset_invoices
+def get_asset_invoices(ids):
+    """Given a list of ids, get a list of corresponding invoice entries from db."""
+    if len(ids) == 0:
+        return {}
+    
+    host_url = _get_host_url()
+
+    query_select = """
+        select asset_invoice.asset, invoice.id, invoice.number, invoice.file_path,
+            invoice.total, asset_invoice.cost,invoice.notes
+        from invoice
+        left join asset_invoice on asset_invoice.invoice = invoice.id
+        where asset_invoice.asset in ({});
+    """.format(','.join('?'*len(ids)))
+
+    db = MyDB()
+    params = tuple(ids)
+    res = db.query(query_select, params)
+    rows = res.fetchall()
+
+    invoice_groups = {id:[] for id in ids}
+
+    for a_id, i_id, number, file_path, total, asset_amount, notes in rows:
+        invoice = {
+            'id':i_id,
+            'number':number,
+            'file_path':file_path,
+            'total':total/config.get_precision_factor(),
+            'asset_amount':asset_amount/config.get_precision_factor(),
+            'notes':notes,
+        }
+        invoice_groups[a_id].append(invoice)
+    print(invoice_groups)
+    return invoice_groups
 
 def _get_pagination(page):
     limit = config.get_pagination_limit()
@@ -228,6 +262,7 @@ def get_assets(page=0, filters={}):
     #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
     # TODO: invoices and fars
+    #invoices = 
     requisition_statuses = dict(list_requisition_statuses())
     receiving_statuses = dict(list_receiving_statuses())
     categories = dict(list_categories())
