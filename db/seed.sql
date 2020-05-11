@@ -7,6 +7,9 @@ delete from picture;
 delete from asset_picture;
 delete from invoice;
 delete from asset_invoice;
+delete from far;
+delete from account;
+delete from asset_far;
 delete from location;
 delete from location_count;
 update sqlite_sequence set seq = 0;
@@ -132,11 +135,15 @@ insert into asset_invoice (asset, invoice, cost) values
 
 
 -- ########################################################################
--- TODO: FIXED ASSET REGISTER ASSOCIATIONS 
--- insert into far (id, account, description, pdf, life,  start_date, amount) values
--- (1, 60261, 'test account 1', 100, 5, '2020-02-02 00:00:00', 2000*10000000000),
--- (2, 60262, 'test account 2', 101, 8, '2000-02-02 00:00:00', 4000.61*10000000000);
--- 
--- insert into asset_far (id, asset, far) values
--- (1, 2, 1), (2, 3, 2); 
+-- FIXED ASSET REGISTER ASSOCIATIONS 
+insert into account (id, number, description) values
+(1, '60261', 'test account 1'),
+(2, '60262', 'test account 2');
+
+insert into far (id, account, description, pdf, life,  start_date, amount) values
+(1, 1, 'test far 1', 100, 5, '2020-02-02 00:00:00', 2000*10000000000),
+(2, 2, 'test far 2', 101, 8, '2000-02-02 00:00:00', 4000.61*10000000000);
+
+insert into asset_far (id, asset, far) values
+(1, 2, 1), (2, 3, 2); 
 

@@ -180,13 +180,45 @@
 
                           <v-card-actions>
                             <v-btn text v-if="invoice.file_path">
-                              <a :href="invoice.file_path">File Link</a>
+                              <a :href="invoice.file_path" target="_blank">File Link</a>
                             </v-btn>
                           </v-card-actions>
                         </v-card>
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
+
+                  <v-expansion-panels>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header>Fixed Asset Register Entries</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <v-card
+                          class="mx-auto"
+                          max-width="344"
+                          outlined
+                          v-for="(far, i) in asset.far"
+                          :key="i"
+                        >
+                          <v-list-item three-line>
+                            <v-list-item-content>
+                              <!--<div class="overline mb-4">{{ invoice }}</div>-->
+                              <div class="overline mb-4">FAR Total: {{ far.amount | currency }}</div>
+                              <!-- TODO: far.asset_amount does not exist yet -->
+                              <div class="overline mb-4">Asset Amount: {{ far.asset_amount | currency }}</div>
+                              <v-list-item-title class="overline mb-4">Pdf: {{ far.pdf }}</v-list-item-title>
+                              <v-list-item-title class="overline mb-4">Acct. Number: {{ far.account_number }}</v-list-item-title>
+                              <v-list-item-title class="overline mb-4">Acct. Desc: {{ far.account_description }}</v-list-item-title>
+                              <v-list-item-subtitle>Description: {{ far.description }}</v-list-item-subtitle>
+                              <v-list-item-subtitle>Start Date: {{ far.start_date | date}}</v-list-item-subtitle>
+                              <v-list-item-subtitle>Useful Life: {{ far.life}} years</v-list-item-subtitle>
+                            </v-list-item-content>
+                          </v-list-item>
+
+                        </v-card>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+
 
                 </v-expansion-panel-content>
               </v-expansion-panel>

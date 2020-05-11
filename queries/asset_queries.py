@@ -119,7 +119,46 @@ def get_asset_pictures(ids):
     print(pic_groups)
     return pic_groups
 
-# TODO: functions: get_asset_fars
+def get_asset_fars(ids):
+    """Given a list of ids, get a list of corresponding invoice entries from db."""
+    if len(ids) == 0:
+        return {}
+
+    query_select = """
+        select asset_far.asset, far.id, far.description,
+            far.pdf, far.life, far.start_date, far.amount,
+            account.id, account.number, account.description
+        from far
+        left join asset_far on asset_far.far = far.id
+        left join account on far.account = account.id
+        where asset_far.asset in ({});
+    """.format(','.join('?'*len(ids)))
+
+    db = MyDB()
+    params = tuple(ids)
+    res = db.query(query_select, params)
+    rows = res.fetchall()
+
+    far_groups = {id:[] for id in ids}
+
+    for a_id, f_id, description, pdf, life, start_date, amount,\
+        acct_id, acct_num, acct_desc in rows:
+        far = {
+            'id':f_id,
+            'description':description,
+            'pdf':pdf,
+            'life':life,
+            'start_date':start_date,
+            'amount':amount/config.get_precision_factor(),
+            'account_id':acct_id,
+            'account_number':acct_num,
+            'account_description':acct_desc,
+        }
+        far_groups[a_id].append(far)
+    # TODO: remove this print
+    print(far_groups)
+    return far_groups
+
 def get_asset_invoices(ids):
     """Given a list of ids, get a list of corresponding invoice entries from db."""
     if len(ids) == 0:
@@ -152,6 +191,7 @@ def get_asset_invoices(ids):
             'notes':notes,
         }
         invoice_groups[a_id].append(invoice)
+    # TODO: remove this print
     print(invoice_groups)
     return invoice_groups
 
@@ -261,8 +301,8 @@ def get_assets(page=0, filters={}):
     location_groups = get_asset_locations(asset_ids)
     #location_groups = get_location_counts(filters)
     picture_groups = get_asset_pictures(asset_ids)
-    # TODO: fars
     invoice_groups = get_asset_invoices(asset_ids)
+    far_groups = get_asset_fars(asset_ids)
     requisition_statuses = dict(list_requisition_statuses())
     receiving_statuses = dict(list_receiving_statuses())
     categories = dict(list_categories())
@@ -309,5 +349,6 @@ def get_assets(page=0, filters={}):
         assets[id]['location_counts'] = location_groups[id]
         assets[id]['pictures'] = picture_groups[id]
         assets[id]['invoices'] = invoice_groups[id]
+        assets[id]['far'] = far_groups[id]
 
     return assets
