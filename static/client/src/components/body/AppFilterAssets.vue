@@ -12,8 +12,10 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars, no-console */
 import assetGetter from '../../js/assets/get_assets';
 import getQueryString from '../../js/assets/query_params';
+import locationGetter from '../../js/locations/get_locations';
 
 export default {
   data: function () {
@@ -46,6 +48,11 @@ export default {
             vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
             vi.$router.push('asset-list')
           }
+          return locationGetter.getAllLocations()
+        })
+        .then(function(result){
+          var locs = result.data.locations
+          vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
         });
     }
   },

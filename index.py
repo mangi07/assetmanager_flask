@@ -171,8 +171,9 @@ def list_locations():
     # execute query
     locs = location_queries.Locations()
     #ids = locs.get_subtree_ids(root)
-    locations = locs.get_tree()
-    
+    #locations = locs.get_tree()
+    locations = locs.get_list()
+
     # create location tree
     return jsonify(
         locations=locations,

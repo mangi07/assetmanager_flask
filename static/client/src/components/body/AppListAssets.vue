@@ -219,6 +219,30 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
 
+                  <!-- TODO: enhancement - make it look better -->
+                  <v-expansion-panels>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header>Locations</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <v-card
+                          class="mx-auto"
+                          max-width="344"
+                          outlined
+                          v-for="(location, i) in asset.location_counts"
+                          :key="i"
+                        >
+                          <v-list-item three-line>
+                            <v-list-item-content>
+                              <v-list-item-title class="overline mb-4">Audit Date: {{ location.audit_date | date }}</v-list-item-title>
+                              <div>Location: {{ location.nesting }}</div>
+                              <div>Count: {{ location.count }}</div>
+                            </v-list-item-content>
+                          </v-list-item>
+
+                        </v-card>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
 
                 </v-expansion-panel-content>
               </v-expansion-panel>
@@ -234,6 +258,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console*/
 import tokens from '../../js/user/tokens'
 
 export default {
@@ -297,6 +322,16 @@ export default {
 
     getPicCountIcon: function (asset) {
       return {picLen:asset.pictures.length, picColor:"green"}
+    },
+
+    getLocation: function (asset) {
+      //var curr = asset.location
+      //var locs = this.$store.state.locationsModule.locations
+      //while ( locs[curr].parent !== null ) {
+      //  s += locs[curr].description
+      //  curr = locs[curr].parent
+      //}
+      return asset
     }
   },
 
@@ -313,11 +348,25 @@ export default {
         for (let j = 0; j < a[i].invoices.length; j++) {
           a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
         }
+
+        var locs = this.$store.state.locationsModule.locations
+        var location_counts = a[i].location_counts
+        for (let k = 0; k < location_counts.length; k++) {
+          var loc = location_counts[k]
+          var curr = loc.location_id
+          var loc_desc = locs[curr].description
+          while ( locs[curr].parent !== null ) {
+            curr = locs[curr].parent
+            loc_desc = locs[curr].description + ' >> ' + loc_desc
+          }
+          location_counts[k].nesting = loc_desc
+
+        }
       }
       //console.log(a)
       return a
     },
-    
+
     assetStyles: function () {
       let a = this.$store.state.assetsModule.assets
       let b = new Array(a.length)

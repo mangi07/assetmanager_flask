@@ -41,7 +41,10 @@ class Locations(object):
 
     def get_tree(self):
         return self._tree.to_dict(with_data=True)
-    
+
+    def get_list(self):
+        return { loc['id']:{'description':loc['description'], 'parent':loc['parent']} for loc in self._list }
+
     def get_subtree_ids(self, root_id):
         """Get a list of ints representing all ids under given id."""
         return [id for id in self._tree.expand_tree(nid=root_id)]

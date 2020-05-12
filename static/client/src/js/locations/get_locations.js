@@ -5,6 +5,8 @@ List all locations.
 
 'use strict';
 
+/* eslint-disable no-console */
+
 import axios from 'axios';
 import tokenUtils from '../user/tokens'
 
