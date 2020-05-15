@@ -27,6 +27,10 @@ export default {
         data: {
           error: null,
         }
+      },
+      pagination: {
+        prev: null,
+        next: null,
       }
     }
   },
@@ -46,13 +50,15 @@ export default {
           vm.error = result.error;
           if (result.error == null) {
             vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
-            vi.$router.push('asset-list')
+            vi.pagination.prev = `${result.data.prev}${query_str}`
+            vi.pagination.next = `${result.data.next}${query_str}`
           }
           return locationGetter.getAllLocations()
         })
         .then(function(result){
           var locs = result.data.locations
           vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
+          vi.$router.push({name: 'asset-list', params: {prev: vi.pagination.prev, next: vi.pagination.next}})
         });
     }
   },

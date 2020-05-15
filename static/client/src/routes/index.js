@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 
 const routes = [
   { path: '/asset-filter', component: AppFilterAssets },
-  { path: '/asset-list', component:  AppListAssets },
+  { path: '/asset-list', name: 'asset-list', component: AppListAssets, props: true },
 ]
 
 export default new VueRouter({

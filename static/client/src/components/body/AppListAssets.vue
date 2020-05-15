@@ -260,8 +260,10 @@
 <script>
 /* eslint-disable no-console*/
 import tokens from '../../js/user/tokens'
+//import assetGetter from '../../js/assets/get_assets';
 
 export default {
+  props: ['prev', 'next'],
   data:  () => ({
     overlay: false,
     selected_asset: 0,
@@ -324,15 +326,6 @@ export default {
       return {picLen:asset.pictures.length, picColor:"green"}
     },
 
-    getLocation: function (asset) {
-      //var curr = asset.location
-      //var locs = this.$store.state.locationsModule.locations
-      //while ( locs[curr].parent !== null ) {
-      //  s += locs[curr].description
-      //  curr = locs[curr].parent
-      //}
-      return asset
-    }
   },
 
   computed: {
