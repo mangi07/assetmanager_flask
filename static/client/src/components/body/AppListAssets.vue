@@ -258,16 +258,26 @@
 </template>
 
 <script>
-/* eslint-disable no-console*/
+/* eslint-disable no-unused-vars, no-console*/
 import tokens from '../../js/user/tokens'
-//import assetGetter from '../../js/assets/get_assets';
+import assetGetter from '../../js/assets/get_assets';
+import locationGetter from '../../js/locations/get_locations';
 
 export default {
-  props: ['prev', 'next'],
   data:  () => ({
     overlay: false,
     selected_asset: 0,
+    ui: {
+      data: {
+        error: null,
+      }
+    },
+    pagination: {
+      prev: null,
+      next: null,
+    }
   }),
+
   methods: {
     showPics: function (id) {
       this.$data.selected_asset = id
@@ -326,38 +336,84 @@ export default {
       return {picLen:asset.pictures.length, picColor:"green"}
     },
 
+    getAssets: function (event) {
+      var vm = this.ui.data;
+      var vi = this;
+      var queryString = vi.$store.state.assetsModule.filterQueryString
+
+      var link
+      if (vi.pagination.next === null) {
+        link = `/assets/0${queryString}`
+      } else {
+        link = `${vi.pagination.next}${queryString}` 
+      }
+
+      return assetGetter.getPaginatedAssets(link)
+        .then(function(result){
+          vm.error = result.error;
+          if (result.error == null) {
+            vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
+            vi.pagination.prev = `${result.data.prev}${queryString}`
+            vi.pagination.next = `${result.data.next}${queryString}`
+          } else {
+            return new Promise.reject({error:result.error})
+          }
+          return locationGetter.getAllLocations()
+        })
+        .then(function(result){
+          var locs = result.data.locations
+          vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
+          return new Promise(function(resolve, reject) { 
+            resolve({
+              assets: vi.$store.state.assetsModule.assets,
+              locations: vi.$store.state.locationsModule.locations
+            })
+          })
+        }); // TODO: possibility of uncaught Promise rejection from locationGetter.getAllLocations() ??
+    }
   },
+  
+  //beforeCreate() {
+  //  this.getAssets()
+  //},
 
   computed: {
 
     assets: function () {
-      var a = this.$store.state.assetsModule.assets
-      var file_access_token = tokens.getTokensFromStorage().file_access_token
-
-      for (let i = 0; i < a.length; i++) {
-        for (let j = 0; j < a[i].pictures.length; j++) {
-          a[i].pictures[j] += "?file_access_token=" + file_access_token
+      // TODO: make this synchronous and rely on this computed property to recompute when store changes ??
+      return this.getAssets().then(function(result){
+        if (result.error || !result.assets || !result.locations) {
+          return {} // TODO: maybe give an object with dummy values instead, to load into v-for??
         }
-        for (let j = 0; j < a[i].invoices.length; j++) {
-          a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
-        }
+        //let a = result.assets
+        var a = this.$store.state.assetsModule.assets
+        var file_access_token = tokens.getTokensFromStorage().file_access_token
 
-        var locs = this.$store.state.locationsModule.locations
-        var location_counts = a[i].location_counts
-        for (let k = 0; k < location_counts.length; k++) {
-          var loc = location_counts[k]
-          var curr = loc.location_id
-          var loc_desc = locs[curr].description
-          while ( locs[curr].parent !== null ) {
-            curr = locs[curr].parent
-            loc_desc = locs[curr].description + ' >> ' + loc_desc
+        for (let i = 0; i < a.length; i++) {
+          for (let j = 0; j < a[i].pictures.length; j++) {
+            a[i].pictures[j] += "?file_access_token=" + file_access_token
           }
-          location_counts[k].nesting = loc_desc
+          for (let j = 0; j < a[i].invoices.length; j++) {
+            a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
+          }
 
+          var locs = this.$store.state.locationsModule.locations
+          var location_counts = a[i].location_counts
+          for (let k = 0; k < location_counts.length; k++) {
+            var loc = location_counts[k]
+            var curr = loc.location_id
+            var loc_desc = locs[curr].description
+            while ( locs[curr].parent !== null ) {
+              curr = locs[curr].parent
+              loc_desc = locs[curr].description + ' >> ' + loc_desc
+            }
+            location_counts[k].nesting = loc_desc
+
+          }
         }
-      }
-      //console.log(a)
-      return a
+        //console.log(a)
+        return a
+      })
     },
 
     assetStyles: function () {

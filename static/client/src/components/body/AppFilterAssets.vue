@@ -13,9 +13,7 @@
 
 <script>
 /* eslint-disable no-unused-vars, no-console */
-import assetGetter from '../../js/assets/get_assets';
 import getQueryString from '../../js/assets/query_params';
-import locationGetter from '../../js/locations/get_locations';
 
 export default {
   data: function () {
@@ -28,10 +26,6 @@ export default {
           error: null,
         }
       },
-      pagination: {
-        prev: null,
-        next: null,
-      }
     }
   },
   methods: {
@@ -40,26 +34,12 @@ export default {
       var vi = this;
 
       try {
-        var query_str = getQueryString(vi.filters)
+        var queryString = getQueryString(vi.filters)
       } catch (err) {
         vm.error = err
       }
-      var link = `/assets/0${query_str}`
-      assetGetter.getPaginatedAssets(link)
-        .then(function(result){
-          vm.error = result.error;
-          if (result.error == null) {
-            vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
-            vi.pagination.prev = `${result.data.prev}${query_str}`
-            vi.pagination.next = `${result.data.next}${query_str}`
-          }
-          return locationGetter.getAllLocations()
-        })
-        .then(function(result){
-          var locs = result.data.locations
-          vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
-          vi.$router.push({name: 'asset-list', params: {prev: vi.pagination.prev, next: vi.pagination.next}})
-        });
+      vi.$store.dispatch('assetsModule/setFilterQueryStringAction', queryString)
+      vi.$router.push('asset-list')
     }
   },
 }

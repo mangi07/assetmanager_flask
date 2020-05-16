@@ -11,6 +11,7 @@ export const assetsModule = {
     namespaced: true,
     state: {
         assets: [],
+				filterQueryString: null,
     },
     getters: {},
     mutations: {
@@ -21,6 +22,9 @@ export const assetsModule = {
             state.assets = []
             addAssets(state, assets)
         },
+				setFilterQueryString (state, queryString) {
+						state.filterQueryString = queryString
+				},
     },
     actions: {
         appendAssetsAction (context, response) {
@@ -28,6 +32,9 @@ export const assetsModule = {
         },
         getNewAssetsAction (context, response) {
             context.commit('getNewAssets', response.data.assets)
-        }
+        },
+				setFilterQueryStringAction (context, queryString) {
+						context.commit('setFilterQueryString', queryString)
+				},
     },
 }
