@@ -27,3 +27,7 @@ curl -X GET "http://localhost:5000/assets/0?cost_gt=500&cost_lt=2000&location=10
 
 # get image
 curl -X GET "http://localhost:5000/img/assets/1.jpg?file_access_token=$FILE_ACCESS_TOKEN"  --output "./temp"
+
+# get all locations like dictionary of objects
+curl -X GET "http://localhost:5000/locations"  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTAwNjA1OTMsIm5iZiI6MTU5MDA2MDU5MywianRpIjoiOTYwNjE4MGItODY0MS00NjAzLTg1ZDAtOGJmMGY2MWE5NzEwIiwiZXhwIjoxNTkwMDYxNDkzLCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.1Pxt5nMNM1ZMosr8xvsM4ok7ZfWbfNdANGxqNCyKIsI"
+

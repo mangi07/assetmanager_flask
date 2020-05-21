@@ -1,7 +1,7 @@
 export const locationsModule = {
     namespaced: true,
     state: {
-        locations: {},
+        locations: null,
     },
     getters: {},
     mutations: {

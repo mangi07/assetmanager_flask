@@ -348,7 +348,7 @@ export default {
         link = `${vi.pagination.next}${queryString}` 
       }
 
-      return assetGetter.getPaginatedAssets(link)
+      assetGetter.getPaginatedAssets(link)
         .then(function(result){
           vm.error = result.error;
           if (result.error == null) {
@@ -356,64 +356,54 @@ export default {
             vi.pagination.prev = `${result.data.prev}${queryString}`
             vi.pagination.next = `${result.data.next}${queryString}`
           } else {
-            return new Promise.reject({error:result.error})
+            return {error:result.error}
           }
           return locationGetter.getAllLocations()
         })
         .then(function(result){
           var locs = result.data.locations
           vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
-          return new Promise(function(resolve, reject) { 
-            resolve({
-              assets: vi.$store.state.assetsModule.assets,
-              locations: vi.$store.state.locationsModule.locations
-            })
-          })
         }); // TODO: possibility of uncaught Promise rejection from locationGetter.getAllLocations() ??
     }
   },
   
-  //beforeCreate() {
-  //  this.getAssets()
-  //},
+  mounted() {
+    this.getAssets()
+  },
 
   computed: {
 
     assets: function () {
-      // TODO: make this synchronous and rely on this computed property to recompute when store changes ??
-      return this.getAssets().then(function(result){
-        if (result.error || !result.assets || !result.locations) {
-          return {} // TODO: maybe give an object with dummy values instead, to load into v-for??
+      var a = this.$store.state.assetsModule.assets
+      var locs = this.$store.state.locationsModule.locations
+      if (a === null || locs === null) {
+        return []
+      }
+
+      var file_access_token = tokens.getTokensFromStorage().file_access_token
+
+      for (let i = 0; i < a.length; i++) {
+        for (let j = 0; j < a[i].pictures.length; j++) {
+          a[i].pictures[j] += "?file_access_token=" + file_access_token
         }
-        //let a = result.assets
-        var a = this.$store.state.assetsModule.assets
-        var file_access_token = tokens.getTokensFromStorage().file_access_token
-
-        for (let i = 0; i < a.length; i++) {
-          for (let j = 0; j < a[i].pictures.length; j++) {
-            a[i].pictures[j] += "?file_access_token=" + file_access_token
-          }
-          for (let j = 0; j < a[i].invoices.length; j++) {
-            a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
-          }
-
-          var locs = this.$store.state.locationsModule.locations
-          var location_counts = a[i].location_counts
-          for (let k = 0; k < location_counts.length; k++) {
-            var loc = location_counts[k]
-            var curr = loc.location_id
-            var loc_desc = locs[curr].description
-            while ( locs[curr].parent !== null ) {
-              curr = locs[curr].parent
-              loc_desc = locs[curr].description + ' >> ' + loc_desc
-            }
-            location_counts[k].nesting = loc_desc
-
-          }
+        for (let j = 0; j < a[i].invoices.length; j++) {
+          a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
         }
-        //console.log(a)
-        return a
-      })
+
+        var location_counts = a[i].location_counts
+        for (let k = 0; k < location_counts.length; k++) {
+          var loc = location_counts[k]
+          var curr = loc.location_id
+          var loc_desc = locs[curr].description
+          while ( locs[curr].parent !== null ) {
+            curr = locs[curr].parent
+            loc_desc = locs[curr].description + ' >> ' + loc_desc
+          }
+          location_counts[k].nesting = loc_desc
+
+        }
+      }
+      return a
     },
 
     assetStyles: function () {
@@ -429,7 +419,6 @@ export default {
           picCountIcon:picCountIcon
         }
       }
-      //console.log(b)
       return b
     },
 
