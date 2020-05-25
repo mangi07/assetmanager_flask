@@ -348,9 +348,19 @@ export default {
         link = `${vi.pagination.next}${queryString}` 
       }
 
-      assetGetter.getPaginatedAssets(link)
+      locationGetter.getAllLocations()
         .then(function(result){
           vm.error = result.error;
+          if (result.error == null) {
+            var locs = result.data.locations
+            vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
+            return assetGetter.getPaginatedAssets(link, result.data.locations)
+          } else {
+            console.log('something')
+            return result
+          }
+        })
+        .then(function(result){
           if (result.error == null) {
             vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
             vi.pagination.prev = `${result.data.prev}${queryString}`
@@ -358,12 +368,9 @@ export default {
           } else {
             return {error:result.error}
           }
-          return locationGetter.getAllLocations()
+        }).catch( function(e) {
+          vm.error = "Promise rejection caught in getAssets()"
         })
-        .then(function(result){
-          var locs = result.data.locations
-          vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
-        }); // TODO: possibility of uncaught Promise rejection from locationGetter.getAllLocations() ??
     }
   },
   
@@ -375,35 +382,11 @@ export default {
 
     assets: function () {
       var a = this.$store.state.assetsModule.assets
-      var locs = this.$store.state.locationsModule.locations
-      if (a === null || locs === null) {
+      if (a === null) {
         return []
+      } else {
+        return a
       }
-
-      var file_access_token = tokens.getTokensFromStorage().file_access_token
-
-      for (let i = 0; i < a.length; i++) {
-        for (let j = 0; j < a[i].pictures.length; j++) {
-          a[i].pictures[j] += "?file_access_token=" + file_access_token
-        }
-        for (let j = 0; j < a[i].invoices.length; j++) {
-          a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
-        }
-
-        var location_counts = a[i].location_counts
-        for (let k = 0; k < location_counts.length; k++) {
-          var loc = location_counts[k]
-          var curr = loc.location_id
-          var loc_desc = locs[curr].description
-          while ( locs[curr].parent !== null ) {
-            curr = locs[curr].parent
-            loc_desc = locs[curr].description + ' >> ' + loc_desc
-          }
-          location_counts[k].nesting = loc_desc
-
-        }
-      }
-      return a
     },
 
     assetStyles: function () {
