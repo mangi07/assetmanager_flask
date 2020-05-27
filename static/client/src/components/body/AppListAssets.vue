@@ -362,7 +362,11 @@ export default {
         })
         .then(function(result){
           if (result.error == null) {
-            vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
+            if (event == 'new') {
+              vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
+            } else if (event == 'append') {
+              vi.$store.dispatch('assetsModule/appendAssetsAction', result)
+            }
             vi.pagination.prev = `${result.data.prev}${queryString}`
             vi.pagination.next = `${result.data.next}${queryString}`
           } else {
@@ -371,11 +375,26 @@ export default {
         }).catch( function(e) {
           vm.error = "Promise rejection caught in getAssets()"
         })
-    }
+    },
+    scroll () {
+      window.onscroll = () => {
+        let bottomOfWindow = document.documentElement.scrollTop +
+          window.innerHeight === document.documentElement.offsetHeight;
+
+        if (bottomOfWindow) {
+          //axios.get(`https://randomuser.me/api/`)
+          //  .then(response => {
+          //    this.persons.push(response.data.results[0]);
+          //  });
+          this.getAssets('append')
+        }
+      };
+    },
   },
   
   mounted() {
-    this.getAssets()
+    this.getAssets('new')
+    this.scroll()
   },
 
   computed: {

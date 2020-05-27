@@ -10,7 +10,7 @@ function addAssets (state, assets) {
 export const assetsModule = {
     namespaced: true,
     state: {
-        assets: null,
+        assets: [],
 				filterQueryString: null,
     },
     getters: {},
