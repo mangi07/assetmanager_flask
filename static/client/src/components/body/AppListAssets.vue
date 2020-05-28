@@ -381,11 +381,7 @@ export default {
         let bottomOfWindow = document.documentElement.scrollTop +
           window.innerHeight === document.documentElement.offsetHeight;
 
-        if (bottomOfWindow) {
-          //axios.get(`https://randomuser.me/api/`)
-          //  .then(response => {
-          //    this.persons.push(response.data.results[0]);
-          //  });
+        if (bottomOfWindow) { // TODO: If no more to list, then don't request more.
           this.getAssets('append')
         }
       };

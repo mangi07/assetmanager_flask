@@ -44,6 +44,9 @@ export default function getQueryString(filters) {
         if (query_str.endsWith('&')) {
             query_str = query_str.slice(0, -1)
         }
+        if (query_str === '?') {
+					return ''
+        }
         return query_str
     } 
 }

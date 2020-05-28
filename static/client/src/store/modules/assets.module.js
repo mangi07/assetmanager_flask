@@ -11,7 +11,7 @@ export const assetsModule = {
     namespaced: true,
     state: {
         assets: [],
-				filterQueryString: null,
+				filterQueryString: '',
     },
     getters: {},
     mutations: {

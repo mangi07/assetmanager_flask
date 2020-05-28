@@ -155,9 +155,8 @@ def get_asset_fars(ids):
             'account_description':acct_desc,
         }
         far_groups[a_id].append(far)
-    # TODO: remove this print
-    print(far_groups)
     return far_groups
+
 
 def get_asset_invoices(ids):
     """Given a list of ids, get a list of corresponding invoice entries from db."""
@@ -191,9 +190,8 @@ def get_asset_invoices(ids):
             'notes':notes,
         }
         invoice_groups[a_id].append(invoice)
-    # TODO: remove this print
-    print(invoice_groups)
     return invoice_groups
+
 
 def _get_pagination(page):
     limit = config.get_pagination_limit()
