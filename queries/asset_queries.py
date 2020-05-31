@@ -116,7 +116,6 @@ def get_asset_pictures(ids):
 
     for id, path in rows:
         pic_groups[id].append(host_url + "img/" + path)
-    print(pic_groups)
     return pic_groups
 
 def get_asset_fars(ids):

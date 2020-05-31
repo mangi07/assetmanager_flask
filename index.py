@@ -118,7 +118,6 @@ def list_assets(page=0):
             'asset.cost__gt': int(float(cost__gt)*config.get_precision_factor()) if cost__gt else None,
             'asset.cost__lt': int(float(cost__lt)*config.get_precision_factor()) if cost__lt else None,
         }
-        print(filters)
     except:
         return jsonify(error='Bad Request: malformed query params'), 400
 
@@ -132,6 +131,7 @@ def list_assets(page=0):
     prev = '/assets/' + str(max(page, 0)) + filters_str
     next = '/assets/' + str(page + 1) + filters_str
 
+    #import pdb; pdb.set_trace()
     return jsonify(
         msg='testing',
         filters=filters,

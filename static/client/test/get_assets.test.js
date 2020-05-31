@@ -20,7 +20,7 @@ describe("get_assets test", () => {
 
     it("should return json object with links to next and prev page, given path 'assets'", () => {
       return tokenUtils.requestTokens('a', 'a').then( () => {
-        return assetsAPI.getPaginatedAssets().then( (result) => {
+        assetsAPI.getPaginatedAssets().then( (result) => {
           expect(result.data).to.have.property('next')
           expect(result.data.next).to.be.a('string')
           expect(result.data).to.have.property('prev')
@@ -82,7 +82,7 @@ describe("get_assets test", () => {
     it("should list assets with location per asset", () => {
       return tokenUtils.requestTokens('a', 'a').then ( () => {
         var link = '/assets/0?location__eq=10'
-        return assetsAPI.getPaginatedAssets(link).then( (result) => {
+        assetsAPI.getPaginatedAssets(link).then( (result) => {
           expect(result.data).to.have.property('assets')
           expect(result.data.assets).to.be.an.instanceof(Object)
           

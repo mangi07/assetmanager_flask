@@ -15,33 +15,40 @@ describe("get_locations test", () => {
           expect(result.data.locations).to.be.an.instanceof(Object)
           expect(result.data).to.have.property('locations')
          
+//					let expectedLocations = 
+//						{"1":
+//							{"children":[ 
+//								{"2":{
+//									"children":[
+//										{"4":{
+//											"data":"subA-1"
+//										}}
+//									],
+//									"data":"subA"
+//								}},
+//								{"3":{
+//									"children":[
+//										{"5":{
+//											"data":"subB-1"
+//										}},
+//										{"6":{
+//											"data":"subB-2"
+//										}}
+//									],
+//									"data":"subB"
+//								}}
+//							],
+//							"data":"root"
+//							}
+//						}
+
 					let expectedLocations = 
-						{"1":
-							{"children":[ 
-								{"2":{
-									"children":[
-										{"4":{
-											"data":"subA-1"
-										}}
-									],
-									"data":"subA"
-								}},
-								{"3":{
-									"children":[
-										{"5":{
-											"data":"subB-1"
-										}},
-										{"6":{
-											"data":"subB-2"
-										}}
-									],
-									"data":"subB"
-								}}
-							],
-							"data":"root"
-							}
-						}
-					
+						{"1":{"description":"root","parent":null},
+						 "2":{"description":"subA","parent":1},
+						 "3":{"description":"subB","parent":1},
+						 "4":{"description":"subA-1","parent":2},
+						 "5":{"description":"subB-1","parent":3},
+						 "6":{"description":"subB-2","parent":3}}
 					let locations = JSON.stringify(result.data.locations)
 					expectedLocations = JSON.stringify(expectedLocations)
 					expect(locations).to.equal(expectedLocations)

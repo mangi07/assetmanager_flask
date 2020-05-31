@@ -401,7 +401,6 @@ class TestAssetQueries:
         """
         db._executescript(query)
         result = asset_queries.get_asset_invoices([1])
-        print(result)
         assert list(result[1][0].values()) == \
             [1,                              # invoice  id
              '1',                            # invoice number
