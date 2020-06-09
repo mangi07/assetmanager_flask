@@ -131,7 +131,6 @@ def list_assets(page=0):
     prev = '/assets/' + str(max(page, 0)) + filters_str
     next = '/assets/' + str(page + 1) + filters_str
 
-    #import pdb; pdb.set_trace()
     return jsonify(
         msg='testing',
         filters=filters,

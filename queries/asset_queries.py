@@ -138,7 +138,7 @@ def get_asset_fars(ids):
     res = db.query(query_select, params)
     rows = res.fetchall()
 
-    far_groups = {id:[] for id in ids}
+    far_groups = {id:{} for id in ids}
 
     for a_id, f_id, description, pdf, life, start_date, amount,\
         acct_id, acct_num, acct_desc in rows:
@@ -153,7 +153,7 @@ def get_asset_fars(ids):
             'account_number':acct_num,
             'account_description':acct_desc,
         }
-        far_groups[a_id].append(far)
+        far_groups[a_id] = far
     return far_groups
 
 
