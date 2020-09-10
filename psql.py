@@ -2,10 +2,10 @@ from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, crea
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from collections import namedtuple
+from functools import reduce
 
 engine = create_engine('sqlite:///db.sqlite3')
 Base = declarative_base()
-#MD = MetaData(bind=engine, reflect=True)
 
  
 class Asset(Base):
@@ -16,9 +16,6 @@ class Asset(Base):
     manufacturer = Column(Integer, ForeignKey('manufacturer.id'))
     manufacturer_rel = relationship("Manufacturer", back_populates="assets")
 
-    #loc_counts = relationship('Location', \
-    #    secondary='location_count', \
-    #    back_populates='location')
     locations = relationship("LocationCount", back_populates='asset_rel')
 
 
@@ -38,6 +35,7 @@ class LocationCount(Base):
     asset_rel = relationship("Asset", back_populates="locations")
     location_rel = relationship("Location", back_populates="assets")
 
+
 class Location(Base):
     __tablename__ = 'location'
     id = Column(Integer, primary_key=True)
@@ -45,9 +43,9 @@ class Location(Base):
     
     parent = Column(Integer, ForeignKey('location.id'))
     parent_rel = relationship("Location", remote_side=[id])
-    #children = relationship("Location", backref=backref('parent', remote_side=[id]))
 
     assets = relationship('LocationCount', back_populates='location_rel')
+
 
     def mtree(self):
         locs = []
@@ -57,6 +55,7 @@ class Location(Base):
             loc = loc.parent_rel
         return locs
 
+
     def _mtree2(self):
         root = None
         nodes = {}
@@ -65,20 +64,47 @@ class Location(Base):
 
         for loc in session.query(Location):
             nodes[loc.id] = Node(location=loc, children={})
+
         for loc in session.query(Location):
             p = loc.parent
             if p is not None:
-                nodes[p].children[loc.id] = loc
+                nodes[p].children[loc.id] = nodes[loc.id]
             else:
                 root = nodes[loc.id]
         return root
+
 
     def print_tree(self):
         session = Session.object_session(self)
         root = self._mtree2()
         print(root.location.description)
-        # TODO: print the actual tree
 
+        stack_A = []
+        stack_B = []
+
+        stack_A.append(root)
+
+        #curr = root
+        while len(stack_A) > 0:
+            curr = stack_A[-1]
+            tail_desc = curr.location.description + "(" + str(curr.location.id) + ")"
+            s = ''.join([x.location.description + "(" + str(x.location.id) + ")" + " => " for x in stack_B]) + tail_desc
+            print(s)
+            if len(curr.children) > 0:
+                stack_B.append(curr)
+                stack_A.extend(list(curr.children.values()))
+            else:
+                stack_A.pop()
+                if len(stack_A) == 0 or len(stack_B) == 0:
+                    break
+
+                while stack_A[-1] == stack_B[-1]:
+                    stack_A.pop()
+                    stack_B.pop()
+                    if len(stack_A) == 0 or len(stack_B) == 0:
+                        break
+                
+    
 Session = sessionmaker()
 Session.configure(bind=engine)
 session = Session()
