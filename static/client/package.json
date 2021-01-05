@@ -10,7 +10,7 @@
     "test:libs": "./node_modules/.bin/mocha --require @babel/register ./test/*.test.js"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.4.1",
     "core-js": "^2.6.11",
     "jquery": "^3.5.0",
