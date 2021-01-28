@@ -11,6 +11,7 @@
 <script>
 import navbar from './components/NavBar.vue'
 import appbody from './components/AppBody.vue'
+/* eslint-disable-next-line */
 import Vuex from 'vuex'
 
 export default {
