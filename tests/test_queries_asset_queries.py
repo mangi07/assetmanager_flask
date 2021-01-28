@@ -843,7 +843,7 @@ class TestAssetQueries:
         assert res[1]['location_counts'] == []
         assert res[1]['pictures'] == []
         assert res[1]['invoices'] == []
-        assert res[1]['far'] == {}
+        assert res[1]['far'] == []
 
     
     ##########################################################

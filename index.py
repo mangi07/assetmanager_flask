@@ -1,3 +1,5 @@
+import sys; print(sys.path);
+
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 #from flask_jwt import JWT, jwt_required, current_identity
@@ -9,6 +11,7 @@ import config
 from models.user import User
 from queries import asset_queries, location_queries
 from utils.file_access import FileGuardian, file_access_token_required
+from logger import log
 
 ##############################################
 # INIT WEB APP
@@ -22,6 +25,7 @@ app.debug = True
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 
 # TODO: read a config or environment so CORS is used only in development
+#app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 
 #jwt = JWT(app, user.User.authenticate, user.User.identity)
@@ -37,6 +41,7 @@ jwt = JWTManager(app)
 # AUTH ##############################################################
 @app.route('/login', methods=['POST'])
 def login():
+    #import pdb; pdb.set_trace()
     if not request.is_json:
         return jsonify({"error": "Missing JSON in request"}), 400
 
