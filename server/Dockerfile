@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # TODO: test production build
 
@@ -13,6 +13,8 @@ RUN apt-get update -y && apt-get upgrade -y
 # optional editing tools
 RUN if [ "$MODE" = "development" ] ; then \
 	apt install neovim -y ; \
+	apt install nodejs -y ; \
+	apt install npm -y ; \
 	fi
 
 
@@ -31,7 +33,8 @@ RUN mkdir -p /var/www/assetmanager/html
 RUN chmod -R 755 /var/www/assetmanager
 #COPY ./index.html /var/www/assetmanager/html/index.html
 COPY ./nginx_config/etc/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY ./nginx_config/etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-available/assetmanager.conf
+#COPY ./nginx_config/etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-available/assetmanager.conf
+COPY ./assetmanager.conf /etc/nginx/sites-available/assetmanager.conf
 RUN ln -s /etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-enabled/
 RUN rm /etc/nginx/sites-enabled/default
 # TODO: Will the following line be good for production mode as well?
@@ -54,8 +57,8 @@ RUN if [ "$MODE" = "production" ] ; then \
             -nodes \
             -out /etc/ssl/certs/nginx-selfsigned.crt \
             -keyout /etc/ssl/private/nginx-selfsigned.key \
-            -subj "/C=GU/ST=GU/L=Hagatna/O=Self/OU=Dev/CN=$request_domain"
-	#openssl dhparam -out /etc/nginx/dhparam.pem 4096
+            -subj "/C=GU/ST=GU/L=Hagatna/O=Self/OU=Dev/CN=$request_domain" ; \
+	#openssl dhparam -out /etc/nginx/dhparam.pem 4096 \
     fi
 
 
