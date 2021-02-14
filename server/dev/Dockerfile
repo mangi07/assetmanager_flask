@@ -4,6 +4,7 @@ RUN apt update -y && apt upgrade -y
 RUN apt install neovim -y ; \
 	apt install nodejs -y ; \
 	apt install npm -y ; \
+	apt install git -y ; \
 	apt install tree -y ;
 
 # ###############################################
@@ -16,7 +17,7 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./assetmanager.conf /etc/nginx/sites-available/assetmanager.conf
 RUN ln -s /etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-enabled/
 RUN rm /etc/nginx/sites-enabled/default
-COPY ./nginx_config/etc/nginx/dhparam.pem /etc/nginx/dhparam.pem
+COPY ./dhparam.pem /etc/nginx/dhparam.pem
 
 # ###############################################
 # get ssl certificate
@@ -31,9 +32,8 @@ RUN apt install openssl && \
             -nodes \
             -out /etc/ssl/certs/nginx-selfsigned.crt \
             -keyout /etc/ssl/private/nginx-selfsigned.key \
-            -subj "/C=GU/ST=GU/L=Hagatna/O=Self/OU=Dev/CN=$request_domain" ; \
+            -subj "/C=GU/ST=GU/L=Hagatna/O=Self/OU=Dev/CN=$request_domain" ;
 	#openssl dhparam -out /etc/nginx/dhparam.pem 4096 \
-    fi
 
 # ###############################################
 # start server
