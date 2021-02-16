@@ -2,7 +2,6 @@
 File: tokens.js
 Description: utlitity functions to manage api tokens
 Documentation: https://flask-jwt-extended.readthedocs.io/en/latest
-Note:
 ************************************************************** */
 
 /* eslint-disable no-unused-vars */
@@ -11,9 +10,10 @@ Note:
 
 import axios from 'axios';
 import atob from 'atob'
+import { config }  from '../config'
 
 const requester = axios.create({
-  baseURL: 'http://localhost:5000/',
+  baseURL: config.apiBaseUrl,
   //timeout: 1000,
 });
 

@@ -6,9 +6,10 @@ Change to use localStorage if users want to stay logged in after closing window.
 
 import axios from 'axios';
 import tokenUtils from "./tokens.js";
+import { config }  from '../config'
 
 const requester = axios.create({
-  baseURL: 'http://localhost:5000/',
+  baseURL: config.apiBaseUrl,
   //timeout: 1000,
 });
 

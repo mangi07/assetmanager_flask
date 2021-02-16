@@ -9,9 +9,10 @@ List all locations.
 
 import axios from 'axios';
 import tokenUtils from '../user/tokens'
+import { config }  from '../config'
 
 const requester = axios.create({
-  baseURL: 'http://localhost:5000/',
+  baseURL: config.apiBaseUrl,
   //timeout: 1000,
 });
 
