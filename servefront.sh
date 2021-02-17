@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd ./static/client/
+cd ./src/front
 npm run serve

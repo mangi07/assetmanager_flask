@@ -4,6 +4,8 @@ RUN apt update -y && apt upgrade -y
 RUN apt install neovim -y ; \
 	apt install nodejs -y ; \
 	apt install npm -y ; \
+	apt install python3-pip -y ; \
+	apt install python3-venv -y ; \
 	apt install git -y ; \
 	apt install tree -y ;
 
