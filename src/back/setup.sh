@@ -8,5 +8,6 @@ pip install -r requirements.txt
 #
 # Note: This database setup is currently also needed for front end tests, 
 # which at this point depend on connecting to a working server with database.
-source ./db/initdb.sh
-
+cd ./db
+source ./initdb.sh
+cd ..

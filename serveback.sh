@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ./src/back
+
 source flaskenv/bin/activate
 
 export FLASK_APP=index.py
