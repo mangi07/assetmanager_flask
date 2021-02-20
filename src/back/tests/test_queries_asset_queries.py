@@ -15,8 +15,8 @@ from queries.query_utils import MyDB
 
 @pytest.fixture
 def host():
-    asset_queries._get_host_url = Mock()
-    asset_queries._get_host_url.return_value = 'host.com/'
+    config.get_host_url = Mock()
+    config.get_host_url.return_value = 'host.com/'
 
 @pytest.fixture
 def precision():

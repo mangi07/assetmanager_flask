@@ -15,6 +15,7 @@ from queries.query_utils import (
     list_receiving_statuses,
 )
 from queries.location_queries import Locations
+import config
 from flask import request
 import sqlite3
 import config
@@ -90,16 +91,12 @@ def get_location_counts(filters=None):
     return asset_groups
 
 
-def _get_host_url():
-    return request.host_url
-
-
 def get_asset_pictures(ids):
     """Given a list of ids, get a list of corresponding pictures entries from db."""
     if len(ids) == 0:
         return {}
     
-    host_url = _get_host_url()
+    host_url = config.get_host_url()
 
     query_select = """
         select asset_picture.asset, picture.file_path from asset_picture
@@ -164,7 +161,7 @@ def get_asset_invoices(ids):
     if len(ids) == 0:
         return {}
     
-    host_url = _get_host_url()
+    host_url = config.get_host_url()
 
     query_select = """
         select asset_invoice.asset, invoice.id, invoice.number, invoice.file_path,
