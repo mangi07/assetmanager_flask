@@ -6,6 +6,10 @@
       <label for="cost-lt">Max Cost</label>
       <input id="cost-lt" type="number" placeholder="0.00" step="0.01" min="0" v-model="filters.cost__lt">
     </div>
+    <div>
+      <label for="desc-contains">Description Contains</label>
+      <input id="desc-contains" type="text" v-model="filters.desc__contains">
+    </div>
     <div><button id="submit" @click="getAssets">List Assets</button></div>
     <div>{{ ui.data.error }}</div>
   </div>
@@ -22,6 +26,7 @@ export default {
     return {
       filters: {
         cost__lt: null,
+        desc__contains: null
       },
       ui: {
         data: {

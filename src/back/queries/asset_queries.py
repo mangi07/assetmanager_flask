@@ -19,7 +19,7 @@ import config
 from flask import request
 import sqlite3
 import config
-
+from logger import log
 
 def get_asset_locations(ids):
     """Given a list of ids, get a list of corresponding location entries from db."""
@@ -288,7 +288,9 @@ def get_assets(page=0, filters={}):
         filters['asset.id__includes'] = list(location_groups.keys())
     
     query_string, params = _get_asset_query_string(page, filters)
-    
+    log(query_string)
+    log(params)
+
     # Run db query
     db = MyDB()
     res = db.query(query_string, params)
