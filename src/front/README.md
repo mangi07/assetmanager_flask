@@ -3,11 +3,21 @@
 ## Project setup
 ```
 npm install
+
+or with low memory constraints on server, example for limiting node to 200 MB:
+
+npm install --max-old-space-size=200
+
 ```
 
 ### Compiles and hot-reloads for development server
 ```
 npm run serve
+
+or for low memory constraints on server, use
+
+npm run serve-low-mem
+
 ```
 
 ### Compiles and runs libraries for quick tests in node
