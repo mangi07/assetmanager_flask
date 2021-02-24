@@ -3,8 +3,12 @@
   <div>
     <p>Filter Assets</p>
     <div>
-      <label for="cost-lt">Max Cost</label>
+      <label for="cost-lt">Cost Less Than</label>
       <input id="cost-lt" type="number" placeholder="0.00" step="0.01" min="0" v-model="filters.cost__lt">
+    </div>
+    <div>
+      <label for="cost-gt">Cost Greater Than</label>
+      <input id="cost-gt" type="number" placeholder="0.00" step="0.01" min="0" v-model="filters.cost__gt">
     </div>
     <div>
       <label for="desc-contains">Description Contains</label>
@@ -26,6 +30,7 @@ export default {
     return {
       filters: {
         cost__lt: null,
+        cost__gt: null,
         desc__contains: null
       },
       ui: {
