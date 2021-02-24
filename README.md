@@ -15,5 +15,5 @@ Run servefront.sh script
 
 
 ### Start Dev Back End
-Run serveapi.sh script
+Run serveback.sh script
 

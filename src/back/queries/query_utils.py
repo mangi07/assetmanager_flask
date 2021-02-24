@@ -1,7 +1,7 @@
 # #########################################
 # General purpose query utility functions.
 # #########################################
-
+from  logger import log
 import sqlite3
 from .db_path import DB_PATH
 
@@ -185,7 +185,7 @@ def filters_to_sql(filters):
         filter_str += f'{t}.{c} {filter_operators[f]} {prepared} AND '
         params_where += v if type(v) is list else [v]
     filter_str = filter_str.strip(' AND ')
-    
+    log(params_where)
     return filter_str, params_where
 
 ################################################

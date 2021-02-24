@@ -1,4 +1,3 @@
-import sys; print(sys.path);
 
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
@@ -113,6 +112,7 @@ def list_assets(page=0):
     # get filters - TODO: may want to move this to asset_queries (??) by passing request.args
     cost__gt = request.args.get('cost__gt', None)
     cost__lt = request.args.get('cost__lt', None)
+    desc__contains = request.args.get('desc__contains', None)
 
     # get file access token - if None, image links provided in this response may return 404 forbidden
     file_access_token = request.args.get('file_access_token', None)
@@ -122,6 +122,7 @@ def list_assets(page=0):
             'location': request.args.get('location', None),
             'asset.cost__gt': int(float(cost__gt)*config.get_precision_factor()) if cost__gt else None,
             'asset.cost__lt': int(float(cost__lt)*config.get_precision_factor()) if cost__lt else None,
+            'asset.description__contains': str(desc__contains) if desc__contains else None,
         }
         print(filters)
     except:
