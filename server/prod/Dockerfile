@@ -2,53 +2,37 @@ FROM ubuntu:20.04
 
 # TODO: test production build
 
-ARG MODE
 
 RUN apt-get update -y && apt-get upgrade -y
 
 #RUN apt-get install software-properties-common -y # may need for production build?
-#RUN apt-get update # may need for production build?
-
-# ###############################################
-# optional editing tools
-RUN if [ "$MODE" = "development" ] ; then \
-	apt install neovim -y ; \
-	apt install nodejs -y ; \
-	apt install npm -y ; \
-	fi
-
 
 # ###############################################
 # install ssl for nginx
-RUN if [ "$MODE" = "production" ] ; then \
-	add-apt-repository ppa:certbot/certbot -y && apt-get update -y && \
-	apt install python-certbot-nginx -y ; \
-	fi
+add-apt-repository ppa:certbot/certbot -y && apt-get update -y && \
+apt install python-certbot-nginx -y ; \
+
 
 # ###############################################
 # install and configure nginx
-# RUN apt install systemd # may not work in docker container because of how docker runs
 RUN apt install nginx -y
 RUN mkdir -p /var/www/assetmanager/html
 RUN chmod -R 755 /var/www/assetmanager
-#COPY ./index.html /var/www/assetmanager/html/index.html
-COPY ./nginx_config/etc/nginx/nginx.conf /etc/nginx/nginx.conf
-#COPY ./nginx_config/etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-available/assetmanager.conf
+COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./assetmanager.conf /etc/nginx/sites-available/assetmanager.conf
 RUN ln -s /etc/nginx/sites-available/assetmanager.conf /etc/nginx/sites-enabled/
 RUN rm /etc/nginx/sites-enabled/default
-# TODO: Will the following line be good for production mode as well?
-COPY ./nginx_config/etc/nginx/dhparam.pem /etc/nginx/dhparam.pem
 
 # ###############################################
 # get ssl certificate
 ARG request_domain
 #ENV request_domain=$request_domain
 
+# TODO: Will the following line be good for production mode as well?
+COPY ./dhparam.pem /etc/nginx/dhparam.pem
+
 # TODO: use aws elastic IP and try to get free domain
-RUN if [ "$MODE" = "production" ] ; then \
-	certbot --register-unsafely-without-email --nginx -d $request_domain ; \
-    elif [ "$MODE" = "development" ] ; then \
+RUN certbot --register-unsafely-without-email --nginx -d $request_domain ; \
 	apt-get install openssl && \
 	openssl req -newkey rsa:4096 \
             -x509 \

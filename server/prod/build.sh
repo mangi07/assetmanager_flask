@@ -12,10 +12,6 @@ echo "${x/'<<domain>>'/$address}" > $destConfPath
 echo "Finished adding $destConfPath..."
 
 
-echo -n "Enter (1) development mode or (2) production mode: "
-read mode
-if [ "$mode"="1" ] ; then mode=development ; elif [ "$mode"="2" ] ; then mode=production ; fi
-
-echo "Building docker image for $mode mode..."
-sudo docker build --build-arg request_domain=$address --build-arg MODE=$mode -t bu-image .
+echo "Building docker image for production server..."
+sudo docker build --build-arg request_domain=$address -t bu-prod-image .
 
