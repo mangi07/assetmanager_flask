@@ -149,12 +149,14 @@ def _validate_filters(fs, filter_operators):
         schemas[table] = schema
 
     # db data types
-    types = {'INTEGER':int, 'TEXT':str}
+    types = {'INTEGER':int, 'TEXT':str, }
 
     # validation
     for t, c, f, v in fs:
         assert f in filter_operators, f"No equivalent db operator found for filter {f}!"
         assert c in schemas[t], f"Column {c} not in table {t}!"
+        if f == 'is_null' and v == '':
+            continue
         expected = types[schemas[t][c]] if f != 'includes' else list
         actual = type(v)
         assert expected == actual, \
@@ -174,14 +176,19 @@ def filters_to_sql(filters):
     filter_str = ""
     params_where = []
     one_or_more = False
-    filter_operators = {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN'}
+    filter_operators = {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN', 'is_null':'IS NULL'}
 
     fs = [_parse_filter(k, v) for k, v in filters.items()] if len(filters) > 0 else []
     _validate_filters(fs, filter_operators)
 
     for t, c, f, v in fs:
         v = f'%{v}%' if f == 'contains' else v
-        prepared = f"({', '.join('?'*len(v))})" if f == 'includes' else '?'
+        if f == 'includes':
+            prepared = f"({', '.join('?'*len(v))})"
+        elif f == 'is_null':
+            prepared = ''
+        else:
+            prepared = '?'
         filter_str += f'{t}.{c} {filter_operators[f]} {prepared} AND '
         params_where += v if type(v) is list else [v]
     filter_str = filter_str.strip(' AND ')

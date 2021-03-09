@@ -9,7 +9,7 @@ import pytest
 
 @pytest.fixture
 def filter_operators():
-    return {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN'}
+    return {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN', 'is_null': None}
 
 
 class TestQueryUtils:
@@ -160,7 +160,20 @@ class TestQueryUtils:
         assert sql == "asset.description LIKE ?"
         assert params == ["%this thing%"]
 
+    def test_filters_to_sql_8(self, setup_mydb):
+        """Returns correctly given valid 'includes' filter."""
+        filters = {'asset.asset_id__includes':[0, 1]}
+        sql, params = query_utils.filters_to_sql(filters)
+        assert sql == "asset.asset_id IN (?, ?)"
+        assert params == [0, 1]
     
+    def test_filters_to_sql_9(self, setup_mydb):
+        """Returns correctly given valid 'not_null' filter."""
+        filters = {'asset.is_current__is_null':''}
+        sql, params = query_utils.filters_to_sql(filters)
+        assert sql == "asset.is_current IS NULL"
+        assert params == ['']
+
     #######################################
     # test get_max_id
     #######################################
