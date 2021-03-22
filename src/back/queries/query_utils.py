@@ -149,12 +149,14 @@ def _validate_filters(fs, filter_operators):
         schemas[table] = schema
 
     # db data types
-    types = {'INTEGER':int, 'TEXT':str}
+    types = {'INTEGER':int, 'TEXT':str, }
 
     # validation
     for t, c, f, v in fs:
         assert f in filter_operators, f"No equivalent db operator found for filter {f}!"
         assert c in schemas[t], f"Column {c} not in table {t}!"
+        if f == 'is_null' and v == '':
+            continue
         expected = types[schemas[t][c]] if f != 'includes' else list
         actual = type(v)
         assert expected == actual, \

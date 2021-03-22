@@ -9,7 +9,7 @@ import pytest
 
 @pytest.fixture
 def filter_operators():
-    return {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN'}
+    return {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN', 'is_null': None}
 
 
 class TestQueryUtils:
@@ -180,7 +180,6 @@ class TestQueryUtils:
         sql, params = query_utils.filters_to_sql(filters)
         assert sql == sql_expected
         assert params == params_expected
-
     
     #######################################
     # test get_max_id
