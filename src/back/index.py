@@ -114,6 +114,25 @@ def list_assets(page=0):
     cost__lt = request.args.get('cost__lt', None)
     desc__contains = request.args.get('desc__contains', None)
 
+    past = request.args.get('past', None)
+    present = request.args.get('present', None)
+    future = request.args.get('future', None)
+    if past == 'true' and present == 'true' and future == 'true':
+        is_current__includes = None
+        is_current__is_null = None
+    else:
+        is_current__includes = []
+        if past == 'true':
+            is_current__includes.append(0)
+        if present == 'true':
+            is_current__includes.append(1)
+        if is_current__includes == []:
+            is_current__includes = None
+
+    is_current__is_null = 1 if future == 'true' else None
+    log(is_current__includes)
+    log(is_current__is_null)
+
     # get file access token - if None, image links provided in this response may return 404 forbidden
     file_access_token = request.args.get('file_access_token', None)
 
@@ -123,8 +142,10 @@ def list_assets(page=0):
             'asset.cost__gt': int(float(cost__gt)*config.get_precision_factor()) if cost__gt else None,
             'asset.cost__lt': int(float(cost__lt)*config.get_precision_factor()) if cost__lt else None,
             'asset.description__contains': str(desc__contains) if desc__contains else None,
+            'asset.is_current__includes': is_current__includes,
+            'asset.is_current__is_null': is_current__is_null,
         }
-        print(filters)
+        log(filters)
     except:
         return jsonify(error='Bad Request: malformed query params'), 400
 

@@ -160,6 +160,27 @@ class TestQueryUtils:
         assert sql == "asset.description LIKE ?"
         assert params == ["%this thing%"]
 
+    @pytest.mark.parametrize("is_current__includes, is_current__is_null, sql_expected, params_expected", 
+            [
+                (None, None, "", []),
+                ([0,1], None, "asset.is_current IN (?, ?)", [0, 1]),
+                ([0], None, "asset.is_current IN (?)", [0]),
+                ([1], None, "asset.is_current IN (?)", [1]),
+                ([0,1], None, "asset.is_current IN (?, ?)", [0,1]),
+                ([1,1], None, "asset.is_current IN (?, ?)", [1,1]),
+                ([0,0], None, "asset.is_current IN (?, ?)", [0,0]),
+                (None, 0, "asset.is_current IS NULL", None),
+            ]
+        )
+    def test_filters_to_sql_8(self, setup_mydb, 
+            is_current__includes, is_current__is_null, sql_expected, params_expected):
+        """Returns correct sql given filter(s) on is_current."""
+        filters = {'asset.is_current__includes':is_current__includes, 
+                'asset.is_current__is_null':is_current__is_null}
+        sql, params = query_utils.filters_to_sql(filters)
+        assert sql == sql_expected
+        assert params == params_expected
+
     
     #######################################
     # test get_max_id

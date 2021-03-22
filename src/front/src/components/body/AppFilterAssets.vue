@@ -14,6 +14,37 @@
       <label for="desc-contains">Description Contains</label>
       <input id="desc-contains" type="text" v-model="filters.desc__contains">
     </div>
+
+    <div>
+      <label for="present">Present (Current) Asset</label>
+      <input id="present" type="checkbox" checked  v-model="filters.present">
+    </div>
+    <div>
+      <label for="past">Past Asset</label>
+      <input id="present" type="checkbox" v-model="filters.past">
+    </div>
+    <div>
+      <label for="future">Future Asset</label>
+      <input id="future" type="checkbox" v-model="filters.future">
+    </div>
+
+    <div>
+      <label for="awaiting_invoice">Awaiting Invoice</label>
+      <input id="awaiting_invoice" type="checkbox" v-model="filters.awaiting_invoice">
+    </div>
+    <div>
+      <label for="partial_payment">Partial Payment</label>
+      <input id="partial_payment" type="checkbox" v-model="filters.partial_payment">
+    </div>
+    <div>
+      <label for="paid_in_full">Paid In Full</label>
+      <input id="paid_in_full" type="checkbox" v-model="filters.paid_in_full">
+    </div>
+    <div>
+      <label for="donated">Donated</label>
+      <input id="donated" type="checkbox" v-model="filters.donated">
+    </div>
+
     <div><button id="submit" @click="getAssets">List Assets</button></div>
     <div>{{ ui.data.error }}</div>
   </div>
@@ -31,7 +62,16 @@ export default {
       filters: {
         cost__lt: null,
         cost__gt: null,
-        desc__contains: null
+        desc__contains: null,
+
+	      present: true,
+	      past: false,
+	      future: false,
+
+        awaiting_invoice: false,
+        partial_payment: false,
+        paid_in_full: false,
+        donated: false,
       },
       ui: {
         data: {

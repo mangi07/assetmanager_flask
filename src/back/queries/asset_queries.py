@@ -261,7 +261,8 @@ def _get_asset_query_string(page=0, filters=None):
         
         query_where += filter_str
         query_where = query_where.strip(' AND ')
-        params_where += tuple(params)
+        if params is not None:
+            params_where += tuple(params)
 
         if query_where == " WHERE ":
             query_where = ""

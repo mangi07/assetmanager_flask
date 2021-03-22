@@ -174,7 +174,7 @@ def filters_to_sql(filters):
     filter_str = ""
     params_where = []
     one_or_more = False
-    filter_operators = {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN'}
+    filter_operators = {'eq':'=', 'gt':'>', 'lt':'<', 'contains':'LIKE', 'includes':'IN', 'is_null': 'IS NULL'}
 
     fs = [_parse_filter(k, v) for k, v in filters.items()] if len(filters) > 0 else []
     _validate_filters(fs, filter_operators)
@@ -182,8 +182,13 @@ def filters_to_sql(filters):
     for t, c, f, v in fs:
         v = f'%{v}%' if f == 'contains' else v
         prepared = f"({', '.join('?'*len(v))})" if f == 'includes' else '?'
+        prepared = "" if f == 'is_null' else prepared
         filter_str += f'{t}.{c} {filter_operators[f]} {prepared} AND '
-        params_where += v if type(v) is list else [v]
+        if f == 'is_null':
+            params_where = None
+            continue
+        else:
+            params_where += v if type(v) is list else [v]
     filter_str = filter_str.strip(' AND ')
     log(params_where)
     return filter_str, params_where
