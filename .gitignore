@@ -4,3 +4,7 @@ swagger/*
 server/secrets/*
 server/nginx_config/etc/nginx/sites-available/*
 
+src/back/log.txt
+src/back/db/db.sqlite3
+src/back/tests/test_db/db.sqlite3
+dev.bat

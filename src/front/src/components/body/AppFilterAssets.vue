@@ -63,11 +63,11 @@ export default {
         cost__lt: null,
         cost__gt: null,
         desc__contains: null,
-
+        
 	      present: true,
 	      past: false,
-	      future: false,
-
+        future: false,
+        
         awaiting_invoice: false,
         partial_payment: false,
         paid_in_full: false,
