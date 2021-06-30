@@ -2,6 +2,12 @@
 
 ## Project setup
 ```
+Firstly, copy file 
+    ./src/js/example_config.js to 
+    ./src/js/config.js
+and follow example's suggestions to modify newly created ./src/js/config.js to your liking.
+
+
 npm install
 
 or with low memory constraints on server, example for limiting node to 200 MB:

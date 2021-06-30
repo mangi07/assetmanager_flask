@@ -3,11 +3,15 @@
 cd ./src/back
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    source flaskenv/bin/activate
-    echo "Activating python virtual environment for linux host system."
+    if [[ -z ${VIRTUAL_ENV+x} ]]; then
+        source flaskenv/bin/activate
+        echo "Activated python virtual environment for linux host system."
+    fi
 elif [[ "$OSTYPE" == "msys" ]]; then
-    source flaskenv/Scripts/activate
-    echo "Activating python virtual environment for msys (Windows) host system."
+    if [[ -z ${VIRTUAL_ENV+x} ]]; then
+        source flaskenv/Scripts/activate
+        echo "Activated python virtual environment for msys (Windows) host system."
+    fi
 fi
 
 
