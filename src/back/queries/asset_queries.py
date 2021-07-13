@@ -113,7 +113,6 @@ def get_asset_pictures(ids):
 
     for id, path in rows:
         pic_groups[id].append(host_url + "img/" + path)
-    print(pic_groups)
     return pic_groups
 
 def get_asset_fars(ids):
@@ -152,8 +151,6 @@ def get_asset_fars(ids):
             'account_description':acct_desc,
         }
         far_groups[a_id].append(far)
-    # TODO: remove this print
-    print(far_groups)
     return far_groups
 
 def get_asset_invoices(ids):
@@ -188,8 +185,6 @@ def get_asset_invoices(ids):
             'notes':notes,
         }
         invoice_groups[a_id].append(invoice)
-    # TODO: remove this print
-    print(invoice_groups)
     return invoice_groups
 
 def _get_pagination(page):

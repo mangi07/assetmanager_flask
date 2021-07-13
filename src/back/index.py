@@ -2,9 +2,13 @@
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 #from flask_jwt import JWT, jwt_required, current_identity
+#from flask_jwt_extended import (JWTManager, create_access_token,
+#                                create_refresh_token, get_jwt_identity,
+#                                jwt_refresh_token_required, jwt_required)
+# above import migrated to:
 from flask_jwt_extended import (JWTManager, create_access_token,
                                 create_refresh_token, get_jwt_identity,
-                                jwt_refresh_token_required, jwt_required)
+                                jwt_required)
 
 import config
 from models.user import User
@@ -71,7 +75,8 @@ def identity(username):
 
 
 @app.route('/refresh', methods=['POST'])
-@jwt_refresh_token_required
+#@jwt_refresh_token_required -- migrated from this to:
+@jwt_required(refresh=True)
 def refresh():
     current_identity = get_jwt_identity()
     username = current_identity['username']
@@ -89,7 +94,8 @@ def refresh():
         return jsonify({"error":"This user could not be found."})
 
 @app.route('/user')
-@jwt_required
+#@jwt_required -- migrated from this to:
+@jwt_required()
 def user():
     current_identity = get_jwt_identity()
     return jsonify(current_identity)
@@ -107,7 +113,8 @@ def send_static_files(path):
 # ASSETS ##############################################################
 @app.route("/assets/<int:page>")
 @app.route("/assets")
-@jwt_required 
+#@jwt_required -- migrated from this to:
+@jwt_required()
 def list_assets(page=0):
     # get filters - TODO: may want to move this to asset_queries (??) by passing request.args
     cost__gt = request.args.get('cost__gt', None)
@@ -192,7 +199,8 @@ def get_file(path):
 
 # LOCATIONS ##############################################################
 @app.route("/locations")
-@jwt_required 
+#@jwt_required -- migrated from this to:
+@jwt_required()
 def list_locations():
    
     # execute query

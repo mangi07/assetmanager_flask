@@ -1,6 +1,6 @@
-Flask==1.1.1
-flask-jwt-extended==3.25.0
+Flask==2.0.1
+flask-jwt-extended==4.2.3
 Flask-CORS==3.0.8
 pytest==5.2.1
-cryptography==2.8
+cryptography==3.1.1
 treelib==1.5.5

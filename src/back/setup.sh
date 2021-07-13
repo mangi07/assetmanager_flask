@@ -14,6 +14,16 @@ elif [[ "$OSTYPE" == "msys" ]]; then
     source ./flaskenv/Scripts/activate
     pip install -r requirements.txt
 
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+    echo "Creating python virtual environment for cygwin (Windows) host system."
+
+    python3 -m venv --without-pip ./flaskenv 
+    source ./flaskenv/bin/activate
+    curl https://bootstrap.pypa.io/get-pip.py | python3
+    deactivate
+    source ./flaskenv/bin/activate
+    ./flaskenv/bin/pip3 install -r requirements.txt # Try to safeguard against project required packages being installed globally.
+
 fi
 
 # Create the database using the scripts in the db folder.
