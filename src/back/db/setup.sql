@@ -67,9 +67,9 @@ CREATE TABLE IF NOT EXISTS "asset"
     [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     [asset_id] TEXT NOT NULL,
     [description] TEXT NOT NULL,
-    [is_current] INTEGER,
-    [requisition] INTEGER, -- foreign key to requisition, either null, awaiting invoice, partial payment, paid in full, or donated
-    [receiving] INTEGER, -- foreign key to receiving, either null, shipped, received, or placed
+    [is_current] INTEGER NOT NULL DEFAULT 2, -- 0: disposed/retired/salvaged, 1: in Harvest's possession, 2: awaiting assignment indicating status of possession (possibly unknown status or not yet received)
+    [requisition] INTEGER NOT NULL DEFAULT 5, -- foreign key to requisition, either awaiting invoice, partial payment, paid in full, donated, or unspecified
+    [receiving] INTEGER NOT NULL DEFAULT 4, -- foreign key to receiving, shipped, received, or placed, or unspecified
     [category_1] INTEGER, -- foreign key to category
     [category_2] INTEGER, -- foreign key to category
     [model_number] TEXT,
@@ -226,6 +226,6 @@ CREATE TABLE IF NOT EXISTS "asset_picture"
 
 
 -- set up requisition and receiving lookup tables
-insert into requisition (status) values ('awaiting invoice'),('partial payment'),('paid in full'),('donated');
+insert into requisition (status) values ('awaiting invoice'),('partial payment'),('paid in full'),('donated'),('unspecified');
 
-insert into receiving (status) values ('shipped'), ('received'), ('placed');
+insert into receiving (status) values ('shipped'), ('received'), ('placed'),('unspecified');

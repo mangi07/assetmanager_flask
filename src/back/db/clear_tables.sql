@@ -24,6 +24,6 @@ delete from "requisition";
 delete from "receiving";
 
 -- set up requisition and receiving lookup tables
-insert into requisition (status) values ('awaiting invoice'),('partial payment'),('paid in full'),('donated');
+insert into requisition (status) values ('awaiting invoice'),('partial payment'),('paid in full'),('donated'),('unspecified');
 
-insert into receiving (status) values ('shipped'), ('received'), ('placed');
+insert into receiving (status) values ('shipped'), ('received'), ('placed'),('unspecified');

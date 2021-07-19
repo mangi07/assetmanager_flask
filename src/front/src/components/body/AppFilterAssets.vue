@@ -45,6 +45,12 @@
       <input id="donated" type="checkbox" v-model="filters.donated">
     </div>
 
+    <!-- requisition and receiving statuses -->
+    <div>
+      <label for="shipped">Shipped</label>
+      <input id="shipped" type="checkbox" v-model="filters.shipped">
+    </div>
+
     <div><button id="submit" @click="getAssets">List Assets</button></div>
     <div>{{ ui.data.error }}</div>
   </div>
@@ -72,6 +78,8 @@ export default {
         partial_payment: false,
         paid_in_full: false,
         donated: false,
+
+        shipped: true,
       },
       ui: {
         data: {

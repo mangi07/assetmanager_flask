@@ -40,7 +40,7 @@ values
     1000*10000000000, null, 10000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    4, '000004', 'test 4', 1, 3, null, 1, null,
+    4, '000004', 'test 4', 2, 5, 4, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
@@ -50,17 +50,17 @@ values
     1000*10000000000, null, 10000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    6, '000006', 'test 6', 1, null, null, 1, null,
+    6, '000006', 'test 6', 1, 5, 4, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    7, '000007', 'test 7', 1, null, null, 1, null,
+    7, '000007', 'test 7', 1, 5, 4, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 ),
 (
-    8, '000008', 'test 8', 1, null, null, 1, null,
+    8, '000008', 'test 8', 1, 5, 4, 1, null,
     '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
     500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
 );
