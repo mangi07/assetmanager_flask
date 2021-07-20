@@ -26,10 +26,10 @@ nnoremap < 3<
 nnoremap > 3>
 vmap gx <Plug>NetrwBrowseXVis
 nmap gx <Plug>NetrwBrowseX
-nnoremap <silent> <Plug>(-fzf-complete-finish) a
-nnoremap <Plug>(-fzf-:) :
-nnoremap <Plug>(-fzf-/) /
 nnoremap <Plug>(-fzf-vim-do) :execute g:__fzf_command
+nnoremap <Plug>(-fzf-/) /
+nnoremap <Plug>(-fzf-:) :
+nnoremap <silent> <Plug>(-fzf-complete-finish) a
 vnoremap <silent> <Plug>NetrwBrowseXVis :call netrw#BrowseXVis()
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))
 onoremap <silent> <Plug>(fzf-maps-o) :call fzf#vim#maps('o', 0)
@@ -74,7 +74,7 @@ endif
 set shortmess=aoO
 argglobal
 %argdel
-edit src/back/utils/filters.py
+edit src/back/db/seed.sql
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -84,9 +84,57 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
+let s:cpo_save=&cpo
+set cpo&vim
+inoremap <buffer> <C-C>R :call sqlcomplete#Map("resetCache")
+inoremap <buffer> <Left> =sqlcomplete#DrillOutOfColumns()
+inoremap <buffer> <Right> =sqlcomplete#DrillIntoTable()
+inoremap <buffer> <C-C>L :call sqlcomplete#Map("column_csv")
+inoremap <buffer> <C-C>l :call sqlcomplete#Map("column_csv")
+inoremap <buffer> <C-C>c :call sqlcomplete#Map("column")
+inoremap <buffer> <C-C>v :call sqlcomplete#Map("view")
+inoremap <buffer> <C-C>p :call sqlcomplete#Map("procedure")
+inoremap <buffer> <C-C>t :call sqlcomplete#Map("table")
+inoremap <buffer> <C-C>s :call sqlcomplete#Map("sqlStatement\\w*")
+inoremap <buffer> <C-C>T :call sqlcomplete#Map("sqlType\\w*")
+inoremap <buffer> <C-C>o :call sqlcomplete#Map("sqlOption\\w*")
+inoremap <buffer> <C-C>f :call sqlcomplete#Map("sqlFunction\\w*")
+inoremap <buffer> <C-C>k :call sqlcomplete#Map("sqlKeyword\\w*")
+inoremap <buffer> <C-C>a :call sqlcomplete#Map("syntax")
+xnoremap <buffer> <silent> [" :exec "normal! gv"|call search('\(^\s*\(--\|\/\/\|\*\|\/\*\|\*\/\).*\n\)\(^\s*\(--\|\/\/\|\*\|\/\*\|\*\/\)\)\@!', "W" )
+nnoremap <buffer> <silent> [" :call search('\(^\s*\(--\|\/\/\|\*\|\/\*\|\*\/\).*\n\)\(^\s*\(--\|\/\/\|\*\|\/\*\|\*\/\)\)\@!', "W" )
+xnoremap <buffer> <silent> [{ ?\c^\s*\(\(create\)\s\+\(or\s\+replace\s\+\)\{,1}\)\{,1}\<\(function\|procedure\|event\|\(existing\|global\s\+temporary\s\+\)\{,1}table\|trigger\|schema\|service\|publication\|database\|datatype\|domain\|index\|subscription\|synchronization\|view\|variable\)\>
+nnoremap <buffer> <silent> [{ :call search('\c^\s*\(\(create\)\s\+\(or\s\+replace\s\+\)\{,1}\)\{,1}\<\(function\|procedure\|event\|\(existing\|global\s\+temporary\s\+\)\{,1}table\|trigger\|schema\|service\|publication\|database\|datatype\|domain\|index\|subscription\|synchronization\|view\|variable\)\>', 'bW')
+xnoremap <buffer> <silent> [] :exec "normal! gv"|call search('\c^\s*end\W*$', 'bW' )
+xnoremap <buffer> <silent> [[ :exec "normal! gv"|call search('\c^\s*begin\>', 'bW' )
+nnoremap <buffer> <silent> [] :call search('\c^\s*end\W*$', 'bW' )
+nnoremap <buffer> <silent> [[ :call search('\c^\s*begin\>', 'bW' )
+xnoremap <buffer> <silent> ]" :exec "normal! gv"|call search('^\(\s*\(--\|\/\/\|\*\|\/\*\|\*\/\).*\n\)\@<!\(\s*\(--\|\/\/\|\*\|\/\*\|\*\/\)\)', "W" )
+nnoremap <buffer> <silent> ]" :call search('^\(\s*\(--\|\/\/\|\*\|\/\*\|\*\/\).*\n\)\@<!\(\s*\(--\|\/\/\|\*\|\/\*\|\*\/\)\)', "W" )
+xnoremap <buffer> <silent> ]} /\c^\s*\(\(create\)\s\+\(or\s\+replace\s\+\)\{,1}\)\{,1}\<\(function\|procedure\|event\|\(existing\|global\s\+temporary\s\+\)\{,1}table\|trigger\|schema\|service\|publication\|database\|datatype\|domain\|index\|subscription\|synchronization\|view\|variable\)\>
+nnoremap <buffer> <silent> ]} :call search('\c^\s*\(\(create\)\s\+\(or\s\+replace\s\+\)\{,1}\)\{,1}\<\(function\|procedure\|event\|\(existing\|global\s\+temporary\s\+\)\{,1}table\|trigger\|schema\|service\|publication\|database\|datatype\|domain\|index\|subscription\|synchronization\|view\|variable\)\>', 'W')
+xnoremap <buffer> <silent> ][ :exec "normal! gv"|call search('\c^\s*end\W*$', 'W' )
+xnoremap <buffer> <silent> ]] :exec "normal! gv"|call search('\c^\s*begin\>', 'W' )
+nnoremap <buffer> <silent> ][ :call search('\c^\s*end\W*$', 'W' )
+nnoremap <buffer> <silent> ]] :call search('\c^\s*begin\>', 'W' )
+inoremap <buffer> R :call sqlcomplete#Map("resetCache")
+inoremap <buffer> L :call sqlcomplete#Map("column_csv")
+inoremap <buffer> l :call sqlcomplete#Map("column_csv")
+inoremap <buffer> c :call sqlcomplete#Map("column")
+inoremap <buffer> v :call sqlcomplete#Map("view")
+inoremap <buffer> p :call sqlcomplete#Map("procedure")
+inoremap <buffer> t :call sqlcomplete#Map("table")
+inoremap <buffer> s :call sqlcomplete#Map("sqlStatement\\w*")
+inoremap <buffer> T :call sqlcomplete#Map("sqlType\\w*")
+inoremap <buffer> o :call sqlcomplete#Map("sqlOption\\w*")
+inoremap <buffer> f :call sqlcomplete#Map("sqlFunction\\w*")
+inoremap <buffer> k :call sqlcomplete#Map("sqlKeyword\\w*")
+inoremap <buffer> a :call sqlcomplete#Map("syntax")
+let &cpo=s:cpo_save
+unlet s:cpo_save
 setlocal keymap=
 setlocal noarabic
-setlocal autoindent
+setlocal noautoindent
 setlocal backupcopy=
 setlocal balloonexpr=
 setlocal nobinary
@@ -96,12 +144,12 @@ setlocal bufhidden=
 setlocal buflisted
 setlocal buftype=
 setlocal nocindent
-setlocal cinkeys=0{,0},0),0],:,!^F,o,O,e
+setlocal cinkeys=0{,0},0),0],:,0#,!^F,o,O,e
 setlocal cinoptions=
 setlocal cinwords=if,else,while,do,for,switch
 setlocal colorcolumn=
-setlocal comments=b:#,fb:-
-setlocal commentstring=#\ %s
+setlocal comments=s1:/*,mb:*,ex:*/,:--,://
+setlocal commentstring=/*%s*/
 setlocal complete=.,w,b,u,t,i
 setlocal concealcursor=
 setlocal conceallevel=0
@@ -112,14 +160,14 @@ setlocal nocursorbind
 setlocal nocursorcolumn
 setlocal nocursorline
 setlocal cursorlineopt=both
-setlocal define=
+setlocal define=\\c\\<\\(VARIABLE\\|DECLARE\\|IN\\|OUT\\|INOUT\\)\\>
 setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
-setlocal expandtab
-if &filetype != 'python'
-setlocal filetype=python
+setlocal noexpandtab
+if &filetype != 'sql'
+setlocal filetype=sql
 endif
 setlocal fixendofline
 setlocal foldcolumn=0
@@ -133,32 +181,32 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=tcq
+setlocal formatoptions=qc
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal formatprg=
 setlocal grepprg=
 setlocal iminsert=0
 setlocal imsearch=-1
-setlocal include=^\\s*\\(from\\|import\\)
-setlocal includeexpr=substitute(substitute(substitute(v:fname,b:grandparent_match,b:grandparent_sub,''),b:parent_match,b:parent_sub,''),b:child_match,b:child_sub,'g')
-setlocal indentexpr=GetPythonIndent(v:lnum)
-setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=GetSQLIndent()
+setlocal indentkeys=0),0],!^F,o,O,=~end,=~else,=~elseif,=~elsif,0=~when,0=)
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=man
+setlocal keywordprg=
 setlocal nolinebreak
 setlocal nolisp
 setlocal lispwords=
 setlocal nolist
 setlocal makeencoding=
 setlocal makeprg=
-setlocal matchpairs=(:),{:},[:]
+setlocal matchpairs=(:),{:},[:],<:>
 setlocal modeline
 setlocal modifiable
 setlocal nrformats=bin,hex
 setlocal nonumber
 setlocal numberwidth=4
-setlocal omnifunc=
+setlocal omnifunc=sqlcomplete#Complete
 setlocal path=
 setlocal nopreserveindent
 setlocal nopreviewwindow
@@ -170,23 +218,23 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal scrolloff=-1
-setlocal shiftwidth=4
+setlocal shiftwidth=8
 setlocal noshortname
 setlocal showbreak=
 setlocal sidescrolloff=-1
 setlocal signcolumn=auto
 setlocal nosmartindent
-setlocal softtabstop=4
+setlocal softtabstop=0
 setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
 setlocal statusline=
-setlocal suffixesadd=.py
+setlocal suffixesadd=
 setlocal swapfile
 setlocal synmaxcol=3000
-if &syntax != 'python'
-setlocal syntax=python
+if &syntax != 'sql'
+setlocal syntax=sql
 endif
 setlocal tabstop=8
 setlocal tagcase=
@@ -207,23 +255,46 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 31 - ((24 * winheight(0) + 18) / 37)
+35,36fold
+33,53fold
+33,53fold
+57,77fold
+81,101fold
+105,125fold
+129,149fold
+153,173fold
+177,198fold
+202,222fold
+33
+normal! zo
+33
+normal! zo
+35
+normal! zo
+33
+normal! zc
+177
+normal! zo
+202
+normal! zo
+let s:l = 193 - ((114 * winheight(0) + 22) / 44)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
-normal! 019|
+193
+normal! 020|
 lcd ~/am/assetmanager_flask
 tabnext 1
-badd +131 ~/am/assetmanager_flask/src/back/index.py
+badd +31 ~/am/assetmanager_flask/src/back/utils/filters.py
+badd +130 ~/am/assetmanager_flask/src/back/index.py
 badd +26 ~/am/assetmanager_flask/src/front/src/components/body/AppFilterAssets.vue
 badd +69 ~/am/assetmanager_flask/src/back/db/setup.sql
 badd +20 ~/am/assetmanager_flask/src/front/src/js/assets/get_assets.js
 badd +31 ~/am/assetmanager_flask/src/back/tests/test_utils_filter_checkboxgroup.py
 badd +186 ~/am/assetmanager_flask/src/back/queries/query_utils.py
-badd +30 ~/am/assetmanager_flask/src/back/utils/filters.py
-badd +53 ~/am/assetmanager_flask/src/back/log.txt
+badd +1 ~/am/assetmanager_flask/src/back/log.txt
 badd +13 ~/am/assetmanager_flask/src/back/logger.py
+badd +0 ~/am/assetmanager_flask/src/back/db/seed.sql
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
 endif

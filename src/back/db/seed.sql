@@ -19,51 +19,209 @@ insert into supplier (name) values ('Island Breeze'),('Japan AC, Inc.'),('Best S
 insert into category (name) values ('AC'),('Furniture'),('AV/IT'),('Vehicles'),('Split AC Units'),('Chair'),('Camera');
 insert into department (name) values ('SCHOOL'),('COFFEE SHOP'),('HOUSING'),('MAINTENANCE'),('CAFETERIA');
 
-insert into asset (
-    id, asset_id, description, is_current, requisition, receiving, category_1, category_2, 
-    model_number, serial_number, bulk_count, date_placed, manufacturer, supplier, date_warranty_expires,
-    cost, shipping, cost_brand_new, life_expectancy_years, notes, department, maint_dir)
-values
-(
-    1, '000001', 'test 1', 1, 4, 1, 1, null,
-    '38KCE009118', '1302770188', 1, '2019-01-01 15:00:01', 1, 1, '2020-03-25 00:00:00',
-    1000.25*10000000000, 20*10000000000, 1000.25*10000000000, 8, 'Replacement cost estimated.', 1, 0
-),
-(
-    2, '000002', 'test 2 - far 1', 1, 5, 2, 1, 4,
-    '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
-    500*10000000000, null, 5000000000000, null, 'Replacement cost estimated.', 1, 0
-),
-(
-    3, '000003', 'test 3 - far 2', 1, 2, 3, 1, null,
-    '38KCE009118', '1302770188', 3, '2019-01-01 15:00:01', 1, 1, null,
-    1000*10000000000, null, 10000000000000, 8, 'Replacement cost estimated.', 1, 0
-),
-(
-    4, '000004', 'test 4', 2, 5, 4, 1, null,
-    '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
-    500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
-),
-(
-    5, '000005', 'test 5', 1, 3, 3, 1, null,
-    '38KCE009118', '1302770188', 1, '2019-01-01 15:00:01', 1, 1, null,
-    1000*10000000000, null, 10000000000000, 8, 'Replacement cost estimated.', 1, 0
-),
-(
-    6, '000006', 'test 6', 1, 5, 4, 1, null,
-    '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
-    500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
-),
-(
-    7, '000007', 'test 7', 1, 5, 4, 1, null,
-    '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
-    500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
-),
-(
-    8, '000008', 'test 8', 1, 5, 4, 1, null,
-    '15KCE009119', '1302770189', 1, '2019-01-01 15:00:01', 1, 1, null,
-    500*10000000000, null, 5000000000000, 8, 'Replacement cost estimated.', 1, 0
-);
+insert into asset (id, asset_id, description) values 
+	(1, "000001", "test 1"),
+	(2, "000002", "test 2 - far 1"),
+	(3, "000003", "test 3 - far 2"),
+	(4, "000004", "test 4"),
+	(5, "000005", "test 5"),
+	(6, "000006", "test 6"),
+	(7, "000007", "test 7"),
+	(8, "000008", "test 8");
+
+update asset set
+	asset_id = '000001',
+	description = 'test 1',
+	is_current = 1,
+	requisition = 4,
+	receiving = 1,
+	category_1 = 1,
+	category_2 = null,
+	model_number = '38KCE009118',
+	serial_number = '1302770188',
+	bulk_count = 1,
+	date_placed = '2019-01-01 15:00:01',
+	manufacturer = 1,
+	supplier = 1,
+	date_warranty_expires = '2020-03-25 00:00:00',
+	cost = 1000.25*10000000000,
+	shipping = 20*10000000000,
+	cost_brand_new = 1000.25*10000000000,
+	life_expectancy_years = 8,
+	notes = 'Replacement cost estimated.',
+	department = 1,
+	maint_dir = 0
+where id = 1;
+
+update asset set
+    asset_id = '000002',
+    description = 'test 2 - far 1',
+    is_current = 1,
+    requisition = 5,
+    receiving = 2,
+    category_1 = 1,
+    category_2 = 4,
+    model_number = '15KCE009119',
+    serial_number = '1302770189',
+    bulk_count = 1,
+    date_placed = '2019-01-01 15:00:01',
+    manufacturer = 1,
+    supplier = 1,
+    date_warranty_expires = null,
+    cost = 500*10000000000,
+    shipping = null,
+    cost_brand_new = 5000000000000,
+    life_expectancy_years = null,
+    notes = 'Replacement cost estimated.',
+    department = 1,
+    maint_dir = 0
+where id = 2;
+
+update asset set
+    asset_id = '000003',
+    description = 'test 3 - far 2',
+    is_current = 1,
+    requisition = 2,
+    receiving = 3,
+    category_1 = 1,
+    category_2 = null,
+    model_number = '38KCE009118',
+    serial_number = '1302770188',
+    bulk_count = 3,
+    date_placed = '2019-01-01 15:00:01',
+    manufacturer = 1,
+    supplier = 1,
+    date_warranty_expires = null,
+    cost = 1000*10000000000,
+    shipping = null,
+    cost_brand_new = 10000000000000,
+    life_expectancy_years = 8,
+    notes = 'Replacement cost estimated.',
+    department = 1,
+    maint_dir = 0
+where id = 3;
+
+update asset set
+    asset_id = '000004',
+    description = 'test 4',
+    is_current = 1,
+    requisition = 5,
+    receiving = 4,
+    category_1 = 1,
+    category_2 = null,
+    model_number = '15KCE009119',
+    serial_number = '1302770189',
+    bulk_count = 1,
+    date_placed = '2019-01-01 15:00:01',
+    manufacturer = 1,
+    supplier = 1,
+    date_warranty_expires = null,
+    cost = 500*10000000000,
+    shipping = null,
+    cost_brand_new = 5000000000000,
+    life_expectancy_years = 8,
+    notes = 'Replacement cost estimated.',
+    department = 1,
+    maint_dir = 0
+where id = 4;
+
+update asset set
+    asset_id = '000005',
+    description = 'test 5',
+    is_current = 1,
+    requisition = 3,
+    receiving = 3,
+    category_1 = 1,
+    category_2 = null,
+    model_number = '38KCE009118',
+    serial_number = '1302770188',
+    bulk_count = 1,
+    date_placed = '2019-01-01 15:00:01',
+    manufacturer = 1,
+    supplier = 1,
+    date_warranty_expires = null,
+    cost = 1000*10000000000,
+    shipping = null,
+    cost_brand_new = 10000000000000,
+    life_expectancy_years = 8,
+    notes = 'Replacement cost estimated.',
+    department = 1,
+    maint_dir = 0
+where id = 5;
+
+update asset set
+    asset_id = '000006',
+    description = 'test 6',
+    is_current = 1,
+    requisition = 5,
+    receiving = 4,
+    category_1 = 1,
+    category_2 = null,
+    model_number = '15KCE009119',
+    serial_number = '1302770189',
+    bulk_count = 1,
+    date_placed = '2019-01-01 15:00:01',
+    manufacturer = 1,
+    supplier = 1,
+    date_warranty_expires = null,
+    cost = 500*10000000000,
+    shipping = null,
+    cost_brand_new = 5000000000000,
+    life_expectancy_years = 8,
+    notes = 'Replacement cost estimated.',
+    department = 1,
+    maint_dir = 0
+where id = 6;
+
+update asset set
+    asset_id = '000007',
+    description = 'test 7',
+    is_current = 0,
+    requisition = 5,
+    receiving = 4,
+    category_1 = 1,
+    category_2 = null,
+    model_number = '15KCE009119',
+    serial_number = '1302770189',
+    bulk_count = 1,
+    date_placed = '2019-01-01 15:00:01',
+    date_removed = '2029-01-01 15:00:01',
+    manufacturer = 1,
+    supplier = 1,
+    date_warranty_expires = null,
+    cost = 500*10000000000,
+    shipping = null,
+    cost_brand_new = 500*10000000000,
+    life_expectancy_years = 8,
+    notes = 'Replacement cost estimated.',
+    department = 1,
+    maint_dir = 0
+where id = 7;
+
+update asset set
+    asset_id = '000008',
+    description = 'test 8',
+    is_current = 1,
+    requisition = 5,
+    receiving = 4,
+    category_1 = 1,
+    category_2 = null,
+    model_number = '15KCE009119',
+    serial_number = '1302770189',
+    bulk_count = 1,
+    date_placed = '2019-01-01 15:00:01',
+    manufacturer = 1,
+    supplier = 1,
+    date_warranty_expires = null,
+    cost = 500*10000000000,
+    shipping = null,
+    cost_brand_new = 5000000000000,
+    life_expectancy_years = 8,
+    notes = 'Replacement cost estimated.',
+    department = 1,
+    maint_dir = 0
+where id = 8;
+
 
 insert into picture (id, file_path) values
 (1, 'assets\1.JPG'),

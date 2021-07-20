@@ -12,6 +12,11 @@ elif [[ "$OSTYPE" == "msys" ]]; then
         source flaskenv/Scripts/activate
         echo "Activated python virtual environment for msys (Windows) host system."
     fi
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+    if [[ -z ${VIRTUAL_ENV+x} ]]; then
+        source flaskenv/bin/activate
+        echo "Activated python virtual environment for cygwin (Windows) host system."
+    fi
 fi
 
 

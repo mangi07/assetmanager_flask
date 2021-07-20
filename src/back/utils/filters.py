@@ -17,7 +17,6 @@ def checkbox_group_filter(filters, column):
     filters = map_req_bools(filters)
     db_filters = {}
 
-    # asset.is_current statuses in order: [past, present, unspecified - possibly not yet received or future asset]
         
     if all(filters) or not any(filters):
         return {} # ignoring this group of filters, since they are all True or all False
@@ -25,7 +24,14 @@ def checkbox_group_filter(filters, column):
 
     included_statuses = []
 
-    curr_status = 1
+    
+    # asset.is_current statuses in order: past: 0, present: 1, unspecified - possibly not yet received or future asset: 2
+    if (column == "asset.is_current"):
+        curr_status = 0
+    # the other columns have foreign keys to lookup tables that start with id 1
+    else:
+        curr_status = 1
+
     for checked in filters:
         if checked:
             included_statuses.append(curr_status)
