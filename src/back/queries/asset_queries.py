@@ -160,6 +160,7 @@ def get_asset_invoices(ids):
     
     host_url = config.get_host_url()
 
+    log("test ids:" + str(ids))
     query_select = """
         select asset_invoice.asset, invoice.id, invoice.number, invoice.file_path,
             invoice.total, asset_invoice.cost,invoice.notes
@@ -180,8 +181,8 @@ def get_asset_invoices(ids):
             'id':i_id,
             'number':number,
             'file_path':host_url + "file/" + file_path,
-            'total':total/config.get_precision_factor(),
-            'asset_amount':asset_amount/config.get_precision_factor(),
+            'total':total/config.get_precision_factor() if total is not None else None,
+            'asset_amount':asset_amount/config.get_precision_factor() if asset_amount is not None else None,
             'notes':notes,
         }
         invoice_groups[a_id].append(invoice)

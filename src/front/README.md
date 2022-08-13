@@ -1,20 +1,33 @@
 # vue_proj
 
 ## Project setup
-```
-Firstly, copy file 
+
+
+### Configure for serving
+
+* Firstly, for configuration related to project source code (not vuejs framework configuration), copy file 
     ./src/js/example_config.js to 
     ./src/js/config.js
 and follow example's suggestions to modify newly created ./src/js/config.js to your liking.
 
+* Secondly, for configuring server proxy, edit ./vue.config.js to change its publicPath
 
+#### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### Install libraries
+
+```
 npm install
+```
 
 or with low memory constraints on server, example for limiting node to 200 MB:
 
-npm install --max-old-space-size=200
-
 ```
+npm install --max-old-space-size=200
+```
+
 
 ### Compiles and hot-reloads for development server
 ```
@@ -34,7 +47,9 @@ npm run libs
 
 ### Setup for testing js libraries
 ### modified from: https://dev.to/bnorbertjs/my-nodejs-setup-mocha--chai-babel7-es6-43ei
-### Currently, flask dev server must be running for axios requests.
+
+Currently, flask dev server must be running for axios requests.
+
 ```
 npm run test:libs
 ```
@@ -49,5 +64,3 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

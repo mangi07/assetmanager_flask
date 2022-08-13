@@ -3,8 +3,8 @@ import App from './App.vue'
 import store from './store/'
 import router from './routes/'
 // TODO: remove these bootstrap imports??
-import 'bootstrap'
-import 'bootstrap/dist/css/bootstrap.min.css'
+//import 'bootstrap'
+//import 'bootstrap/dist/css/bootstrap.min.css'
 import userUtils from './js/user/check_login'
 import vuetify from './plugins/vuetify'
 

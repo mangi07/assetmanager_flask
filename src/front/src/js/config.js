@@ -7,6 +7,6 @@ File: config.js
 export const config = {
 	//apiBaseUrl: "http://35.233.170.4/api/"
 	//apiBaseUrl: "http://localhost/api/"
-	apiBaseUrl: "http://localhost:5000/" // may be used in local dev environment
+	apiBaseUrl: "https://home.brodev.tk:8081/dev/front/" // may be used in local dev environment
 }
 

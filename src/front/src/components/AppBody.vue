@@ -11,7 +11,8 @@ import home from './body/AppHome.vue'
 import login from './body/AppLogin.vue'
 
 export default {
-  name: 'appbody',
+  // eslint-disable-next-line
+  name: 'AppBody',
   components: {
     'home':home,
     'login':login

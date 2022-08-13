@@ -3,8 +3,6 @@
 #
 ###############################################################################
 
-from unittest.mock import Mock
-import sqlite3
 import pytest
 
 from queries import location_queries
@@ -35,6 +33,33 @@ def locations():
     db = MyDB()
     db._executescript(query)
 
+@pytest.fixture
+def locations_deps_unsorted():
+    # Locations as <loc_name>(<loc.id>):
+    #
+    #                           loc1(2)
+    #                          /       \
+    #                 building1(1)      building2(3)
+    #                 /       \                |
+    #              b1a(4)    b1b(5)          b2a(6)
+    #              /   \
+    #      b1a_rm1(7) b1a_rm2(8)
+
+    # Records referr to parents that do not yet exist (ie: out of order topologically)
+    query = f"""
+        insert into location (id, description, parent) values
+            (1, 'building1', 2),
+            (2, 'loc1', NULL),
+            (3, 'building2', 2),
+            (4, 'b1a', 1),
+            (5, 'b1b', 1),
+            (6, 'b2a', 3),
+            (7, 'b1a_rm1', 4),
+            (8, 'b1a_rm2', 4);
+    """
+    db = MyDB()
+    db._executescript(query)
+
 class TestLocationQueries:
     def test_location_queries_1(self, setup_mydb, locations):
         """Should build the correct list of locations."""
@@ -56,6 +81,27 @@ class TestLocationQueries:
             }
         }
 
+    def test_location_queries_1_deps_unsorted(self, setup_mydb, locations_deps_unsorted):
+        """Should build the correct list of locations."""
+        locs = location_queries.Locations()
+        print("locs: ", locs.get_list())
+
+        tree = locs.get_tree()
+        assert tree == {
+            2: {'children': 
+                [{1: {'children': 
+                    [{4: {'children': 
+                        [{7: {'data': 'b1a_rm1'}}, 
+                         {8: {'data': 'b1a_rm2'}}], 
+                        'data': 'b1a'}}, 
+                     {5: {'data': 'b1b'}}], 
+                    'data': 'building1'}}, 
+                 {3: {'children': 
+                    [{6: {'data': 'b2a'}}], 'data': 'building2'}}
+                ], 
+               'data': 'loc1'
+            }
+        }
 
     @pytest.mark.parametrize("root, expected_ids", [
         (1, {1, 2, 3, 4, 5, 6, 7, 8}), 

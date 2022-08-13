@@ -2,23 +2,23 @@
 <template>
   <v-app>
   <div id="app">
-    <navbar></navbar>
-    <appbody></appbody>
+    <NavBar></NavBar>
+    <AppBody></AppBody>
   </div>
   </v-app>
 </template>
 
 <script>
-import navbar from './components/NavBar.vue'
-import appbody from './components/AppBody.vue'
+import NavBar from './components/NavBar.vue'
+import AppBody from './components/AppBody.vue'
 /* eslint-disable-next-line */
 import Vuex from 'vuex'
 
 export default {
   name: 'app',
   components: {
-    'navbar':navbar,
-    'appbody':appbody,
+    'NavBar':NavBar,
+    'AppBody':AppBody,
   },
 }
 </script>

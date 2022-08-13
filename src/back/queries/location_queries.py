@@ -1,10 +1,24 @@
-import sqlite3
-from treelib import Node, Tree
+from collections import deque
+from treelib import Tree
 from queries.query_utils import MyDB
 
 
 class Locations(object):
     __instance = None
+
+    def topological_sort(self, node_list):
+        nodes_dict = {}
+        node_deque = deque(node_list)
+        while len(node_deque) > 0:
+            node = node_deque.pop()
+            if node["parent"] in nodes_dict: # parent in list ?
+                nodes_dict[ node["id"] ] = node
+            elif node["parent"] is None: # assuming there is only one node like this, the root node
+                assert len(nodes_dict) == 0
+                nodes_dict[ node["id"] ] = node
+            else: # cannot add this node yet, so put it at the beginning
+                node_deque.appendleft(node)
+        return nodes_dict
 
     def __init__(self):
         query_select = """SELECT id, description, parent FROM location;"""
@@ -20,6 +34,8 @@ class Locations(object):
             } 
             for id, loc_desc, parent_id in self._rows]
 
+        self._nodes_dict = self.topological_sort(self._list)
+
         # Locations as <loc_name>(<loc.id>:<asset.id>-<count>,<asset....)
         #
         #   Example tree:
@@ -31,8 +47,8 @@ class Locations(object):
         #              /   \
         # b1a_rm1(7:1-1)    b1a_rm2(8:2-2)
         self._tree = Tree()
-        for x in self._list:
-            self._tree.create_node(tag=x['id'], identifier=x['id'], parent=x['parent'], data=x['description'])
+        for key, val in self._nodes_dict.items():
+            self._tree.create_node(tag=val['id'], identifier=val['id'], parent=val['parent'], data=val['description'])
 
     def __new__(cls):
         if not cls.__instance:
