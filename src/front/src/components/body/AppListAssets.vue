@@ -39,13 +39,13 @@
               mdi-tag
             </v-icon>
             <v-chip class="ma-1" color="blue-grey" label text-color="white">
-              <span class="font-weight-light">(Est.) Total Cost......{{ asset.cost | currency }}</span>
+              <span class="font-weight-light">(Est.) Total Cost......{{ $filters.currency(asset.cost) }}</span>
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-1" label text-color="white">
-              <span class="font-weight-light">Cost Brand New......{{ asset.cost | currency }}</span>
+              <span class="font-weight-light">Cost Brand New......{{ $filters.currency(asset.cost_brand_new) }}</span>
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="white">
-              <span class="font-weight-light">Shipping Cost......{{ asset.shipping | currency }}</span>
+              <span class="font-weight-light">Shipping Cost......{{ $filters.currency(asset.shipping) }}</span>
             </v-chip>
             <v-chip class="ma-2" color="yellow-grey" label text-color="black">
               <span class="font-weight-light">Life Expectancy: {{ asset.life_expectancy_years || '--' }} years</span>
@@ -96,7 +96,7 @@
               Supplier: {{ asset.supplier || "--" }}
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
-              Date Warranty Expires: {{ asset.date_warranty_expires | date }}
+              Date Warranty Expires: {{ $date(asset.date_warranty_expires) }}
             </v-chip>
 
             <!--AUDIT AND LOCATIONS-->
@@ -106,10 +106,10 @@
               Remaining: {{ asset.bulk_count - asset.bulk_count_removed || "--" }}    
             </v-chip>
             <v-chip class="ma-2"  label color="grey" text-color="black">
-              Date Placed: {{ asset.date_placed | date }}
+              Date Placed: {{ $date(asset.date_placed) }}
             </v-chip>
             <v-chip class="ma-2"  label color="grey" text-color="black">
-              Date Removed: {{ asset.date_removed | date }}
+              Date Removed: {{ $date(asset.date_removed) }}
             </v-chip>
 
             <v-divider></v-divider>
@@ -209,7 +209,7 @@
                               <v-list-item-title class="overline mb-4">Acct. Number: {{ far.account_number }}</v-list-item-title>
                               <v-list-item-title class="overline mb-4">Acct. Desc: {{ far.account_description }}</v-list-item-title>
                               <v-list-item-subtitle>Description: {{ far.description }}</v-list-item-subtitle>
-                              <v-list-item-subtitle>Start Date: {{ far.start_date | date}}</v-list-item-subtitle>
+                              <v-list-item-subtitle>Start Date: {{ $date(far.start_date) }}</v-list-item-subtitle>
                               <v-list-item-subtitle>Useful Life: {{ far.life}} years</v-list-item-subtitle>
                             </v-list-item-content>
                           </v-list-item>
@@ -233,7 +233,7 @@
                         >
                           <v-list-item three-line>
                             <v-list-item-content>
-                              <v-list-item-title class="overline mb-4">Audit Date: {{ location.audit_date | date }}</v-list-item-title>
+                              <v-list-item-title class="overline mb-4">Audit Date: {{ $date(location.audit_date) }}</v-list-item-title>
                               <div>Location: {{ location.nesting }}</div>
                               <div>Count: {{ location.count }}</div>
                             </v-list-item-content>
