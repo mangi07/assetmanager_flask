@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta>
+    </meta>
+    <script defer src="carousel.js"></script>
+    <script defer src="overlay-toggle.js"></script>
+    <link rel="stylesheet" href="carousel-style.css"/>
+    <link rel="stylesheet" href="pic-overlay.css"/>
+  </head>
+  <body>
+    <div>
+      <container>
+      <div> <!--row-->
+        <!-- v-for="(asset, i) in assets" :key="i" >
+          <div> <!--column-->
+            <div
+                color="blue-grey lighten-4"
+                width="1500px"
+                > <!--card-->
+              <title>
+                <!-- v-if="! asset.is_current" -->
+                <div>
+                  <div> <!--icon: mdi-alert-->
+                  </div>
+                  PREVIOUS ASSET
+                </div>
+                <!--chip-->
+                <div class="ma-2" color="red darken-4" label text-color="white">
+                  <!--icon: mdi-pound-box-->
+                  <div large left>
+                  </div>
+                  <span class="title font-weight-light">ASSET ID</span>
+                </div>
+                <div class="ma-2" color="black lighten-4" label text-color="white">DESCRIPTION: </div>
+                <span class="title font-weight-light">ASSET DESCRIPTION</span>
+              </title>
+
+              <!--<v-divider></v-divider>-->
+              <br>
+
+              <!--FINANCES / COSTS-->
+              <!--icon: mdi-tag-->
+              <div large left>
+              </div>
+              <div class="ma-1" color="blue-grey" label text-color="white">
+                <span class="font-weight-light">(Est.) Total Cost......$10.00</span>
+              </div>
+              <div class="ma-2" color="blue-grey lighten-1" label text-color="white">
+                <span class="font-weight-light">Cost Brand New......$11.00</span>
+              </div>
+              <div class="ma-2" color="blue-grey lighten-2" label text-color="white">
+                <span class="font-weight-light">Shipping Cost......$0.20</span>
+              </div>
+              <div class="ma-2" color="yellow-grey" label text-color="black">
+                <span class="font-weight-light">Life Expectancy: 20 years</span>
+              </div>
+              <!--<v-divider></v-divider>-->
+              <br>
+
+              <!--REQUISITION AND RECEIVING-->
+              <!--
+                <v-badge 
+                :icon="assetStyles[i].requisitionIcon.icon"
+                left
+                overlap
+                :color="assetStyles[i].requisitionIcon.color"
+                >
+              -->
+                <div>
+                  <!--v-chip-->
+                  <div class="ma-2" color="blue-grey lighten-3" label text-color="black">
+                    Requisition: STATUS DESC HERE
+                  </div>
+                </div>
+                <!--
+                  <v-badge 
+                  :icon="assetStyles[i].receivingIcon.icon"
+                  left
+                  overlap
+                  :color="assetStyles[i].receivingIcon.color"
+                  >
+                -->
+                    <div>
+                      <!--v-chip-->
+                      <div class="ma-2" color="blue-grey lighten-3" label text-color="black">
+                        Receiving: STATUS DESC HERE
+                      </div>
+                    </div>
+
+                    <!--CATEGORIES-->
+                    <div class="ma-2" color="grey" label text-color="black">
+                      Category 1: CAT ONE
+                    </div>
+                    <div class="ma-2" color="grey" label text-color="black">
+                      Category 2: CAT TWO
+                    </div>
+
+                    <!--MANUFACTURING DETAILS-->
+                    <div class="ma-2" color="blue-grey lighten-2" label text-color="black">
+                      Model Number: MODEL NUMBER
+                    </div>
+                    <div class="ma-2" color="blue-grey lighten-2" label text-color="black">
+                      Serial Number: SER. NUMBER
+                    </div>
+                    <div class="ma-2" color="blue-grey lighten-2" label text-color="black">
+                      Manufacturer: MFR. NUMBER
+                    </div>
+                    <div class="ma-2" color="blue-grey lighten-2" label text-color="black">
+                      Supplier: NAME
+                    </div>
+                    <div class="ma-2" color="blue-grey lighten-2" label text-color="black">
+                      Date Warranty Expires: January 1, 2023
+                    </div>
+
+                    <!--AUDIT AND LOCATIONS-->
+                    <div class="ma-2"  label color="grey" text-color="black">
+                      Counts (this entry)...Orig. count: {{ asset.bulk_count || "--" }}, 
+                      Removed: {{ asset.bulk_count_removed || "--" }}, 
+                      Remaining: {{ asset.bulk_count - asset.bulk_count_removed || "--" }}    
+                    </div>
+                    <div class="ma-2"  label color="grey" text-color="black">
+                      Date Placed: {{ asset.date_placed | date }}
+                    </div>
+                    <div class="ma-2"  label color="grey" text-color="black">
+                      Date Removed: {{ asset.date_removed | date }}
+                    </div>
+
+                    <!--<v-divider></v-divider>-->
+                    <br>
+
+                    <!--ASSET PICTURES-->
+                    <!-- Slideshow container -->
+                    <!-- https://www.w3schools.com/howto/howto_js_slideshow.asp , this and carousel-style.css and carousel.js -->
+                    
+                    <div onclick="overlayOn()">Pictures</div>
+                    <div id="pic-overlay">
+                      <div class="slideshow-container">
+
+                        <!-- Full-width images with number and caption text -->
+                        <div class="mySlides fade">
+                          <div class="numbertext">1 / 3</div>
+                          <img src="./pics/img1.jpg" style="width:100%">
+                          <div class="text">Caption Text</div>
+                        </div>
+
+                        <div class="mySlides fade">
+                          <div class="numbertext">2 / 3</div>
+                          <img src="./pics/img2.jpg" style="width:100%">
+                          <div class="text">Caption Two</div>
+                        </div>
+
+                        <div class="mySlides fade">
+                          <div class="numbertext">3 / 3</div>
+                          <img src="./pics/img3.jpg" style="width:100%">
+                          <div class="text">Caption Three</div>
+                        </div>
+
+                        <!-- Next and previous buttons -->
+                        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                      </div>
+                      <br>
+
+                      <!-- The dots/circles -->
+                      <div style="text-align:center">
+                        <span class="dot" onclick="currentSlide(1)"></span>
+                        <span class="dot" onclick="currentSlide(2)"></span>
+                        <span class="dot" onclick="currentSlide(3)"></span>
+                      </div>
+
+                      <div id="carousel-exit" onclick="overlayOff()">Return</div>
+                    </div>
+
+
+                    <details>
+                      <summary>
+                        Invoices
+                      </summary>
+                      <p>
+                        <div class="overline mb-4">Invoice Total: {{ invoice.total | currency }}</div>
+                        <div class="overline mb-4">Asset Amount: {{ invoice.asset_amount | currency }}</div>
+                        <div class="headline mb-1">Inv. # {{ invoice.number }}</div>
+                        <div>Note: {{ invoice.notes }}</div>
+
+                        <!--<div v-if="invoice.file_path">
+                        <a :href="invoice.file_path" target="_blank">File Link</a>
+                        </div>-->
+                        <a href="./invoices/inv1.pdf" target="_blank">File Link</a>
+                      </p>
+                    </details>
+
+                    <details>
+                      <summary>
+                        FAR
+                      </summary>
+                      <p>
+                        <div class="overline mb-4">FAR Total: {{ far.amount | currency }}</div>
+                        <!-- TODO: far.asset_amount does not exist yet -->
+                        <div class="overline mb-4">Asset Amount: {{ far.asset_amount | currency }}</div>
+                        <div class="overline mb-4">Pdf: {{ far.pdf }}</div>
+                        <div class="overline mb-4">Acct. Number: {{ far.account_number }}</div>
+                        <div class="overline mb-4">Acct. Desc: {{ far.account_description }}</div>
+                        <div>Description: {{ far.description }}</div>
+                        <div>Start Date: {{ far.start_date | date}}</div>
+                        <div>Useful Life: {{ far.life}} years</div>
+                      </p>
+                    </details>
+
+                    <details>
+                      <summary>
+                        Locations 
+                      </summary>
+                      <p>
+                        <div class="overline mb-4">Location: {{ location.nesting }}</div>
+                        <div class="overline mb-4">Count: {{ location.count }}</div>
+                        <div class="overline mb-4">Audit Date: {{ location.audit_date | date }}</div>
+                      </p>
+                    </details>
+
+            </div> <!--column-->
+          </div> <!--row-->
+      </container>
+
+
+
+      </div>
+  </body>
+</html>
+
+<script>
+  export default {
+      methods: {
+          showPics: function (id) {
+              this.$data.selected_asset = id
+              if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
+                  this.$data.overlay = true
+                }
+            },
+          getReceivingIcon: function (asset) {
+              let color, icon
+              switch (asset.receiving) {
+                  case "shipped":
+                    icon = "mdi-airplane-takeoff"
+                    color = "blue"
+                    break
+                  case "received":
+                    icon = "mdi-airplane-landing"
+                    color = "green"
+                    break
+                  case "placed":
+                    icon = "mdi-check"
+                    color = "purple"
+                    break
+                  default:
+                    icon = "mdi-minus-circle-outline"
+                    color = "grey"
+                } 
+              return {icon:icon, color:color}
+            },
+          getRequisitionIcon: function (asset) {
+              let color, icon
+              switch (asset.requisition) {
+                  case "awaiting invoice":
+                    color = "red"
+                    icon = "mdi-clock"
+                    break
+                  case "partial payment":
+                    color = "grey"
+                    icon = "mdi-circle-slice-4"
+                    break
+                  case "paid in full":
+                    color = "green"
+                    icon = "mdi-check-circle"
+                    break
+                  case "donated":
+                    color = "pink"
+                    icon = "mdi-heart"
+                    break
+                  default:
+                    color = "grey"
+                    icon = "mdi-help"
+                }
+              return {icon:icon, color:color}
+            },
+
+          getPicCountIcon: function (asset) {
+              return {picLen:asset.pictures.length, picColor:"green"}
+            },
+
+        },
+
+      computed: {
+
+          assets: function () {
+              var a = this.$store.state.assetsModule.assets
+              var file_access_token = tokens.getTokensFromStorage().file_access_token
+
+              for (let i = 0; i < a.length; i++) {
+                  for (let j = 0; j < a[i].pictures.length; j++) {
+                      a[i].pictures[j] += "?file_access_token=" + file_access_token
+                    }
+                  for (let j = 0; j < a[i].invoices.length; j++) {
+                      a[i].invoices[j].file_path += "?file_access_token=" + file_access_token
+                    }
+
+                  var locs = this.$store.state.locationsModule.locations
+                  var location_counts = a[i].location_counts
+                  for (let k = 0; k < location_counts.length; k++) {
+                      var loc = location_counts[k]
+                      var curr = loc.location_id
+                      var loc_desc = locs[curr].description
+                      while ( locs[curr].parent !== null ) {
+                          curr = locs[curr].parent
+                          loc_desc = locs[curr].description + ' >> ' + loc_desc
+                        }
+                      location_counts[k].nesting = loc_desc
+
+                    }
+                }
+              //console.log(a)
+              return a
+            },
+
+          assetStyles: function () {
+              let a = this.$store.state.assetsModule.assets
+              let b = new Array(a.length)
+              for (let i = 0; i < a.length; i++) {
+                  let requisitionIcon = this.getRequisitionIcon(a[i])
+                  let receivingIcon = this.getReceivingIcon(a[i])
+                  let picCountIcon = this.getPicCountIcon(a[i])
+                  b[i] = {
+                      requisitionIcon:requisitionIcon,
+                      receivingIcon:receivingIcon,
+                      picCountIcon:picCountIcon
+                    }
+                }
+              //console.log(b)
+              return b
+            },
+
+        },
+    }
+</script>
+
