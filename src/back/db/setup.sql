@@ -224,6 +224,23 @@ CREATE TABLE IF NOT EXISTS "asset_picture"
       ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
+CREATE TABLE IF NOT EXISTS "attachment" -- assets can have more than one attachment (file) and an attachment can have one or more assets
+(
+    [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    [file_path] TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "asset_attachment"
+(
+    [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    [asset] INTEGER NOT NULL,
+    [attachment] INTEGER NOT NULL,
+    
+    FOREIGN KEY ([asset]) REFERENCES "asset" ([id])
+      ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY ([attachment]) REFERENCES "attachment" ([id])
+      ON DELETE CASCADE ON UPDATE NO ACTION
+);
 
 -- set up requisition and receiving lookup tables
 insert into requisition (status) values ('awaiting invoice'),('partial payment'),('paid in full'),('donated'),('unspecified');
