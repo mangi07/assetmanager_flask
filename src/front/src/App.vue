@@ -1,18 +1,14 @@
 
 <template>
-  <v-app>
   <div id="app">
     <NavBar></NavBar>
     <AppBody></AppBody>
   </div>
-  </v-app>
 </template>
 
 <script>
 import NavBar from './components/NavBar.vue'
 import AppBody from './components/AppBody.vue'
-/* eslint-disable-next-line */
-import Vuex from 'vuex'
 
 export default {
   name: 'app',

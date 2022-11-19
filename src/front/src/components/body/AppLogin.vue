@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!--
     <v-card width="400" class="mx-auto mt-5">
       <v-card-title>
         <h1 class="display-1">Login</h1>
@@ -27,7 +28,11 @@
       
       <div>{{ ui.data.error }}</div>
     </v-card>
-
+    -->
+    <h1>Login</h1>
+    <input type="text" name="username" v-model="username" placeholder="Username" />
+    <input type="password" name="password" v-model="password" placeholder="Password" />
+    <button type="button" v-on:click="logIn()">Login</button>
   </div>
 </template>
 
@@ -52,7 +57,21 @@ export default {
       var vm = this.ui.data;
       var vi = this;
 
-      userUtils.logIn(this.username, this.password)
+      // mock section
+      vi.username = null
+      vi.password = null
+      // TODO: set result variable
+      var result = {
+        "username": "Noah", "role": "Regular", "loggedIn": true, "error": null
+      }
+      vm.error = null
+      if (vm.error == null) {
+        vi.$store.dispatch('userModule/setUserAction', result)
+      }
+      return
+
+      // TODO: open this back up when ui is working
+      userutils.logIn(this.username, this.password)
         .then(function(result){
           vi.username = null
           vi.password = null

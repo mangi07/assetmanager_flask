@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AM Vite + Vue</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!--<script type="module" src="/src/main.js"></script>-->
+    <script type='module'>
+
+      import { worker } from './src/mocks/browser.js'
+      //const { worker } = require('./src/mocks/browser.js')
+      worker.start()
+
+      console.log("got here")
+      //fetch("https://www.home.brodev.tk/login")
+      fetch("/login")
+        .then(response => {
+          console.log(response)
+          //fetch("/user")
+          //  .then(response => {
+          //    console.log(response)
+          //  }
+          //  .catch(error => {
+          //    console.log("error...")
+          //    console.log(error)
+          //  }
+        })
+        .catch(error => {
+          console.log("error...")
+          console.log(error)
+        });
+
+    </script>
+  </body>
+</html>

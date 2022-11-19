@@ -1,0 +1,22 @@
+[
+    {
+        "asset_id": "000001",
+        "cost": 1000,
+        "description": "test 1",
+        "far": {},
+        "id": 1,
+        "invoices": {},
+        "location_counts": [],
+        "pictures": []
+    },
+    {
+        "asset_id": "000002",
+        "cost": 500,
+        "description": "test 2",
+        "far": {},
+        "id": 2,
+        "invoices": {},
+        "location_counts": [],
+        "pictures": []
+    }
+]

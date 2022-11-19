@@ -184,7 +184,9 @@ def get_image(path):
     try:
         # This could result in sending a file as an image when the file is not really an image; 
         # the server trusts that the requested file really is an image. 
-        return send_file(f"db/files/{path}", mimetype='image/jpg')
+        #return send_file(f"db/files/{path}", mimetype='image/jpg')
+        log("testing path: " + path)
+        return send_file(f"/root/asset_files/{path}", mimetype='image/jpg')
     except:
         return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
 
@@ -195,7 +197,8 @@ def get_file(path):
     try:
         # This could result in sending a file as an image when the file is not really an image; 
         # the server trusts that the requested file really is an image. 
-        return send_file(f"db/files/{path}")
+        #return send_file(f"db/files/{path}")
+        return send_file(f"/root/asset_files/{path}")
     except:
         return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
 
@@ -217,6 +220,11 @@ def list_locations():
         locations=locations,
     )
 
+
+# TEST ##############################################################
+@app.route("/test")
+def get_test_file():
+        return send_file("/root/asset_files/test_file.txt")
 
 
 

@@ -26,6 +26,7 @@ export const userModule = {
     mutations: {
         setUser (state, user) {
             resetUser(state.user, user)
+						console.log(state.user)
         },
         unsetUser (state) {
             resetUser(state.user)

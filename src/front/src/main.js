@@ -1,16 +1,16 @@
-import Vue from 'vue'
-import App from './App.vue'
-import store from './store/'
+//import Vue from 'vue'
+import { store } from './store/'
 import router from './routes/'
 import userUtils from './js/user/check_login'
 
+import { createApp } from 'vue'
+import './style.css'
+import App from './App.vue'
 
 
-const app = Vue.createApp({
-  store,
-  render: h => h(App)
-})
+const app = createApp(App)
 app.use(router)
+app.use(store)
 app.mount('#app')
 
 userUtils.getUser().then( (result) => {
