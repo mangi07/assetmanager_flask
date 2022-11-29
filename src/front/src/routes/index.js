@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import AppFilterAssets from '../components/body/AppFilterAssets'
-import AppListAssets from '../components/body/AppListAssets'
+import AppFilterAssets from '../components/body/AppFilterAssets.vue'
+import AppListAssets from '../components/body/AppListAssets.vue'
 
 Vue.use(VueRouter)
 

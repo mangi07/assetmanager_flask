@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import userUtils from '../js/user/check_login'
+import userUtils from '../js/user/check_login.js'
 
 export default {
   data: () => ({
