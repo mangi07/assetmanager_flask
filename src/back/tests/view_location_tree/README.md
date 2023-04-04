@@ -9,7 +9,7 @@ since I have not yet taken the time to build out that feature of the front end.
 Make sure db_path.py correctly identifies the db.sqlite3 file that is seeded with a location hierarchy.
 Then, run the following:
 
-`
+```
 python3 -m venv env
 
 source ./env/bin/activate
@@ -23,7 +23,7 @@ outfile=$day.loc-tree.txt
 echo day > outfile
 
 python loc_tree.py >> outfile
-`
+```
 
 You could then view the tree structure in the output file.
 
