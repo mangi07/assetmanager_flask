@@ -1,0 +1,14 @@
+Need to test location tree creation
+
+See 
+queries/location_queries.py
+for an example of what's needed.
+
+Find a way to create a tree with two passes on list of locations from db:
+
+First pass inserts nodes,
+Second pass inserts the parent of each node,
+
+Because the current bug is where there is no parent yet for some nodes as they are being created.
+
+testing
