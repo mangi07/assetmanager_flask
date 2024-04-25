@@ -148,8 +148,9 @@ def list_assets(page=0):
     file_access_token = request.args.get('file_access_token', None)
 
     try:
+        location__eq = request.args.get('location_count.location__eq', None)
         filters = {
-            'location': request.args.get('location', None),
+            'location_count.location__eq': int(location__eq) if location__eq else None,
             'asset.cost__gt': int(float(cost__gt)*config.get_precision_factor()) if cost__gt else None,
             'asset.cost__lt': int(float(cost__lt)*config.get_precision_factor()) if cost__lt else None,
             'asset.description__contains': str(desc__contains) if desc__contains else None,

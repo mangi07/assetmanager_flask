@@ -128,8 +128,9 @@ def _parse_filter(k, v):
     Takes a key, value pair and returns a tuple of (table, column, filter, value)
     """
     split = k.split('.')
+    print(f"\n\n{split}\n\n") # debug
     table = split[0]
-    rem = split[1].split('__')
+    rem = split[1].split('__') # TODO: bug - this throws error if len(split) < 1 .. eg: k = "location"
     column = rem[0]
     f = rem[1]
     return table, column, f, v
