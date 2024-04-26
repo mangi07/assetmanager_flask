@@ -336,10 +336,15 @@ Filter options: cost_gt, cost_lt, location (by id)
 curl -X GET "http://localhost:5000/assets/0?cost_gt=500&cost_lt=2000&location=10" -H "Authorization: Bearer $TOKEN"
 '''
 class Filters:
-    def __init__(self):
-        self.cost_greater_than : float = None # get all assets greater than cost
-        self.cost_less_than : float = None # get all assets less than cost
-        self.location : int = None # get all assets at this location and all its child locations
+    def __init__(self,
+                 cost_greater_than=None,
+                 cost_less_than=None,
+                 location=None,
+                 description=None):
+        self.cost_greater_than = cost_greater_than # get all assets greater than cost
+        self.cost_less_than = cost_less_than # get all assets less than cost
+        self.location = location # get all assets at this location and all its child locations
+        self.description = description # get all assets at this location and all its child locations
 
     def get_url_query_params(self):
         params = "?"
@@ -349,13 +354,12 @@ class Filters:
             params = params + f"cost__lt={str(self.cost_less_than)}&"
         if self.location:
             params = params + f"location_count.location__eq={str(self.location)}&"
+        if self.description:
+            params = params + f"desc__contains={str(self.description)}&"
+
         params = params[:-1]
         return params
 
-filters = Filters()
-filters.cost_greater_than = 100
-filters.cost_less_than = 1000.01
-filters.location = 3
 def get_assets_filtered(user:User,filters:Filters):
     headers = {'Authorization': f'Bearer {user.access_token}'}
     url = 'http://localhost:5000/assets/0'
@@ -363,6 +367,27 @@ def get_assets_filtered(user:User,filters:Filters):
     print(f'{url}{params}')
     paginated_listing = requests.get(f'{url}{params}', headers=headers)
     return paginated_listing
+
+# ########################################################################################
+# Example based on ./back/db/db.sqlite3, filtering for cost range of assets at location with location id 3
+filtered_res_1 = get_assets_filtered(
+        user,
+        Filters(
+            cost_greater_than = 100,
+            cost_less_than = 1000.01,
+            location = 3,
+        )
+    ).json()
+pprint(filtered_res_1)
+# Example based on ./back/db/db.sqlite3, filtering for asset descriptions containing 'far'
+filtered_res_2 = get_assets_filtered(
+        user,
+        Filters(
+            description = "far",
+        )
+    ).json()
+pprint(filtered_res_2)
+# ########################################################################################
 
 #
 ## get image
