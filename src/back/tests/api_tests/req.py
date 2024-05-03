@@ -387,11 +387,56 @@ filtered_res_2 = get_assets_filtered(
         )
     ).json()
 pprint(filtered_res_2)
-# ########################################################################################
 
+# #############################################################################
+# Get image
+# #############################################################################
+'''
+curl -X GET "http://localhost:5000/img/assets/1.jpg?file_access_token=$FILE_ACCESS_TOKEN"  --output "./temp"
+
+Example response: <the image requested>
+'''
+import shutil
+def get_image(file_name, dest):
+    #headers = {'Authorization': f'Bearer {user.access_token}'}
+    url = f'http://localhost:5000/img/assets/{file_name}?file_access_token={user.file_access_token}'
+    response = requests.get(url, stream=True)
+    with open(dest, 'wb') as out_file:
+        shutil.copyfileobj(response.raw, out_file)
+    del response
+
+# #############################################################################
+# Assert that the downloaded image is correct, by comparing the hashe of the
+# picture file on the server to the hash of the picture file downloaded.
 #
-## get image
-#curl -X GET "http://localhost:5000/img/assets/1.jpg?file_access_token=$FILE_ACCESS_TOKEN"  --output "./temp"
-#
-## -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# If the hashes of these two files are the same, this gives a strong indication
+# that they are indeed the same files.  In other words, the request for the 
+# picture file succeeded.
+import hashlib
+
+def get_file_hash(f):
+    BLOCKSIZE = 65536
+    with open(f, 'rb') as afile:
+        buf = afile.read(BLOCKSIZE)
+        hasher = hashlib.md5()
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = afile.read(BLOCKSIZE)
+    req_hash =  hasher.hexdigest()
+    return req_hash
+
+def test_correct_file(file_requested, file_expected):
+    get_image(file_requested, 'downloaded.JPG')
+    f1_hash = get_file_hash('downloaded.JPG')
+    f2_hash = get_file_hash(file_expected)
+    print(f1_hash)
+    print(f2_hash)
+    return f1_hash == f2_hash
+
+if test_correct_file('1.JPG', '../../db/files/assets/1.JPG'):
+    print("File requested as expected.")
+
+if test_correct_file('non_existant_file.JPG', '../../db/files/file_not_found.jpg'):
+    print("File requested as expected.")
+
 
