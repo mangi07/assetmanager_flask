@@ -1,4 +1,7 @@
 from pprint import pprint
+import base64
+import json
+from datetime import datetime
 
 import requests
 
@@ -36,6 +39,31 @@ class User:
         self.refresh_token = tokens['refresh_token']
 
 
+    def _refresh(self):
+        """
+        Assumes the access token has expired but that the refresh token is still valid and 
+        that the refresh token can be used in the same way the access token is used to make 
+        requests to JWT-restricted routes.
+
+        Example request:
+
+        curl -X POST http://localhost:5000/refresh -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODI4NTYsIm5iZiI6MTU2Njg4Mjg1NiwianRpIjoiZDNiODk3NDgtOThhNy00NzBkLThjOTUtNDM0NTMwODEwMzMxIiwiZXhwIjoxNTY5NDc0ODU2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.q-MTMIGfsfFHt5vgRPHz9PKruaQHQIdFZe7G4WjJcSg"
+
+        Example response:
+
+        { "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODYyMDYsIm5iZiI6MTU2Njg4NjIwNiwianRpIjoiZTcxZTgxMWQtM2JjYi00Yjk4LTk4M2ItOGQ3OTJjODYyNmQ1IiwiZXhwIjoxNTY2ODg3MTA2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.nj3-7l8K1vX1pdBkLNeWD-6PYrpyhUjM9OyYWpBBIUE",
+          "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODYyMDYsIm5iZiI6MTU2Njg4NjIwNiwianRpIjoiMjk3NTM5YzctMGM2NS00YTA0LThlZTUtYTNjYTZhZDczNTk5IiwiZXhwIjoxNTY5NDc4MjA2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.XMgsW2NF7lLbcauPCHduHG_B6ECh9veZMY9oMAdLnQM"
+          "file_access_token":"gAAAAABdpsTMUQtEUFl3oOXjYZXVV7hVv0kzK5oLs1UFuye0ESxrPqgjwp32VKuD4MZ7gd3x2Ow5LvYNnScuyJ1hwMp-LZJkrW1qyqRTweSU8tEVoZzOqrQ="
+        }
+        """
+        print("Performing token refresh...")
+        headers = {'Authorization': f'Bearer {user.refresh_token}'}
+        url = 'http://localhost:5000/refresh'
+        r = requests.post(f'{url}', headers=headers)
+        tokens = r.json()
+        return tokens
+        
+
     def get_tokens(self, refresh:str|None = None) -> dict:
         """Requests user authentication tokens.
 
@@ -45,29 +73,9 @@ class User:
         Returns:
             A dict of token types that could be used for request requiring authentication.
         """
-        # This if clause is included to provide an alternate direction
-        # if needed in the case of expired tokens
-        #
-        # For example,
-        #   if access or file access tokens have expired,
-        #   try the refresh: get_tokens(refresh_token), or...
-        #
-        #   if the refresh token doesn't work, just skip this if block
-        #   to resend username and password and get all new tokens:
-        #   get_tokens() <-- without passing the refresh token
         if refresh:
-            # TODO: do token refresh
-            # TODO: change return statement to correctly return the tokens
-            ## refresh
-            #curl -X POST http://localhost:5000/refresh -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODI4NTYsIm5iZiI6MTU2Njg4Mjg1NiwianRpIjoiZDNiODk3NDgtOThhNy00NzBkLThjOTUtNDM0NTMwODEwMzMxIiwiZXhwIjoxNTY5NDc0ODU2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.q-MTMIGfsfFHt5vgRPHz9PKruaQHQIdFZe7G4WjJcSg"
-            ## Example response:
-            ## {
-            ##   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODYyMDYsIm5iZiI6MTU2Njg4NjIwNiwianRpIjoiZTcxZTgxMWQtM2JjYi00Yjk4LTk4M2ItOGQ3OTJjODYyNmQ1IiwiZXhwIjoxNTY2ODg3MTA2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.nj3-7l8K1vX1pdBkLNeWD-6PYrpyhUjM9OyYWpBBIUE",
-            ##   "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjY4ODYyMDYsIm5iZiI6MTU2Njg4NjIwNiwianRpIjoiMjk3NTM5YzctMGM2NS00YTA0LThlZTUtYTNjYTZhZDczNTk5IiwiZXhwIjoxNTY5NDc4MjA2LCJpZGVudGl0eSI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.XMgsW2NF7lLbcauPCHduHG_B6ECh9veZMY9oMAdLnQM"
-            ##   "file_access_token":"gAAAAABdpsTMUQtEUFl3oOXjYZXVV7hVv0kzK5oLs1UFuye0ESxrPqgjwp32VKuD4MZ7gd3x2Ow5LvYNnScuyJ1hwMp-LZJkrW1qyqRTweSU8tEVoZzOqrQ="
-            ## }
-            #
-            return {}
+            refresh_tokens = self._refresh()
+            return refresh_tokens
         payload = {'username':self.username, 'password':self.password}
         r = requests.post('http://localhost:5000/login', json=payload)
         tokens = r.json()
@@ -78,6 +86,27 @@ class User:
     def init_tokens(self):
         tokens = self.get_tokens()
         self.set_tokens(tokens)
+
+
+    def token_is_expired(self, token):
+        """
+        Example expired token:
+
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxNTA1OTQ0NCwianRpIjoiODU2M2I1MGQtYzY4Yi00ODZkLWFlMGItYmY0ZGFjMmViZDI5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJuYmYiOjE3MTUwNTk0NDQsImV4cCI6MTcxNTA2MDM0NH0.HCoEGxYMtR8RPcxn4V2IiRVyXAXHCsdnj0G_dQ72rvE'
+        """
+        # get middle part
+        token = token[token.index(".")+1:]
+        token = token[:token.index(".")] + "="
+        # Following the example, we should end up with (notice the appended equal sign to make ascii decoding work):
+        # eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxNTA1OTQ0NCwianRpIjoiODU2M2I1MGQtYzY4Yi00ODZkLWFlMGItYmY0ZGFjMmViZDI5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJuYmYiOjE3MTUwNTk0NDQsImV4cCI6MTcxNTA2MDM0NH0=
+
+        token_dict = json.loads(base64.b64decode(token).decode('ascii'))
+        # Following the example, token_dict['exp'] should be '1715060344'
+        exp_seconds_from_epoch = token_dict['exp']
+        token_date = datetime.fromtimestamp(exp_seconds_from_epoch) # Should represent time: 2024-05-07 15:39:04
+
+        # compare with the current time
+        return token_date < datetime.now() # indicating expired if True
 
 
 user = User()
@@ -91,6 +120,8 @@ print(user.file_access_token)
 print("\nRefresh Token:")
 print(user.refresh_token)
 print()
+print("is expired??")
+print(user.token_is_expired('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxNTA1OTQ0NCwianRpIjoiODU2M2I1MGQtYzY4Yi00ODZkLWFlMGItYmY0ZGFjMmViZDI5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJuYmYiOjE3MTUwNTk0NDQsImV4cCI6MTcxNTA2MDM0NH0.HCoEGxYMtR8RPcxn4V2IiRVyXAXHCsdnj0G_dQ72rvE'))
 
 
 # #############################################################################
@@ -378,7 +409,7 @@ filtered_res_1 = get_assets_filtered(
             location = 3,
         )
     ).json()
-pprint(filtered_res_1)
+#pprint(filtered_res_1)
 # Example based on ./back/db/db.sqlite3, filtering for asset descriptions containing 'far'
 filtered_res_2 = get_assets_filtered(
         user,
@@ -386,7 +417,7 @@ filtered_res_2 = get_assets_filtered(
             description = "far",
         )
     ).json()
-pprint(filtered_res_2)
+#pprint(filtered_res_2)
 
 # #############################################################################
 # Get image
@@ -483,6 +514,6 @@ def get_location_listing(user:User):
     return location_listing
 
 locs = get_location_listing(user)
-#pprint(locs.json())
+pprint(locs.json())
 
 
