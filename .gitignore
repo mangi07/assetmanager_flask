@@ -12,5 +12,7 @@ src/back/tests/test_db/db.sqlite3
 src/back/flaskenv/*
 
 src/front/src/js/config.py
+src/front/src/node_modules/*
+
 
 dev.bat

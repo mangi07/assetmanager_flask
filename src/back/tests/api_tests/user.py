@@ -56,7 +56,8 @@ class User:
         """
         print("Performing token refresh...")
         headers = {'Authorization': f'Bearer {self.refresh_token}'}
-        url = 'http://localhost:5000/refresh'
+        #url = 'http://localhost:5000/refresh'
+        url = 'https://apps.home.brodev.dev/server1/refresh'
         r = requests.post(f'{url}', headers=headers)
         tokens = r.json()
         return tokens
@@ -71,11 +72,15 @@ class User:
         Returns:
             A dict of token types that could be used for request requiring authentication.
         """
+        print("Getting tokens for user login...")
         if refresh:
             refresh_tokens = self._refresh()
             return refresh_tokens
         payload = {'username':self.username, 'password':self.password}
-        r = requests.post('http://localhost:5000/login', json=payload)
+        #url = 'http://localhost:5000/login'
+        url = 'https://apps.home.brodev.dev/server1/login'
+        #r = requests.post('http://localhost:5000/login', json=payload)
+        r = requests.post(f'{url}', json=payload)
         tokens = r.json()
         print(tokens)
         return tokens

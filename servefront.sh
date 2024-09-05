@@ -1,4 +1,5 @@
 #!/bin/bash
 
 cd ./src/front
-npm run serve
+#npm run dev
+npm run build

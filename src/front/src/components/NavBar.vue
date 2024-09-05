@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar color="primary" dark app>
+    <v-app-bar>
 
       <v-menu
         left

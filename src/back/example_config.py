@@ -15,4 +15,4 @@ def get_host_url():
         #location /api {
         #	proxy_pass http://localhost:5000/;
         #}
-    #return "http://localhost/api/"
+    #return "http://path/to/backend/root/with/forwardslash/"

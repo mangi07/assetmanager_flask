@@ -1,3 +1,6 @@
+# TODO: extract base url to environment file
+# TODO: test /user route that gets information on the currently logged in user
+
 from pprint import pprint
 
 import requests

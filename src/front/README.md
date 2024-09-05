@@ -10,7 +10,7 @@
     ./src/js/config.js
 and follow example's suggestions to modify newly created ./src/js/config.js to your liking.
 
-* Secondly, for configuring server proxy, edit ./vue.config.js to change its publicPath
+* Secondly, for configuring server proxy, copy ./example_vite.config.js to new file ./vite.config.js and edit ./vite.config.js to change its publicPath as appropriate.
 
 #### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
@@ -19,30 +19,27 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ### Install libraries
 
 ```
-npm install
-```
-
-or with low memory constraints on server, example for limiting node to 200 MB:
-
-```
-npm install --max-old-space-size=200
+pnpm install
 ```
 
 
 ### Compiles and hot-reloads for development server
 ```
-npm run serve
+pnpm run dev
 
-or for low memory constraints on server, use
+```
 
-npm run serve-low-mem
+
+### Compiles for development preview
+```
+pnpm run serve
 
 ```
 
 ### Compiles and runs libraries for quick tests in node
 ### index.js runner must be present in ./src/js/
 ```
-npm run libs
+pnpm run libs
 ```
 
 ### Setup for testing js libraries
@@ -51,16 +48,16 @@ npm run libs
 Currently, flask dev server must be running for axios requests.
 
 ```
-npm run test:libs
+pnpm run test:libs
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+pnpm run build
 ```
 
 ### Lints and fixes files
 ```
-npm run lint
+pnpm run lint
 ```
 

@@ -23,7 +23,7 @@ function getPicture(link) {
         return response.data;
       })
       .catch(function (error) {
-				console.log(error.response.data)
+	console.log(error.response.data)
         return error.response.data;
       });
   }).catch( (error) => {

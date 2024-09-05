@@ -39,13 +39,13 @@
               mdi-tag
             </v-icon>
             <v-chip class="ma-1" color="blue-grey" label text-color="white">
-              <span class="font-weight-light">(Est.) Total Cost......{{ asset.cost | currency }}</span>
+              <span class="font-weight-light">(Est.) Total Cost......{{ $filters.filterCurrency(asset.cost) }}</span>
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-1" label text-color="white">
-              <span class="font-weight-light">Cost Brand New......{{ asset.cost | currency }}</span>
+              <span class="font-weight-light">Cost Brand New......{{ $filters.filterCurrency(asset.cost_brand_new) }}</span>
             </v-chip>
             <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="white">
-              <span class="font-weight-light">Shipping Cost......{{ asset.shipping | currency }}</span>
+              <span class="font-weight-light">Shipping Cost......{{ $filters.filterCurrency(asset.shipping) }}</span>
             </v-chip>
             <v-chip class="ma-2" color="yellow-grey" label text-color="black">
               <span class="font-weight-light">Life Expectancy: {{ asset.life_expectancy_years || '--' }} years</span>
