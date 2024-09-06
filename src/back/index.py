@@ -186,7 +186,9 @@ def get_image(path):
         # This could result in sending a file as an image when the file is not really an image; 
         # the server trusts that the requested file really is an image. 
         # TODO: have file root load from env rather than hard-coded text
-        return send_file(f"db/files/{path}", mimetype='image/jpg')
+        #return send_file(f"db/files/{path}", mimetype='image/jpg')
+        BASE_PATH = config.get_asset_files_base_path()
+        return send_from_directory(BASE_PATH, path, mimetype='image/jpg')
     except:
         # TODO: have file root load from env rather than hard-coded text
         return send_file("db/files/file_not_found.jpg", mimetype='image/jpg')
@@ -202,7 +204,9 @@ def get_file(path):
         # See the following URL:
         # https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/
         #   This does include a guide for indicating a download base path, further down the webpage
-        return send_file(f"db/files/{path}")
+        #return send_file(f"db/files/{path}")
+        BASE_PATH = config.get_asset_files_base_path()
+        return send_from_directory(BASE_PATH, path)
     except:
         # This could result in sending a file as an image when the file is not really an image;
         # TODO: have file root load from env rather than hard-coded text

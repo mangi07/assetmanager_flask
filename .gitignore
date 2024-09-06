@@ -8,7 +8,7 @@ src/back/config.py
 src/back/log.txt
 src/back/db/db.sqlite3
 src/back/tests/test_db/db.sqlite3
-
+src/back/.env
 src/back/flaskenv/*
 
 src/front/src/js/config.py
