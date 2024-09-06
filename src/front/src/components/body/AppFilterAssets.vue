@@ -116,6 +116,7 @@ export default {
         .then(function(result){
           var locs = result.data.locations
           vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
+          // TODO: https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22
           vi.$router.push({name: 'asset-list', params: {prev: vi.pagination.prev, next: vi.pagination.next}})
         });
     }

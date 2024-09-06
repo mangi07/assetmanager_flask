@@ -28,7 +28,7 @@
       >
         <v-list-item>
           <v-list-item-avatar>
-            <v-icon color="info">mdi-account</v-icon>
+            <v-icon color="warning">mdi-account</v-icon>
           </v-list-item-avatar>
 
           <v-list-item-content>
