@@ -1,6 +1,12 @@
 .DS_Store
 node_modules
 
+# This config is machine specific, set up per machine:
+vite.config.js
+
+# This is not project source code:
+dist/
+
 # local env files
 .env.local
 .env.*.local
