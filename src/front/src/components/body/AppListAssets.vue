@@ -258,6 +258,7 @@ export default {
     overlay: false,
     selected_asset: 0,
   }),
+
   methods: {
     showPics: function (id) {
       this.$data.selected_asset = id
@@ -265,6 +266,7 @@ export default {
         this.$data.overlay = true
       }
     },
+
     getReceivingIcon: function (asset) {
       let color, icon
       switch (asset.receiving) {
@@ -286,6 +288,7 @@ export default {
       } 
       return {icon:icon, color:color}
     },
+
     getRequisitionIcon: function (asset) {
       let color, icon
       switch (asset.requisition) {

@@ -58,7 +58,8 @@
 
 <script>
 /* eslint-disable no-unused-vars, no-console */
-import assetGetter from '../../js/assets/get_assets';
+//import assetGetter from '../../js/assets/get_assets';
+import assetGetter from '../../js/api/provider';
 import getQueryString from '../../js/assets/query_params';
 import locationGetter from '../../js/locations/get_locations';
 

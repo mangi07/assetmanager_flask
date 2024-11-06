@@ -23,6 +23,7 @@
     "@mdi/font": "^4.9.95",
     "@vue/test-utils": "2.0.2",
     "atob": "^2.1.2",
+    "axios-mock-adapter": "^2.1.0",
     "chai": "^4.3.8",
     "eslint": "^8.50.0",
     "eslint-plugin-vue": "^9.17.0",

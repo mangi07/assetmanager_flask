@@ -9,6 +9,7 @@ Documentation: https://flask-jwt-extended.readthedocs.io/en/latest
 'use strict';
 
 import axios from 'axios';
+import AxiosMockAdapter from 'axios-mock-adapter';
 import atob from 'atob'
 import { config }  from '../config'
 
@@ -42,18 +43,25 @@ function getTokensFromStorage() {
 }
 
 function requestTokens(username, password) {
-	var data = {username:username, password:password};
-	return requester.post('login', data)
+  // TODO: refactor this test of axios-mock-adapter
+  // TODO: OR refactor this code block to use api provider that reads config to switch between real API calls and mock stubs
+  const mock = new AxiosMockAdapter(axios);
+  // TODO: continue here, refering to example at https://www.npmjs.com/package/axios-mock-adapter
+  // TODO: investigate if moxios could alternatively be used for this use case
+
+
+  var data = {username:username, password:password};
+  return requester.post('login', data)
     .then(function (response) {      
-			// handle success
-			var accessToken = response.data.access_token;
+      // handle success
+      var accessToken = response.data.access_token;
       var refreshToken = response.data.refresh_token;
       var fileAccessToken = response.data.file_access_token
 
-			// save token on user's device (may overwrite tokens previously stored in local or session storage)
-			setTokens(accessToken, refreshToken, fileAccessToken);
-
-			return {'error': null, 'access': accessToken, 'refresh': refreshToken, 'file_access_token': fileAccessToken};
+      // save token on user's device (may overwrite tokens previously stored in local or session storage)
+      setTokens(accessToken, refreshToken, fileAccessToken);
+      
+      return {'error': null, 'access': accessToken, 'refresh': refreshToken, 'file_access_token': fileAccessToken};
     })
     .catch(function (error) { // 400s errors
       return error.response.data;
