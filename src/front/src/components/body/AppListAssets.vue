@@ -91,7 +91,8 @@
           Supplier: {{ asset.supplier || "--" }}
         </v-chip>
         <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
-          Date Warranty Expires: {{ asset.date_warranty_expires | date }}
+          <!--Date Warranty Expires: {{ asset.date_warranty_expires | date }}-->
+          Date Warranty Expires: {{ $filters.filterDate(asset.date_warranty_expires) }}
         </v-chip>
 
         <!--AUDIT AND LOCATIONS-->
@@ -101,10 +102,12 @@
           Remaining: {{ asset.bulk_count - asset.bulk_count_removed || "--" }}    
         </v-chip>
         <v-chip class="ma-2"  label color="grey" text-color="black">
-          Date Placed: {{ asset.date_placed | date }}
+          <!--Date Placed: {{ asset.date_placed | date }}-->
+          Date Placed: {{ $filters.filterDate(asset.date_placed) }}
         </v-chip>
         <v-chip class="ma-2"  label color="grey" text-color="black">
-          Date Removed: {{ asset.date_removed | date }}
+          <!--Date Removed: {{ asset.date_removed | date }}-->
+          Date Removed: {{ $filters.filterDate(asset.date_removed) }}
         </v-chip>
 
         <v-divider></v-divider>
@@ -164,13 +167,10 @@
                       :key="i"
                     >
                       <v-list-item three-line>
-                        <v-list-item-content>
-                          <!--<div class="overline mb-4">{{ invoice }}</div>-->
                           <div class="overline mb-4">Invoice Total: {{ invoice.total | currency }}</div>
                           <div class="overline mb-4">Asset Amount: {{ invoice.asset_amount | currency }}</div>
                           <v-list-item-title class="headline mb-1">Inv. # {{ invoice.number }}</v-list-item-title>
                           <v-list-item-subtitle>Note: {{ invoice.notes }}</v-list-item-subtitle>
-                        </v-list-item-content>
                       </v-list-item>
 
                       <v-card-actions>
@@ -195,8 +195,6 @@
                       :key="i"
                     >
                       <v-list-item three-line>
-                        <v-list-item-content>
-                          <!--<div class="overline mb-4">{{ invoice }}</div>-->
                           <div class="overline mb-4">FAR Total: {{ far.amount | currency }}</div>
                           <!-- TODO: far.asset_amount does not exist yet -->
                           <div class="overline mb-4">Asset Amount: {{ far.asset_amount | currency }}</div>
@@ -204,9 +202,8 @@
                           <v-list-item-title class="overline mb-4">Acct. Number: {{ far.account_number }}</v-list-item-title>
                           <v-list-item-title class="overline mb-4">Acct. Desc: {{ far.account_description }}</v-list-item-title>
                           <v-list-item-subtitle>Description: {{ far.description }}</v-list-item-subtitle>
-                          <v-list-item-subtitle>Start Date: {{ far.start_date | date}}</v-list-item-subtitle>
+                          <v-list-item-subtitle>Start Date: {{ $filters.filterDate(far.start_date) }}</v-list-item-subtitle>
                           <v-list-item-subtitle>Useful Life: {{ far.life}} years</v-list-item-subtitle>
-                        </v-list-item-content>
                       </v-list-item>
 
                     </v-card>
@@ -227,11 +224,9 @@
                       :key="i"
                     >
                       <v-list-item three-line>
-                        <v-list-item-content>
-                          <v-list-item-title class="overline mb-4">Audit Date: {{ location.audit_date | date }}</v-list-item-title>
+                          <v-list-item-title class="overline mb-4">Audit Date: {{ $filters.filterDate(location.audit_date) }}</v-list-item-title>
                           <div>Location: {{ location.nesting }}</div>
                           <div>Count: {{ location.count }}</div>
-                        </v-list-item-content>
                       </v-list-item>
 
                     </v-card>
@@ -249,7 +244,8 @@
 
 <script>
 /* eslint-disable no-console*/
-import tokens from '../../js/user/tokens'
+//import tokens from '../../js/user/tokens'
+import provider from '../../js/api/provider'
 //import assetGetter from '../../js/assets/get_assets';
 
 export default {
@@ -325,7 +321,8 @@ export default {
 
     assets: function () {
       var a = this.$store.state.assetsModule.assets
-      var file_access_token = tokens.getTokensFromStorage().file_access_token
+      //var file_access_token = tokens.getTokensFromStorage().file_access_token
+      var file_access_token = provider.getTokensFromStorage().file_access_token
 
       for (let i = 0; i < a.length; i++) {
         for (let j = 0; j < a[i].pictures.length; j++) {
@@ -336,6 +333,10 @@ export default {
         }
 
         var locs = this.$store.state.locationsModule.locations
+        // debug:
+        console.log("Debug message from AppListAssets.vue computed assets:")
+        console.log(locs);
+
         var location_counts = a[i].location_counts
         for (let k = 0; k < location_counts.length; k++) {
           var loc = location_counts[k]

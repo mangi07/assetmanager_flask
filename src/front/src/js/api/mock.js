@@ -5,12 +5,24 @@ Library to provide mock api responses.
  
 'use strict';
 
+function getUser() {
+  console.log("Message from 'getUser method in mock.js' :)");
+  
+  let user = {
+    username: "MockUser",
+    role: "Regular",
+    loggedIn: true,
+    error: null
+  };
+  
+  return Promise.resolve(user);
+}
+
 function getPaginatedAssetsMock(link='/assets/0') {
   // debug:
   console.log("Message from 'getPaginatedAssetsMock method in mock.js' :)");
   return Promise.resolve(
     // return assets listing object, as specified by the backend api   
-    // TODO: change links to dummy content that does not depend on real server
     {
       "data": {
 	    "assets": {
@@ -18,11 +30,11 @@ function getPaginatedAssetsMock(link='/assets/0') {
 			 "bulk_count": 1,
 			 "bulk_count_removed": 0,
 			 "category_1": "AC",
-			 "category_2": "NULL",
+			 "category_2": null,
 			 "cost": 1000.25,
 			 "cost_brand_new": 1000.25,
 			 "date_placed": "2019-01-01 15:00:01",
-			 "date_removed": "NULL",
+			 "date_removed": null,
 			 "date_warranty_expires": "2020-03-25 00:00:00",
 			 "description": "test 1",
 			 "far": [],
@@ -61,8 +73,8 @@ function getPaginatedAssetsMock(link='/assets/0') {
 			 "cost": 500.0,
 			 "cost_brand_new": 500.0,
 			 "date_placed": "2019-01-01 15:00:01",
-			 "date_removed": "NULL",
-			 "date_warranty_expires": "NULL",
+			 "date_removed": null,
+			 "date_warranty_expires": null,
 			 "description": "test 2 - far 1",
 			 "far": [{"account_description": "test account 1",
 				  "account_id": 1,
@@ -87,32 +99,32 @@ function getPaginatedAssetsMock(link='/assets/0') {
 				       "number": "400",
 				       "total": 250.0}],
 			 "is_current": true,
-			 "life_expectancy_years": "NULL",
-			 "location_counts": [{"audit_date": "NULL",
+			 "life_expectancy_years": null,
+			 "location_counts": [{"audit_date": null,
 					      "count": 1,
 					      "count_id": 1,
 					      "description": "root",
 					      "location_id": 1,
-					      "parent_id": "NULL"}],
+					      "parent_id": null}],
 			 "manufacturer": "Carrier",
 			 "model_number": "15KCE009119",
 			 "pictures": ["https://picsum.photos/200/300"],
 			 "receiving": "received",
 			 "requisition": "unspecified",
 			 "serial_number": "1302770189",
-			 "shipping": "NULL",
+			 "shipping": null,
 			 "supplier": "Island Breeze"},
 
 		   "3": {"asset_id": "000003",
 			 "bulk_count": 3,
 			 "bulk_count_removed": 0,
 			 "category_1": "AC",
-			 "category_2": "NULL",
+			 "category_2": null,
 			 "cost": 1000.0,
 			 "cost_brand_new": 1000.0,
 			 "date_placed": "2019-01-01 15:00:01",
-			 "date_removed": "NULL",
-			 "date_warranty_expires": "NULL",
+			 "date_removed": null,
+			 "date_warranty_expires": null,
 			 "description": "test 3 - far 2",
 			 "far": [{"account_description": "test account 2",
 				  "account_id": 2,
@@ -132,7 +144,7 @@ function getPaginatedAssetsMock(link='/assets/0') {
 				       "total": 500.0}],
 			 "is_current": true,
 			 "life_expectancy_years": 8,
-			 "location_counts": [{"audit_date": "NULL",
+			 "location_counts": [{"audit_date": null,
 					      "count": 1,
 					      "count_id": 2,
 					      "description": "subB",
@@ -150,19 +162,19 @@ function getPaginatedAssetsMock(link='/assets/0') {
 			 "receiving": "placed",
 			 "requisition": "partial payment",
 			 "serial_number": "1302770188",
-			 "shipping": "NULL",
+			 "shipping": null,
 			 "supplier": "Island Breeze"},
 
 		   "4": {"asset_id": "000004",
 			 "bulk_count": 1,
 			 "bulk_count_removed": 0,
 			 "category_1": "AC",
-			 "category_2": "NULL",
+			 "category_2": null,
 			 "cost": 500.0,
 			 "cost_brand_new": 500.0,
 			 "date_placed": "2019-01-01 15:00:01",
-			 "date_removed": "NULL",
-			 "date_warranty_expires": "NULL",
+			 "date_removed": null,
+			 "date_warranty_expires": null,
 			 "description": "test 4",
 			 "far": [],
 			 "id": 4,
@@ -181,19 +193,19 @@ function getPaginatedAssetsMock(link='/assets/0') {
 			 "receiving": "unspecified",
 			 "requisition": "unspecified",
 			 "serial_number": "1302770189",
-			 "shipping": "NULL",
+			 "shipping": null,
 			 "supplier": "Island Breeze"},
 
 		   "5": {"asset_id": "000005",
 			 "bulk_count": 1,
 			 "bulk_count_removed": 0,
 			 "category_1": "AC",
-			 "category_2": "NULL",
+			 "category_2": null,
 			 "cost": 1000.0,
 			 "cost_brand_new": 1000.0,
 			 "date_placed": "2019-01-01 15:00:01",
-			 "date_removed": "NULL",
-			 "date_warranty_expires": "NULL",
+			 "date_removed": null,
+			 "date_warranty_expires": null,
 			 "description": "test 5",
 			 "far": [],
 			 "id": 5,
@@ -212,21 +224,71 @@ function getPaginatedAssetsMock(link='/assets/0') {
 			 "receiving": "placed",
 			 "requisition": "paid in full",
 			 "serial_number": "1302770188",
-			 "shipping": "NULL",
+			 "shipping": null,
 			 "supplier": "Island Breeze"}}
 	},
 
-	 "filters": {"asset.cost__gt": "NULL",
-		     "asset.cost__lt": "NULL",
-		     "asset.description__contains": "NULL",
-		     "location": "NULL"},
+	 "filters": {"asset.cost__gt": null,
+		     "asset.cost__lt": null,
+		     "asset.description__contains": null,
+		     "location": null},
 	 "msg": "testing",
 	 "next": "/assets/1"
     } // end object passed to Promise.resolve method 
   );
 }
 
+
+function getAllLocationsMock() {
+  // debug:
+  console.log("Message from 'getAllLocationsMock method in mock.js' :)");
+  return Promise.resolve(
+    {
+
+      'data':{
+        'locations':{
+          '1': {
+            'description': 'root',
+            'parent': null
+          },
+          '2': {
+            'description': 'subA',
+            'parent': 1
+          },
+          '3': {
+            'description': 'subB',
+            'parent': 1
+          },
+          '4': {
+            'description': 'subA-1',
+            'parent': 2
+          },
+          '5': {
+            'description': 'subB-1',
+            'parent': 3
+          },
+          '6': {
+            'description': 'subB-2',
+            'parent': 3
+          }
+        }
+      }
+
+    }
+  );
+}
+      //var file_access_token = provider.getTokensFromStorage().file_access_token
+function getTokensFromStorage() {
+  console.log("Message from 'getAllLocationsMock method in mock.js' :)");
+  return Promise.resolve({
+    'file_access_token':'testfileaccesstoken',
+  });
+}
+
 export default {
+  getUser,
   getPaginatedAssetsMock,
+  getAllLocationsMock,
+  getTokensFromStorage,
 }
 

@@ -11,16 +11,22 @@ import api from './api'
 import mock from './mock'
 
 let provider = {}
-// if api, call api function
-// if mock, call mock function
-if (config.apiMode == "mock") {
-  provider.getPaginatedAssets = mock.getPaginatedAssetsMock;
-} else if (config.apiMode == "real") {
-  provider.getPaginatedAssets = api.getPaginatedAssets;
-}
 
-  
-  
+if (config.apiMode == "mock") {
+
+  provider.getPaginatedAssets = mock.getPaginatedAssetsMock;
+  provider.getAllLocations = mock.getAllLocationsMock;
+
+  provider.getUser = mock.getUser;
+
+  provider.getTokensFromStorage = mock.getTokensFromStorage;
+
+} else if (config.apiMode == "real") {
+
+  provider.getPaginatedAssets = api.getPaginatedAssets;
+  provider.getAllLocations = api.getAllLocations;
+
+}
 
 export default provider;
 

@@ -29,6 +29,22 @@ function getPaginatedAssets(link='/assets/0') {
   })
 }
 
+function getAllLocations() {
+  var tokens = tokenUtils.getTokensFromStorage()
+  return tokenUtils.getToken(tokens.access, tokens.refresh).then( (result) => {
+    return requester.get('/locations', {headers: {'Authorization': 'Bearer ' + result.token}})
+      .then(function (response) {
+        return response;
+      })
+      .catch(function (error) {
+        return error;
+      });
+  }).catch( (error) => {
+    console.log(error)
+  })
+}
+
 export default {
   getPaginatedAssets,
+  getAllLocations,
 }

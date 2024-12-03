@@ -3,7 +3,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import store from './store/'
 import routes from './routes/'
-import userUtils from './js/user/check_login'
+
+//import userUtils from './js/user/check_login'
+import provider from './js/api/provider'
 import vuetify from './plugins/vuetify'
 
 const app = createApp(App)
@@ -43,6 +45,9 @@ app.config.globalProperties.$filters = {
 
 app.mount('#app')
 
-userUtils.getUser().then( (result) => {
+//userUtils.getUser().then( (result) => {
+//  store.dispatch('userModule/setUserAction', result)
+//})
+provider.getUser().then( (result) => {
   store.dispatch('userModule/setUserAction', result)
 })
