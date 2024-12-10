@@ -77,8 +77,8 @@
         this.$data.drawer = false
       },
       removeVListItemActiveClass: function (title) {
-        console.log("call to remove removeVListItemActiveClass");
-        console.log(title);
+        //console.log("call to remove removeVListItemActiveClass");
+        //console.log(title);
         var el = this.$refs[title][0].$el
 
         var classList = el.classList;

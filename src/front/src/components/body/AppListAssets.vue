@@ -152,12 +152,14 @@
 
         <v-expansion-panels>
           <v-expansion-panel>
-            <v-expansion-panel-title>Details</v-expansion-panel-title>
+            <v-expansion-panel-title-wrapped title="Details">
+            </v-expansion-panel-title-wrapped>
             <v-expansion-panel-text>
 
               <v-expansion-panels>
                 <v-expansion-panel>
-                  <v-expansion-panel-title>Invoices</v-expansion-panel-title>
+                  <v-expansion-panel-title-wrapped title="Invoices">
+                  </v-expansion-panel-title-wrapped>
                   <v-expansion-panel-text>
                     <v-card
                       class="mx-auto"
@@ -167,8 +169,9 @@
                       :key="i"
                     >
                       <v-list-item three-line>
-                          <div class="overline mb-4">Invoice Total: {{ invoice.total | currency }}</div>
-                          <div class="overline mb-4">Asset Amount: {{ invoice.asset_amount | currency }}</div>
+                          <!-- <div class="overline mb-4">Invoice Total: {{ invoice.total | currency }}</div> -->
+                          <div class="overline mb-4">Invoice Total: {{ $filters.filterCurrency(invoice.total) }}</div>
+                          <div class="overline mb-4">Asset Amount: {{ $filters.filterCurrency(invoice.asset_amount) }}</div>
                           <v-list-item-title class="headline mb-1">Inv. # {{ invoice.number }}</v-list-item-title>
                           <v-list-item-subtitle>Note: {{ invoice.notes }}</v-list-item-subtitle>
                       </v-list-item>
@@ -185,7 +188,8 @@
 
               <v-expansion-panels>
                 <v-expansion-panel>
-                  <v-expansion-panel-title>Fixed Asset Register Entries</v-expansion-panel-title>
+                  <v-expansion-panel-title-wrapped title="Fixed Asset Register Entries">
+                  </v-expansion-panel-title-wrapped>
                   <v-expansion-panel-text>
                     <v-card
                       class="mx-auto"
@@ -195,15 +199,15 @@
                       :key="i"
                     >
                       <v-list-item three-line>
-                          <div class="overline mb-4">FAR Total: {{ far.amount | currency }}</div>
+                          <div class="overline mb-4">FAR Total: {{ $filters.filterCurrency(far.amount) }}</div>
                           <!-- TODO: far.asset_amount does not exist yet -->
-                          <div class="overline mb-4">Asset Amount: {{ far.asset_amount | currency }}</div>
+                          <div class="overline mb-4">Asset Amount: {{ $filters.filterCurrency(far.asset_amount) }}</div>
                           <v-list-item-title class="overline mb-4">Pdf: {{ far.pdf }}</v-list-item-title>
                           <v-list-item-title class="overline mb-4">Acct. Number: {{ far.account_number }}</v-list-item-title>
                           <v-list-item-title class="overline mb-4">Acct. Desc: {{ far.account_description }}</v-list-item-title>
                           <v-list-item-subtitle>Description: {{ far.description }}</v-list-item-subtitle>
                           <v-list-item-subtitle>Start Date: {{ $filters.filterDate(far.start_date) }}</v-list-item-subtitle>
-                          <v-list-item-subtitle>Useful Life: {{ far.life}} years</v-list-item-subtitle>
+                          <v-list-item-subtitle>Useful Life: {{ far.life }} years</v-list-item-subtitle>
                       </v-list-item>
 
                     </v-card>
@@ -214,7 +218,8 @@
               <!-- TODO: enhancement - make it look better -->
               <v-expansion-panels>
                 <v-expansion-panel>
-                  <v-expansion-panel-title>Locations</v-expansion-panel-title>
+                  <v-expansion-panel-title-wrapped title="Locations">
+                  </v-expansion-panel-title-wrapped>
                   <v-expansion-panel-text>
                     <v-card
                       class="mx-auto"
@@ -228,7 +233,6 @@
                           <div>Location: {{ location.nesting }}</div>
                           <div>Count: {{ location.count }}</div>
                       </v-list-item>
-
                     </v-card>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
@@ -246,9 +250,13 @@
 /* eslint-disable no-console*/
 //import tokens from '../../js/user/tokens'
 import provider from '../../js/api/provider'
+import VExpansionPanelTitleWrapped from '../wrapped-vuetify/VExpansionPanelTitleWrapped.vue';
 //import assetGetter from '../../js/assets/get_assets';
 
 export default {
+  components: {
+    'VExpansionPanelTitleWrapped':VExpansionPanelTitleWrapped,
+  },
   props: ['prev', 'next'],
   data:  () => ({
     overlay: false,
@@ -315,6 +323,13 @@ export default {
       return {picLen:asset.pictures.length, picColor:"green"}
     },
 
+    removeClass: function (title) {
+      var elements = [].slice.call(document.getElementsByClassName('v-expansion-panel-title__overlay'));
+      elements.forEach(element => {
+        element.classList.remove('v-expansion-panel-title__overlay');
+      });
+      // TODO #2: wrap the v-expansion-panel-title class in a component
+    },
   },
 
   computed: {
@@ -334,8 +349,8 @@ export default {
 
         var locs = this.$store.state.locationsModule.locations
         // debug:
-        console.log("Debug message from AppListAssets.vue computed assets:")
-        console.log(locs);
+        //console.log("Debug message from AppListAssets.vue computed assets:")
+        //console.log(locs);
 
         var location_counts = a[i].location_counts
         for (let k = 0; k < location_counts.length; k++) {
@@ -372,6 +387,21 @@ export default {
     },
 
   },
+
+  //mounted: function () {
+  //  // TODO: copied - needs to be adapted to this component
+  //  console.log("MOUNTED")
+  //  this.$nextTick(function () {
+  //    // Code that will run only after the
+  //    // entire view has been rendered
+  //    console.log(this.$refs);
+  //    this.$data.items.forEach(item => {
+  //      console.log("in forEach");
+  //      this.removeVListItemActiveClass(item.title);
+  //    });
+  //  })
+  //},
 }
+
 </script>
 
