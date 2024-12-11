@@ -1,13 +1,11 @@
 <template>
   <v-divider></v-divider>
   <div>
-    <p>Asset Listing</p>
-    <div>{{ assets }}</div>
     <v-container class="ma-6">
+      <p>Asset Listing</p>
       <v-card
         v-for="(asset, i) in assets"
         :key="i"
-        color="blue-grey lighten-4"
         class="ma-3"
       >
         <v-card-title>
@@ -17,100 +15,86 @@
             </v-icon>
             PREVIOUS ASSET
           </div>
-          <v-chip class="ma-2" color="red darken-4" label text-color="white">
+          <v-chip class="ma-2" color="warning" variant="outlined" label>
             <v-icon large left>
               mdi-pound-box
             </v-icon>
             <span class="title font-weight-light">{{ asset.asset_id }}</span>
           </v-chip>
-          <v-chip class="ma-2" color="black lighten-4" label text-color="white">DESCRIPTION: </v-chip>
+          <v-chip variant="text" label>DESCRIPTION: </v-chip>
           <span class="title font-weight-light"> {{ asset.description }}</span>
         </v-card-title>
+        <v-divider thickness="8"></v-divider>
 
-        <v-divider></v-divider>
-
-        <!--FINANCES / COSTS-->
-        <v-icon large left>
+        <h5>FINANCIALS</h5>
+        <v-icon large left color="success-darken-1">
           mdi-tag
         </v-icon>
-        <v-chip class="ma-1" color="blue-grey" label text-color="white">
-          <span class="font-weight-light">(Est.) Total Cost......{{ $filters.filterCurrency(asset.cost) }}</span>
+        <v-chip color="success-darken-1" label>
+          (Est.) Total Cost...... {{ $filters.filterCurrency(asset.cost) }}
         </v-chip>
-        <v-chip class="ma-2" color="blue-grey lighten-1" label text-color="white">
-          <span class="font-weight-light">Cost Brand New......{{ $filters.filterCurrency(asset.cost_brand_new) }}</span>
+        <v-chip color="success" label>
+          Cost Brand New......{{ $filters.filterCurrency(asset.cost_brand_new) }}
         </v-chip>
-        <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="white">
-          <span class="font-weight-light">Shipping Cost......{{ $filters.filterCurrency(asset.shipping) }}</span>
+        <v-chip color="success-darken-2" label>
+          Shipping Cost......{{ $filters.filterCurrency(asset.shipping) }}
         </v-chip>
-        <v-chip class="ma-2" color="yellow-grey" label text-color="black">
-          <span class="font-weight-light">Life Expectancy: {{ asset.life_expectancy_years || '--' }} years</span>
+        <v-chip color="info" label>
+          Life Expectancy: {{ asset.life_expectancy_years || '--' }} years
         </v-chip>
-        <v-divider></v-divider>
+        <v-divider thickness="8"></v-divider>
 
-        <!--REQUISITION AND RECEIVING-->
-        <v-badge 
-          :icon="assetStyles[i].requisitionIcon.icon"
-          left
-          overlap
-          :color="assetStyles[i].requisitionIcon.color"
-        >
-          <v-chip class="ma-2" color="blue-grey lighten-3" label text-color="black">
-              Requisition: {{ asset.requisition }}
-          </v-chip>
-        </v-badge>
-        <v-badge 
-          :icon="assetStyles[i].receivingIcon.icon"
-          left
-          overlap
-          :color="assetStyles[i].receivingIcon.color"
-        >
-          <v-chip class="ma-2" color="blue-grey lighten-3" label text-color="black">
-            Receiving: {{ asset.receiving }}
-          </v-chip>
-        </v-badge>
+        <h5>REQUISITION AND RECEIVING STATUSES</h5>
+        <v-chip>
+          <v-icon :icon="assetStyles[i].requisitionIcon.icon" :color="assetStyles[i].requisitionIcon.color"></v-icon>
+          Requisition: {{ asset.requisition }}
+        </v-chip>
+        <v-chip>
+          <v-icon :icon="assetStyles[i].receivingIcon.icon" :color="assetStyles[i].receivingIcon.color"></v-icon>
+          Receiving: {{ asset.receiving }}
+        </v-chip>
+        <v-divider thickness="8"></v-divider>
 
-        <!--CATEGORIES-->
-        <v-chip class="ma-2" color="grey" label text-color="black">
+        <h5>ASSET CATEGORIZATIONS</h5>
+        <v-chip variant="outlined">
           Category 1: {{ asset.category_1 || "--" }}
         </v-chip>
-        <v-chip class="ma-2" color="grey" label text-color="black">
+        <v-chip variant="outlined">
           Category 2: {{ asset.category_2 || "--" }}
         </v-chip>
+        <v-divider thickness="8"></v-divider>
 
-        <!--MANUFACTURING DETAILS-->
-        <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+        <h5>MANUFACTURER / SUPPLIER DETAILS</h5>
+        <v-chip color="surface" variant="flat">
           Model Number: {{ asset.model_number || "--" }}
         </v-chip>
-        <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+        <v-chip color="surface" variant="flat">
           Serial Number: {{ asset.serial_number || "--" }}
         </v-chip>
-        <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+        <v-chip color="surface-bright" variant="flat">
           Manufacturer: {{ asset.manufacturer || "--" }}
         </v-chip>
-        <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
+        <v-chip class="ma-2" color="surface-variant" label>
           Supplier: {{ asset.supplier || "--" }}
         </v-chip>
-        <v-chip class="ma-2" color="blue-grey lighten-2" label text-color="black">
-          <!--Date Warranty Expires: {{ asset.date_warranty_expires | date }}-->
+        <v-chip class="ma-2" label>
           Date Warranty Expires: {{ $filters.filterDate(asset.date_warranty_expires) }}
         </v-chip>
+        <v-divider thickness="8"></v-divider>
 
-        <!--AUDIT AND LOCATIONS-->
-        <v-chip class="ma-2"  label color="grey" text-color="black">
+        <h5>AUDIT AND LOCATIONS</h5>
+        <v-chip color="on-surface-variant">
           Counts (this entry)...Orig. count: {{ asset.bulk_count || "--" }}, 
           Removed: {{ asset.bulk_count_removed || "--" }}, 
           Remaining: {{ asset.bulk_count - asset.bulk_count_removed || "--" }}    
         </v-chip>
-        <v-chip class="ma-2"  label color="grey" text-color="black">
-          <!--Date Placed: {{ asset.date_placed | date }}-->
+        <v-chip color="info">
           Date Placed: {{ $filters.filterDate(asset.date_placed) }}
         </v-chip>
-        <v-chip class="ma-2"  label color="grey" text-color="black">
-          <!--Date Removed: {{ asset.date_removed | date }}-->
+        <v-chip variant="outlined" color="info">
           Date Removed: {{ $filters.filterDate(asset.date_removed) }}
         </v-chip>
-
-        <v-divider></v-divider>
+        <v-divider thickness="8"></v-divider>
 
         <!--ASSET PICTURES-->
         <v-avatar
@@ -124,7 +108,6 @@
             @click="showPics(i)"
           ></v-img>
         </v-avatar>
-        <!--<v-overlay :value="overlay" contain>-->
         <v-overlay
           v-model="overlay"
           class="align-center justify-center"
@@ -248,10 +231,8 @@
 
 <script>
 /* eslint-disable no-console*/
-//import tokens from '../../js/user/tokens'
 import provider from '../../js/api/provider'
 import VExpansionPanelTitleWrapped from '../wrapped-vuetify/VExpansionPanelTitleWrapped.vue';
-//import assetGetter from '../../js/assets/get_assets';
 
 export default {
   components: {
@@ -276,11 +257,11 @@ export default {
       switch (asset.receiving) {
         case "shipped":
           icon = "mdi-airplane-takeoff"
-          color = "blue"
+          color = "surface-variant"
           break
         case "received":
           icon = "mdi-airplane-landing"
-          color = "green"
+          color = "received"
           break
         case "placed":
           icon = "mdi-check"
@@ -309,7 +290,7 @@ export default {
           icon = "mdi-check-circle"
           break
         case "donated":
-          color = "pink"
+          color = "donated"
           icon = "mdi-heart"
           break
         default:
@@ -322,21 +303,12 @@ export default {
     getPicCountIcon: function (asset) {
       return {picLen:asset.pictures.length, picColor:"green"}
     },
-
-    removeClass: function (title) {
-      var elements = [].slice.call(document.getElementsByClassName('v-expansion-panel-title__overlay'));
-      elements.forEach(element => {
-        element.classList.remove('v-expansion-panel-title__overlay');
-      });
-      // TODO #2: wrap the v-expansion-panel-title class in a component
-    },
   },
 
   computed: {
 
     assets: function () {
       var a = this.$store.state.assetsModule.assets
-      //var file_access_token = tokens.getTokensFromStorage().file_access_token
       var file_access_token = provider.getTokensFromStorage().file_access_token
 
       for (let i = 0; i < a.length; i++) {
@@ -348,9 +320,6 @@ export default {
         }
 
         var locs = this.$store.state.locationsModule.locations
-        // debug:
-        //console.log("Debug message from AppListAssets.vue computed assets:")
-        //console.log(locs);
 
         var location_counts = a[i].location_counts
         for (let k = 0; k < location_counts.length; k++) {
@@ -365,7 +334,6 @@ export default {
 
         }
       }
-      //console.log(a)
       return a
     },
 
@@ -382,25 +350,10 @@ export default {
           picCountIcon:picCountIcon
         }
       }
-      //console.log(b)
       return b
     },
 
   },
-
-  //mounted: function () {
-  //  // TODO: copied - needs to be adapted to this component
-  //  console.log("MOUNTED")
-  //  this.$nextTick(function () {
-  //    // Code that will run only after the
-  //    // entire view has been rendered
-  //    console.log(this.$refs);
-  //    this.$data.items.forEach(item => {
-  //      console.log("in forEach");
-  //      this.removeVListItemActiveClass(item.title);
-  //    });
-  //  })
-  //},
 }
 
 </script>

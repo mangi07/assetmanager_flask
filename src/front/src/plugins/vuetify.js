@@ -2,6 +2,7 @@ import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loade
 import { createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
+import 'vuetify/styles';
 
 const myCustomDarkTheme = {
   //dark: false,
@@ -9,6 +10,8 @@ const myCustomDarkTheme = {
   colors: {
     background: '#121212',
     surface: '#212121',
+    received: '#03DAC5',
+    donated: '#FF0CC0',
     //surface: '#CF6679',
     'surface-bright': '#ccbfd6',
     'surface-variant': '#a3a3a3',
@@ -20,6 +23,8 @@ const myCustomDarkTheme = {
     error: '#CF6679',
     info: '#2196F3',
     success: '#4CAF50',
+    'success-darken-1': '#4C7F00',
+    'success-darken-2': '#4BD000',
     warning: '#FB8C00'
   },
   variables: {

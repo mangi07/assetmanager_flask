@@ -50,9 +50,8 @@
       </v-list-item>
 
       <template v-slot:append>
-        <div class="pa-2">
+          <!-- <v-btn-wrapped title="Logout" @click='logOut'></v-btn-wrapped> -->
           <v-btn block @click='logOut'>Logout</v-btn>
-        </div>
       </template>
 
     </v-navigation-drawer>
@@ -61,8 +60,12 @@
 
 <script>
   import userUtils from '../js/user/check_login'
+  import VBtnWrapped from './wrapped-vuetify/VBtnWrapped.vue';
 
   export default {
+    components: {
+      VBtnWrapped: 'VBtnWrapped',
+    },
     data: () => ({
       drawer: false,
 
@@ -118,6 +121,7 @@
       background-color: #000000 !important;
       opacity: 0.80;
   }
+
 /*
   :deep() {
     .v-list-item--active {
