@@ -12,42 +12,46 @@ const requester = axios.create({
   //timeout: 1000,
 });
 
-function setTokens(access, refresh) {
+function setTokens(access, refresh, file_access_token) {
   if (access===undefined) {
     throw "In setTokens, access undefined.";
   } else if (refresh===undefined) {
     throw "In setTokens, refresh undefined.";
   }
-	var tokenData = {'access': access, 'refresh': refresh};
+  var tokenData = {'access': access, 'refresh': refresh, 'file_access_token':file_access_token};
   // save token on user's device
   window.sessionStorage.setItem('assetmanagerUserToken', JSON.stringify(tokenData));
 }
 
 function getTokensFromStorage() {
-	var tokens = JSON.parse(window.sessionStorage.getItem('assetmanagerUserToken'));
-	if (tokens === null) {
-		throw "Cannot obtain requested tokens from user's device."
-	}
-	var access = tokens.access;
+  var tokens = JSON.parse(window.sessionStorage.getItem('assetmanagerUserToken'));
+  if (tokens === null) {
+    throw "Cannot obtain requested tokens from user's device."
+  }
+  var access = tokens.access;
   var refresh = tokens.refresh;
   return {'access': access, 'refresh': refresh};
 }
 
 function requestTokens(username, password) {
-	var data = {"username": username, "password": password};
-	return requester.post('login/', data)
+  var data = {"username": username, "password": password};
+  return requester.post('login/', data)
     .then(function (response) {
-	    // Note: user may have tokens saved in local storage or session storage overwritten here.
+    // Note: user may have tokens saved in local storage or session storage overwritten here.
 
-	    // handle success
-	    var accessToken = response.data.access;
-	    var refreshToken = response.data.refresh;
+    // handle success
+    var accessToken = response.data.access;
+    var refreshToken = response.data.refresh;
+    var fileAccessToken = response.data.file_access_token
 
-	    // save token on user's device
-	    setTokens(accessToken, refreshToken); // assumed to be synchronous!!
+    // save token on user's device
+    setTokens(accessToken, refreshToken, fileAccessToken); // assumed to be synchronous!!
 
-	    return {'access': accessToken, 'refresh': refreshToken};
-	  });
+    return {'error': null, 'access': accessToken, 'refresh': refreshToken, 'file_access_token': fileAccessToken};
+  })
+  .catch(function (error) { // 400s errors
+    return error.response.data;
+  });
 }
 
 function renewTokens(refresh) {
@@ -65,8 +69,8 @@ function renewTokens(refresh) {
 }
 
 export default {
-	setTokens,
-	getTokensFromStorage,
-	requestTokens,
-	renewTokens,
+  setTokens,
+  getTokensFromStorage,
+  requestTokens,
+  renewTokens,
 }

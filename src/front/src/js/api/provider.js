@@ -7,8 +7,8 @@ responses, based on config settings.
 'use strict';
 
 import { config }  from '../config'
-import api from './api'
-import mock from './mock'
+import api from './real/api'
+import mock from './mocks/mock.js'
 
 let provider = {}
 

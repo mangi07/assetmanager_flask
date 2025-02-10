@@ -1,5 +1,5 @@
 <template>
-    <div>{{ user }}</div>
+    <!-- <div>{{ user }}</div> -->
     <home v-if ="  user.loggedIn"></home>
     <login v-if="! user.loggedIn"></login>
 </template>

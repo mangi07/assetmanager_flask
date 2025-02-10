@@ -42,7 +42,7 @@
         <v-chip color="info" label>
           Life Expectancy: {{ asset.life_expectancy_years || '--' }} years
         </v-chip>
-        <v-divider thickness="8"></v-divider>
+        <v-divider thickness="15"></v-divider>
 
         <h5>REQUISITION AND RECEIVING STATUSES</h5>
         <v-chip>
@@ -53,7 +53,7 @@
           <v-icon :icon="assetStyles[i].receivingIcon.icon" :color="assetStyles[i].receivingIcon.color"></v-icon>
           Receiving: {{ asset.receiving }}
         </v-chip>
-        <v-divider thickness="8"></v-divider>
+        <v-divider thickness="15"></v-divider>
 
         <h5>ASSET CATEGORIZATIONS</h5>
         <v-chip variant="outlined">
@@ -62,7 +62,7 @@
         <v-chip variant="outlined">
           Category 2: {{ asset.category_2 || "--" }}
         </v-chip>
-        <v-divider thickness="8"></v-divider>
+        <v-divider thickness="15"></v-divider>
 
         <h5>MANUFACTURER / SUPPLIER DETAILS</h5>
         <v-chip color="surface" variant="flat">
@@ -80,7 +80,7 @@
         <v-chip class="ma-2" label>
           Date Warranty Expires: {{ $filters.filterDate(asset.date_warranty_expires) }}
         </v-chip>
-        <v-divider thickness="8"></v-divider>
+        <v-divider thickness="15"></v-divider>
 
         <h5>AUDIT AND LOCATIONS</h5>
         <v-chip color="on-surface-variant">
@@ -94,7 +94,7 @@
         <v-chip variant="outlined" color="info">
           Date Removed: {{ $filters.filterDate(asset.date_removed) }}
         </v-chip>
-        <v-divider thickness="8"></v-divider>
+        <v-divider thickness="15"></v-divider>
 
         <!--ASSET PICTURES-->
         <v-avatar
@@ -224,7 +224,10 @@
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
+
       </v-card>
+      <v-btn :disabled="pagination.prev == null" @click="navigate('prev')"> TODO: Prev</v-btn>
+      <v-btn :disabled="pagination.next == null" @click="navigate('next')"> TODO: Next</v-btn>
     </v-container>
   </div>
 </template>
@@ -238,14 +241,35 @@ export default {
   components: {
     'VExpansionPanelTitleWrapped':VExpansionPanelTitleWrapped,
   },
-  props: ['prev', 'next'],
   data:  () => ({
     overlay: false,
     selected_asset: 0,
   }),
 
   methods: {
+    navigate: function (direction) {
+      if (direction == 'prev') {
+        this._navigate_inner(this.$store.state.assetsModule.pagination.prev);
+      } else if (direction == 'next') {
+        this._navigate_inner(this.$store.state.assetsModule.pagination.next);
+      }
+    },
+    _navigate_inner: function (link) {
+      var vi = this;
+      // Note: It is the server's responsibility to determine and provide the 
+      // new prev and next links to be updated in the UI's state and provide these
+      // in the results of this API call.
+      // 
+      // Then, the state management here should examine the result and set or update
+      // the pagination links for prev and next pages.
+      provider.getPaginatedAssets(link)
+        .then(function(result){
+          vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
+        });
+    },
+
     showPics: function (id) {
+      console.log("Call to showPics");
       this.$data.selected_asset = id
       if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
         this.$data.overlay = true
@@ -306,10 +330,11 @@ export default {
   },
 
   computed: {
-
     assets: function () {
+      console.log("computed.assets called");
       var a = this.$store.state.assetsModule.assets
       var file_access_token = provider.getTokensFromStorage().file_access_token
+      console.log(provider.getTokensFromStorage().file_access_token);
 
       for (let i = 0; i < a.length; i++) {
         for (let j = 0; j < a[i].pictures.length; j++) {
@@ -353,7 +378,32 @@ export default {
       return b
     },
 
-  },
+    pagination: function () {
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      // This pair of computed properties should have values based on which page is showing
+      // in the pagination, to determine whether 'prev' and 'next' buttons should be active.
+      // 
+      // This computed property expects another function call to set the state, such as triggered
+      // by clicking on the 'prev' or 'next' buttons and setting the links for prevPage and/or 
+      // nextPage or ensuring they are null, as appropriate.
+      //
+      // For example, if we are on the last page, showing the last group of assets in the requested
+      // (searched-for) listing, there should be no next page to go to and so 'nextPage' should,
+      // in this case, be set to null to make this UI component's 'next' button deactivated.
+      // However, if there were a next page to go to, it should be indicated in 'nextPage' as the
+      // path part of the URL that is used to tell with page should be loaded in the UI listing
+      // of assets.
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      let prevPage = this.$store.state.assetsModule.pagination.prev;
+      let nextPage = this.$store.state.assetsModule.pagination.next;
+
+      return {
+        prev: prevPage,
+        next: nextPage,
+      };
+    },
+  }, // end computed properties
 }
 
 </script>

@@ -80,8 +80,6 @@
         this.$data.drawer = false
       },
       removeVListItemActiveClass: function (title) {
-        //console.log("call to remove removeVListItemActiveClass");
-        //console.log(title);
         var el = this.$refs[title][0].$el
 
         var classList = el.classList;
@@ -96,13 +94,10 @@
       },
     },
     mounted: function () {
-      console.log("MOUNTED")
       this.$nextTick(function () {
         // Code that will run only after the
         // entire view has been rendered
-        console.log(this.$refs);
         this.$data.items.forEach(item => {
-          console.log("in forEach");
           this.removeVListItemActiveClass(item.title);
         });
       })

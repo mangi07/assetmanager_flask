@@ -10,11 +10,8 @@
       title: String,
     },
     mounted () {
-      console.log("Created called");
       var elements = [].slice.call(document.getElementsByClassName('v-expansion-panel-title__overlay'));
-      console.log(elements);
       elements.forEach(element => {
-        console.log("removing...");
         element.classList.remove('v-expansion-panel-title__overlay');
       });
     }

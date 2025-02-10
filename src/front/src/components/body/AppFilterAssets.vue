@@ -58,12 +58,9 @@
 
 <script>
 /* eslint-disable no-unused-vars, no-console */
-//import assetGetter from '../../js/assets/get_assets';
-import assetGetter from '../../js/api/provider';
 import getQueryString from '../../js/assets/query_params';
 
 // TODO: API refactor - change this out for provider module
-//import locationGetter from '../../js/locations/get_locations';
 import provider from '../../js/api/provider';
 
 export default {
@@ -97,6 +94,9 @@ export default {
     }
   },
   methods: {
+    // TODO: extract button to separate component with role 
+    //   to get asset listing, based on filters and pagination, into state, 
+    //   and push to router view that reads that state
     getAssets: function (event) {
       var vm = this.ui.data;
       var vi = this;
@@ -107,23 +107,19 @@ export default {
         vm.error = err
       }
       var link = `/assets/0${query_str}`
-      //assetGetter.getPaginatedAssets(link)
       provider.getPaginatedAssets(link)
         .then(function(result){
           vm.error = result.error;
           if (result.error == null) {
             vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
-            vi.pagination.prev = `${result.data.prev}${query_str}`
-            vi.pagination.next = `${result.data.next}${query_str}`
           }
-          //return locationGetter.getAllLocations()
           return provider.getAllLocations()
         })
         .then(function(result){
           var locs = result.data.locations
           vi.$store.dispatch('locationsModule/getNewLocationsAction', locs)
           // TODO: https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22
-          vi.$router.push({name: 'asset-list', params: {prev: vi.pagination.prev, next: vi.pagination.next}})
+          vi.$router.push({name: 'asset-list'})
         });
     }
   },

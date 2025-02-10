@@ -28,8 +28,9 @@ class User(object):
 ##############################################
 # todo: FOR DB
 users = [
-    User(1, 'a', 'a'),
-    User(2, 'b', 'b'),
+    #User(1, 'a', 'a'),
+    #User(2, 'b', 'b'),
+    User(1, 'reg', '24am20.'),
 ]
 
 username_table = {u.username: u for u in users}

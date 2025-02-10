@@ -6,8 +6,8 @@ Library to provide api responses.
 'use strict';
 
 import axios from 'axios';
-import tokenUtils from '../user/tokens'
-import { config }  from '../config'
+import tokenUtils from '../../user/tokens'
+import { config }  from '../../config'
 
 const requester = axios.create({
   baseURL: config.apiBaseUrl,
