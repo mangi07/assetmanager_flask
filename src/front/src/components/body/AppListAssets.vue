@@ -2,7 +2,7 @@
   <v-divider></v-divider>
   <div>
     <v-container class="ma-6">
-      <p>Asset Listing</p>
+      <p>asset listing</p>
       <v-card
         v-for="(asset, i) in assets"
         :key="i"
@@ -13,7 +13,7 @@
             <v-icon>
               mdi-alert
             </v-icon>
-            PREVIOUS ASSET
+            previous asset
           </div>
           <v-chip class="ma-2" color="warning" variant="outlined" label>
             <v-icon large left>
@@ -21,117 +21,121 @@
             </v-icon>
             <span class="title font-weight-light">{{ asset.asset_id }}</span>
           </v-chip>
-          <v-chip variant="text" label>DESCRIPTION: </v-chip>
+          <v-chip variant="text" label>description: </v-chip>
           <span class="title font-weight-light"> {{ asset.description }}</span>
         </v-card-title>
         <v-divider thickness="8"></v-divider>
 
-        <h5>FINANCIALS</h5>
+        <h5>financials</h5>
         <v-icon large left color="success-darken-1">
           mdi-tag
         </v-icon>
         <v-chip color="success-darken-1" label>
-          (Est.) Total Cost...... {{ $filters.filterCurrency(asset.cost) }}
+          (est.) total cost...... {{ $filters.filterCurrency(asset.cost) }}
         </v-chip>
         <v-chip color="success" label>
-          Cost Brand New......{{ $filters.filterCurrency(asset.cost_brand_new) }}
+          cost brand new......{{ $filters.filterCurrency(asset.cost_brand_new) }}
         </v-chip>
         <v-chip color="success-darken-2" label>
-          Shipping Cost......{{ $filters.filterCurrency(asset.shipping) }}
+          shipping cost......{{ $filters.filterCurrency(asset.shipping) }}
         </v-chip>
         <v-chip color="info" label>
-          Life Expectancy: {{ asset.life_expectancy_years || '--' }} years
+          life expectancy: {{ asset.life_expectancy_years || '--' }} years
         </v-chip>
         <v-divider thickness="15"></v-divider>
 
-        <h5>REQUISITION AND RECEIVING STATUSES</h5>
+        <h5>requisition and receiving statuses</h5>
         <v-chip>
           <v-icon :icon="assetStyles[i].requisitionIcon.icon" :color="assetStyles[i].requisitionIcon.color"></v-icon>
-          Requisition: {{ asset.requisition }}
+          requisition: {{ asset.requisition }}
         </v-chip>
         <v-chip>
           <v-icon :icon="assetStyles[i].receivingIcon.icon" :color="assetStyles[i].receivingIcon.color"></v-icon>
-          Receiving: {{ asset.receiving }}
+          receiving: {{ asset.receiving }}
         </v-chip>
         <v-divider thickness="15"></v-divider>
 
-        <h5>ASSET CATEGORIZATIONS</h5>
+        <h5>asset categorizations</h5>
         <v-chip variant="outlined">
-          Category 1: {{ asset.category_1 || "--" }}
+          category 1: {{ asset.category_1 || "--" }}
         </v-chip>
         <v-chip variant="outlined">
-          Category 2: {{ asset.category_2 || "--" }}
+          category 2: {{ asset.category_2 || "--" }}
         </v-chip>
         <v-divider thickness="15"></v-divider>
 
-        <h5>MANUFACTURER / SUPPLIER DETAILS</h5>
+        <h5>manufacturer / supplier details</h5>
         <v-chip color="surface" variant="flat">
-          Model Number: {{ asset.model_number || "--" }}
+          model number: {{ asset.model_number || "--" }}
         </v-chip>
         <v-chip color="surface" variant="flat">
-          Serial Number: {{ asset.serial_number || "--" }}
+          serial number: {{ asset.serial_number || "--" }}
         </v-chip>
         <v-chip color="surface-bright" variant="flat">
-          Manufacturer: {{ asset.manufacturer || "--" }}
+          manufacturer: {{ asset.manufacturer || "--" }}
         </v-chip>
         <v-chip class="ma-2" color="surface-variant" label>
-          Supplier: {{ asset.supplier || "--" }}
+          supplier: {{ asset.supplier || "--" }}
         </v-chip>
         <v-chip class="ma-2" label>
-          Date Warranty Expires: {{ $filters.filterDate(asset.date_warranty_expires) }}
+          date warranty expires: {{ $filters.filterDate(asset.date_warranty_expires) }}
         </v-chip>
         <v-divider thickness="15"></v-divider>
 
-        <h5>AUDIT AND LOCATIONS</h5>
+        <h5>audit and locations</h5>
         <v-chip color="on-surface-variant">
-          Counts (this entry)...Orig. count: {{ asset.bulk_count || "--" }}, 
-          Removed: {{ asset.bulk_count_removed || "--" }}, 
-          Remaining: {{ asset.bulk_count - asset.bulk_count_removed || "--" }}    
+          counts (this entry)...orig. count: {{ asset.bulk_count || "--" }}, 
+          removed: {{ asset.bulk_count_removed || "--" }}, 
+          remaining: {{ asset.bulk_count - asset.bulk_count_removed || "--" }}    
         </v-chip>
         <v-chip color="info">
-          Date Placed: {{ $filters.filterDate(asset.date_placed) }}
+          date placed: {{ $filters.filterDate(asset.date_placed) }}
         </v-chip>
         <v-chip variant="outlined" color="info">
-          Date Removed: {{ $filters.filterDate(asset.date_removed) }}
+          date removed: {{ $filters.filterDate(asset.date_removed) }}
         </v-chip>
         <v-divider thickness="15"></v-divider>
 
-        <!--ASSET PICTURES-->
-        <v-avatar
-          color="grey"
-          size="10vw"
-        >
-          <v-img
-            :id="i" 
-            :src="asset.pictures[0]"
-            lazy-src="https://picsum.photos/id/11/10/6"
-            @click="showPics(i)"
-          ></v-img>
-        </v-avatar>
-        <v-overlay
-          v-model="overlay"
-          class="align-center justify-center"
-        >
-          <v-carousel height="90vh">
-            <v-carousel-item
-              v-for="(picture, i) in assets[selected_asset].pictures"
-              :key="i"
-              :id="i"
-              :src="picture"
-              width="90vw"
-              max-width="100%"
-              max-height="100%"
-              contained
-            ></v-carousel-item>
-          </v-carousel>
-          <v-btn
-            icon
-            @click="overlay = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-overlay>
+        <!--asset pictures-->
+        <AppPictureCarousel :pictures="assets[i].pictures" />
 
+        <!--extract starting here-->
+        <!-- <v-avatar -->
+        <!--   color="grey" -->
+        <!--   size="10vw" -->
+        <!-- > -->
+        <!--   <v-img -->
+        <!--     :id="i"  -->
+        <!--     :src="asset.pictures[0]" -->
+        <!--     lazy-src="https://picsum.photos/id/11/10/6" -->
+        <!--     @click="showPics(i)" -->
+        <!--   ></v-img> -->
+        <!-- </v-avatar> -->
+
+        <!-- <v-overlay -->
+        <!--   v-model="overlay" -->
+        <!--   class="align-center justify-center" -->
+        <!-- > -->
+        <!--   <v-carousel height="90vh"> -->
+        <!--     <v-carousel-item -->
+        <!--       v-for="(picture, i) in assets[selected_asset].pictures" -->
+        <!--       :key="i" -->
+        <!--       :id="i" -->
+        <!--       :src="picture" -->
+        <!--       width="90vw" -->
+        <!--       max-width="100%" -->
+        <!--       max-height="100%" -->
+        <!--       contained -->
+        <!--     ></v-carousel-item> -->
+        <!--   </v-carousel> -->
+        <!--   <v-btn -->
+        <!--     icon -->
+        <!--     @click="overlay = false" -->
+        <!--   > -->
+        <!--     <v-icon>mdi-close</v-icon> -->
+        <!--   </v-btn> -->
+        <!-- </v-overlay> -->
+        <!--end extraction of picture carousel-->
 
         <v-expansion-panels>
           <v-expansion-panel>
@@ -236,10 +240,12 @@
 /* eslint-disable no-console*/
 import provider from '../../js/api/provider'
 import VExpansionPanelTitleWrapped from '../wrapped-vuetify/VExpansionPanelTitleWrapped.vue';
+import AppPictureCarousel from './AppPictureCarousel.vue';
 
 export default {
   components: {
     'VExpansionPanelTitleWrapped':VExpansionPanelTitleWrapped,
+    "AppPictureCarousel":AppPictureCarousel,
   },
   data:  () => ({
     overlay: false,
@@ -268,13 +274,13 @@ export default {
         });
     },
 
-    showPics: function (id) {
-      console.log("Call to showPics");
-      this.$data.selected_asset = id
-      if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
-        this.$data.overlay = true
-      }
-    },
+    // showPics: function (id) {
+    //   console.log("Call to showPics");
+    //   this.$data.selected_asset = id
+    //   if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
+    //     this.$data.overlay = true
+    //   }
+    // },
 
     getReceivingIcon: function (asset) {
       let color, icon
