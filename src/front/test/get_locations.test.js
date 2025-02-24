@@ -3,6 +3,8 @@ import tokenUtils from "../src/js/user/tokens.js"
 import locationsAPI from "../src/js/locations/get_locations"
 import { mockSessionStorage } from "./mockSessionStorage.js";
 
+import { env } from "./setup/env.js";
+
 describe("get_locations test", () => {
   before( () => {
     global.window = {sessionStorage: mockSessionStorage}
@@ -10,7 +12,7 @@ describe("get_locations test", () => {
 
   describe("getAllLocations", () => {
     it("should list all locations", () => {
-      return tokenUtils.requestTokens('reg', '24am20.').then ( () => {
+      return tokenUtils.requestTokens(env.username, env.password).then ( () => {
         return locationsAPI.getAllLocations().then( (result) => {
           expect(result.data.locations).to.be.an.instanceof(Object)
           expect(result.data).to.have.property('locations')

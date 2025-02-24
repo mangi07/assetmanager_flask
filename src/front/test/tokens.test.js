@@ -5,6 +5,8 @@ import atob from 'atob'
 import tokenUtils from "../src/js/user/tokens.js"
 import { mockSessionStorage } from "./mockSessionStorage.js";
 
+import { env } from "./setup/env.js";
+
 describe("tokens test", () => {
   before( () => {
     global.window = {sessionStorage: mockSessionStorage}
@@ -45,8 +47,8 @@ describe("tokens test", () => {
 
   describe('requestTokens', function () {
     it('should return access, refresh, and file access tokens and error = null', function () {
-      var username = 'reg'
-      var password = '24am20.'
+      var username = env.username
+      var password = env.password
       return tokenUtils.requestTokens(username, password).then( (result) => {
         expect(result.error).to.equal(null)
         expect(result).to.have.property('access')
@@ -57,14 +59,14 @@ describe("tokens test", () => {
 
     it('should return error on bad username', function () {
       var username = 'bad'
-      var password = '24am20.'
+      var password = env.password
       return tokenUtils.requestTokens(username, password).then( (result) => {
         expect(result.error).to.not.equal(null)
       })
     })
 
     it('should return error on bad password', function () {
-      var username = 'reg'
+      var username = env.username
       var password = 'bad'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         expect(result.error).to.not.equal(null)
@@ -74,8 +76,8 @@ describe("tokens test", () => {
 
   describe('getToken', function () {
     it('should use access token', function () {
-      var username = 'reg'
-      var password = '24am20.'
+      var username = env.username
+      var password = env.password
       return tokenUtils.requestTokens(username, password).then( (result) => {
         var access = result.access
         var refresh = result.refresh
@@ -86,8 +88,8 @@ describe("tokens test", () => {
     })
     
     it('should use refresh token and obtain new token', function () {
-      var username = 'reg'
-      var password = '24am20.'
+      var username = env.username
+      var password = env.password
       return tokenUtils.requestTokens(username, password).then( (result) => {
         var access = result.access
         var refresh = result.refresh
@@ -162,8 +164,8 @@ describe("tokens test", () => {
     })
 
     it('should renew tokens when request sent with good refresh token', () => {
-      var username = 'reg'
-      var password = '24am20.'
+      var username = env.username
+      var password = env.password
       return tokenUtils.requestTokens(username, password).then( (result) => {
         return tokenUtils.renewTokens(result.refresh).then( (result) => {
           expect(result).to.have.property('access')

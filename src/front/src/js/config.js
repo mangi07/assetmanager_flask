@@ -9,7 +9,7 @@ export const config = {
 	//apiBaseUrl: "http://localhost/api/"
 	apiBaseUrl: "https://apps.home.brodev.dev/server1/",
 
-	apiMode: "mock", // may be either "mock" or "real"
-	//apiMode: "real", // may be either "mock" or "real"
+	//apiMode: "mock", // may be either "mock" or "real"
+	apiMode: "real", // may be either "mock" or "real"
 }
 

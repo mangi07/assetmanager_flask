@@ -139,6 +139,13 @@ def get_asset_fars(ids):
 
     for a_id, f_id, description, pdf, life, start_date, amount,\
         acct_id, acct_num, acct_desc in rows:
+
+        # TODO: determine whether to either....
+        # (1) configure gunicorn dev mode like the following:
+        #   gunicorn --log-level debug myapp:app
+        # OR (2) use the flask dev server during development
+        assert isinstance(amount, (int, float)), f"Amount {amount} is not a numeric type and therefore division cannot be used to convert or format the amount."
+
         far = {
             'id':f_id,
             'description':description,

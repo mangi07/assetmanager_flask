@@ -99,44 +99,6 @@
         <!--asset pictures-->
         <AppPictureCarousel :pictures="assets[i].pictures" />
 
-        <!--extract starting here-->
-        <!-- <v-avatar -->
-        <!--   color="grey" -->
-        <!--   size="10vw" -->
-        <!-- > -->
-        <!--   <v-img -->
-        <!--     :id="i"  -->
-        <!--     :src="asset.pictures[0]" -->
-        <!--     lazy-src="https://picsum.photos/id/11/10/6" -->
-        <!--     @click="showPics(i)" -->
-        <!--   ></v-img> -->
-        <!-- </v-avatar> -->
-
-        <!-- <v-overlay -->
-        <!--   v-model="overlay" -->
-        <!--   class="align-center justify-center" -->
-        <!-- > -->
-        <!--   <v-carousel height="90vh"> -->
-        <!--     <v-carousel-item -->
-        <!--       v-for="(picture, i) in assets[selected_asset].pictures" -->
-        <!--       :key="i" -->
-        <!--       :id="i" -->
-        <!--       :src="picture" -->
-        <!--       width="90vw" -->
-        <!--       max-width="100%" -->
-        <!--       max-height="100%" -->
-        <!--       contained -->
-        <!--     ></v-carousel-item> -->
-        <!--   </v-carousel> -->
-        <!--   <v-btn -->
-        <!--     icon -->
-        <!--     @click="overlay = false" -->
-        <!--   > -->
-        <!--     <v-icon>mdi-close</v-icon> -->
-        <!--   </v-btn> -->
-        <!-- </v-overlay> -->
-        <!--end extraction of picture carousel-->
-
         <v-expansion-panels>
           <v-expansion-panel>
             <v-expansion-panel-title-wrapped title="Details">
@@ -242,15 +204,12 @@ import provider from '../../js/api/provider'
 import VExpansionPanelTitleWrapped from '../wrapped-vuetify/VExpansionPanelTitleWrapped.vue';
 import AppPictureCarousel from './AppPictureCarousel.vue';
 
+
 export default {
   components: {
     'VExpansionPanelTitleWrapped':VExpansionPanelTitleWrapped,
     "AppPictureCarousel":AppPictureCarousel,
   },
-  data:  () => ({
-    overlay: false,
-    selected_asset: 0,
-  }),
 
   methods: {
     navigate: function (direction) {
@@ -273,14 +232,6 @@ export default {
           vi.$store.dispatch('assetsModule/getNewAssetsAction', result)
         });
     },
-
-    // showPics: function (id) {
-    //   console.log("Call to showPics");
-    //   this.$data.selected_asset = id
-    //   if (this.$store.state.assetsModule.assets[id].pictures.length > 0) {
-    //     this.$data.overlay = true
-    //   }
-    // },
 
     getReceivingIcon: function (asset) {
       let color, icon

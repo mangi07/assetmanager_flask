@@ -10,7 +10,6 @@ class MyDB(object):
     __instance = None
 
     def __init__(self):
-        print(DB_PATH) # debug
         self._conn = sqlite3.connect(DB_PATH)
         self._cursor = self._conn.cursor()
 

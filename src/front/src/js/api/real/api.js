@@ -7,6 +7,7 @@ Library to provide api responses.
 
 import axios from 'axios';
 import tokenUtils from '../../user/tokens'
+import user from '../../user/check_login'
 import { config }  from '../../config'
 
 const requester = axios.create({
@@ -44,6 +45,14 @@ function getAllLocations() {
   })
 }
 
+function getTokensFromStorage() {
+  return tokenUtils.getTokensFromStorage();
+}
+
+function getUser() {
+  return user.getUser();
+}
+
 // need to adapt from here on down
 // /* get information on the current user from the server */
 // function getUser(){
@@ -76,7 +85,6 @@ function getAllLocations() {
 export default {
   getPaginatedAssets,
   getAllLocations,
-  // TODO: Add the following functions:
-  //provider.getUser = api.getUser;
-  // provider.getTokensFromStorage = api.getTokensFromStorage;
+  getUser,
+  getTokensFromStorage,
 }
