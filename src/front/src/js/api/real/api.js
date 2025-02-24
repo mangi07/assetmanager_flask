@@ -44,7 +44,39 @@ function getAllLocations() {
   })
 }
 
+// need to adapt from here on down
+// /* get information on the current user from the server */
+// function getUser(){
+//   try {
+//     var tokens = tokenUtils.getTokensFromStorage();
+//   } catch (error) {
+//     console.log(error);
+//   }
+//   
+//   requester.get('user/', {headers: {'Authorization': 'Bearer ' + tokens.access}})
+//     .then(function (response) {
+//       return response;
+//     })
+//     .catch(function (error) {
+//       console.log(error);
+//     });
+// }
+// /* check access and refresh to see if user is currently logged in */
+// function checkLogin(){
+//   try {
+//     var tokens = tokenUtils.getTokensFromStorage();
+//     var user = getUser();
+//   } catch (error) {
+//     console.log(error);
+//     return;
+//   }
+//   // do other stuff here
+// }
+
 export default {
   getPaginatedAssets,
   getAllLocations,
+  // TODO: Add the following functions:
+  //provider.getUser = api.getUser;
+  // provider.getTokensFromStorage = api.getTokensFromStorage;
 }

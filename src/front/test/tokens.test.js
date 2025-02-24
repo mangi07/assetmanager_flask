@@ -45,8 +45,8 @@ describe("tokens test", () => {
 
   describe('requestTokens', function () {
     it('should return access, refresh, and file access tokens and error = null', function () {
-      var username = 'a'
-      var password = 'a'
+      var username = 'reg'
+      var password = '24am20.'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         expect(result.error).to.equal(null)
         expect(result).to.have.property('access')
@@ -57,14 +57,14 @@ describe("tokens test", () => {
 
     it('should return error on bad username', function () {
       var username = 'bad'
-      var password = 'a'
+      var password = '24am20.'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         expect(result.error).to.not.equal(null)
       })
     })
 
     it('should return error on bad password', function () {
-      var username = 'a'
+      var username = 'reg'
       var password = 'bad'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         expect(result.error).to.not.equal(null)
@@ -74,8 +74,8 @@ describe("tokens test", () => {
 
   describe('getToken', function () {
     it('should use access token', function () {
-      var username = 'a'
-      var password = 'a'
+      var username = 'reg'
+      var password = '24am20.'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         var access = result.access
         var refresh = result.refresh
@@ -86,8 +86,8 @@ describe("tokens test", () => {
     })
     
     it('should use refresh token and obtain new token', function () {
-      var username = 'a'
-      var password = 'a'
+      var username = 'reg'
+      var password = '24am20.'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         var access = result.access
         var refresh = result.refresh
@@ -99,7 +99,6 @@ describe("tokens test", () => {
         MockDate.set(date.setDate(after_tomorrow)) // should force refresh token to be used
 
         return tokenUtils.getToken(access, refresh).then( (chosen) => {
-          //console.log(chosen)
           expect(chosen.token).to.not.equal(access)
           expect(chosen.token).to.not.equal(refresh)
           
@@ -163,8 +162,8 @@ describe("tokens test", () => {
     })
 
     it('should renew tokens when request sent with good refresh token', () => {
-      var username = 'a'
-      var password = 'a'
+      var username = 'reg'
+      var password = '24am20.'
       return tokenUtils.requestTokens(username, password).then( (result) => {
         return tokenUtils.renewTokens(result.refresh).then( (result) => {
           expect(result).to.have.property('access')

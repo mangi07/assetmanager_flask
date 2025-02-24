@@ -25,6 +25,10 @@ if (config.apiMode == "mock") {
 
   provider.getPaginatedAssets = api.getPaginatedAssets;
   provider.getAllLocations = api.getAllLocations;
+  
+  // TODO: Add the following functions:
+  //provider.getUser = api.getUser;
+  // provider.getTokensFromStorage = api.getTokensFromStorage;
 
 }
 

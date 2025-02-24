@@ -32,7 +32,8 @@ function setTokens(access, refresh, file_access_token) {
 }
 
 function getTokensFromStorage() {
-	var tokens = JSON.parse(window.sessionStorage.getItem('assetmanagerUserToken'));
+        var tokenStr = window.sessionStorage.getItem('assetmanagerUserToken')
+	var tokens = JSON.parse(tokenStr);
 	if (tokens === null) {
 		return null;
 	}
@@ -45,7 +46,7 @@ function getTokensFromStorage() {
 function requestTokens(username, password) {
   // TODO: refactor this test of axios-mock-adapter
   // TODO: OR refactor this code block to use api provider that reads config to switch between real API calls and mock stubs
-  const mock = new AxiosMockAdapter(axios);
+  //const mock = new AxiosMockAdapter(axios);
   // TODO: continue here, refering to example at https://www.npmjs.com/package/axios-mock-adapter
   // TODO: investigate if moxios could alternatively be used for this use case
 

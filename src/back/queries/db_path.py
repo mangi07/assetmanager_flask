@@ -11,4 +11,5 @@ def get_db_path():
     return os.getenv('DB_PATH')
 
 DB_PATH = get_db_path()
+
 assert type(DB_PATH) == str
