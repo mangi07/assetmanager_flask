@@ -248,7 +248,8 @@ def _get_asset_query_string(page=0, filters=None):
         asset.life_expectancy_years,
         asset.notes,
         asset.department,
-        asset.maint_dir
+        asset.maint_dir,
+        COUNT(asset.id) OVER () AS total_count
         FROM asset
     """
 
@@ -281,7 +282,14 @@ def _get_asset_query_string(page=0, filters=None):
 def get_assets(page=0, filters={}):
     """
     page: page number to determine offset of paginated results
+      Note that the maximum number of asset entries to be returned, the 'limit' in SQL, is set by a configuration value
+      and is not the responsibility of this function.
     filters: dict of filters, example: {'asset.cost__gt':100} (see query_utils.filters_to_sql)
+
+    Returns:
+        tuple of ( <assets dict>, <total_count int> )
+          where assets is the dict of asset entries by DB id -- restricted by pagination offset and limit --
+          to be the subset of all possible asset entries that exist according to the same filters.
     """
     filters = {k:v for k,v in filters.items() if v is not None}
     # TODO: If filters contain location ids, modify query string in _get_asset_query_string
@@ -312,6 +320,10 @@ def get_assets(page=0, filters={}):
     manufacturers = dict(list_manufacturers())
     suppliers = dict(list_suppliers())
 
+    total_count = 0 # remains 0 unless DB query returns at least 1 entity
+    if len(rows) > 0:
+        total_count = rows[0][-1]
+
     # combine rows per asset
     assets = {}
     for (id, asset_id, description, cost, cost_brand_new, shipping,
@@ -319,7 +331,7 @@ def get_assets(page=0, filters={}):
         model_number, serial_number, bulk_count, bulk_count_removed,
         date_placed, date_removed, date_record_created, date_warranty_expires,
         manufacturer, supplier, purchase_order,
-        life_expectancy_years, notes, department, maint_dir) in rows:
+        life_expectancy_years, notes, department, maint_dir, total_count) in rows:
         if id not in assets:
             assets[id] = {
                 'id':id, 
@@ -354,4 +366,5 @@ def get_assets(page=0, filters={}):
         assets[id]['invoices'] = invoice_groups[id]
         assets[id]['far'] = far_groups[id]
 
-    return assets
+    # TODO: Should return an empty array if no assets are found based on page (offset in DB query)
+    return assets, total_count

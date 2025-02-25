@@ -736,7 +736,8 @@ class TestAssetQueries:
         asset.life_expectancy_years,
         asset.notes,
         asset.department,
-        asset.maint_dir
+        asset.maint_dir,
+        COUNT(asset.id) OVER () AS total_count
         FROM asset LIMIT ?, ?;
         """
 
@@ -777,7 +778,8 @@ class TestAssetQueries:
         asset.life_expectancy_years,
         asset.notes,
         asset.department,
-        asset.maint_dir
+        asset.maint_dir,
+        COUNT(asset.id) OVER () AS total_count
         FROM asset
         WHERE asset.cost > ?
         LIMIT ?, ?;
@@ -801,10 +803,10 @@ class TestAssetQueries:
     # ASSET LISTINGS
     ##########################################################
     def test_get_assets_1(self, setup_mydb, pagination):
-        """Should return {} since there are 0 assets in the database."""
+        """Should return ({}, 0) since there are 0 assets in the database."""
         pagination(page=0, limit=5)
         res = asset_queries.get_assets()
-        assert res == {}
+        assert res == ({}, 0)
 
     def test_get_assets_2(self, setup_mydb, host, pagination):
         """Should return one asset in asset listing with only one asset in the database."""
@@ -815,8 +817,8 @@ class TestAssetQueries:
         """
         db = MyDB()
         db._executescript(query)
-        res = asset_queries.get_assets()
-        assert len(res) == 1
+        assets_subset, total_count = asset_queries.get_assets()
+        assert len(assets_subset) == 1 and total_count == 1
 
     def test_get_assets_3(self, setup_mydb, host, pagination):
         """Should return two assets in asset listing with only two assets in the database."""
@@ -827,8 +829,8 @@ class TestAssetQueries:
         """
         db = MyDB()
         db._executescript(query)
-        res = asset_queries.get_assets()
-        assert len(res) == 2
+        assets_subset, total_count = asset_queries.get_assets()
+        assert len(assets_subset) == 2 and total_count == 2
     
     def test_get_assets_4(self, setup_mydb, host, pagination):
         """Should return asset with correct empty data structures."""
@@ -839,11 +841,11 @@ class TestAssetQueries:
         """
         db = MyDB()
         db._executescript(query)
-        res = asset_queries.get_assets()
-        assert res[1]['location_counts'] == []
-        assert res[1]['pictures'] == []
-        assert res[1]['invoices'] == []
-        assert res[1]['far'] == []
+        assets_subset, _ = asset_queries.get_assets()
+        assert assets_subset[1]['location_counts'] == []
+        assert assets_subset[1]['pictures'] == []
+        assert assets_subset[1]['invoices'] == []
+        assert assets_subset[1]['far'] == []
 
     
     ##########################################################
@@ -862,8 +864,8 @@ class TestAssetQueries:
         pagination(page, limit)
         db = MyDB()
         db._executescript(query)
-        res = asset_queries.get_assets()
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets()
+        assert len(assets_subset) == count
 
 
     @pytest.mark.parametrize("page, offset, limit", [
@@ -893,9 +895,9 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'asset.cost__gt':gt}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
-    
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
+
 
     @pytest.mark.parametrize("lt, count", [
         (100, 0), (101, 1), (300, 2), (301, 3), (600, 5), (601, 6),
@@ -911,8 +913,8 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'asset.cost__lt':lt}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
 
 
     @pytest.mark.parametrize("gt, lt, count", [
@@ -931,8 +933,8 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'asset.cost__gt':gt, 'asset.cost__lt':lt}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
 
 
     @pytest.mark.parametrize("contains, count", [
@@ -949,8 +951,8 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'asset.description__contains':contains}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
 
 
     @pytest.mark.parametrize("gt, lt, contains, count", [
@@ -970,8 +972,8 @@ class TestAssetQueries:
         db._executescript(query)
         filters = {'asset.cost__gt':gt, 'asset.cost__lt':lt,
             'asset.description__contains':contains}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
 
 
     @pytest.mark.parametrize("contains1, contains2, count", [
@@ -990,8 +992,8 @@ class TestAssetQueries:
         db._executescript(query)
         filters = {'asset.description__contains':contains1, 
             'asset.description__contains':contains2}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
 
 
     @pytest.mark.parametrize("includes, count", [
@@ -1008,8 +1010,8 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'asset.cost__includes':includes}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
     
 
     @pytest.mark.parametrize("gt, count", [
@@ -1032,8 +1034,8 @@ class TestAssetQueries:
         db._executescript(query)
         filters = {'asset.date_placed__gt':gt}
         # similar to: select * from asset where datetime(date_placed) > datetime(f'{gt}');
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
     
 
     @pytest.mark.parametrize("gt, lt, count", [
@@ -1057,8 +1059,8 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'asset.date_placed__gt':gt, 'asset.date_placed__lt':lt}
-        res = asset_queries.get_assets(filters=filters)
-        assert len(res) == count
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        assert len(assets_subset) == count
 
 
     @pytest.mark.parametrize("loc_id, expected_sql, expected_params", [
@@ -1143,8 +1145,8 @@ class TestAssetQueries:
         db = MyDB()
         db._executescript(query)
         filters = {'location_count.location__eq':location}
-        res = asset_queries.get_assets(filters=filters)
-        ids = sorted([v['id'] for k, v in res.items()])
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        ids = sorted([v['id'] for k, v in assets_subset.items()])
         assert ids == expected_ids
 
     ###############################################################################
@@ -1207,8 +1209,8 @@ class TestAssetQueries:
         db._executescript(query)
         filters = {'location_count.location__eq':location, 'asset.cost__eq':cost, 
             'asset.date_placed__lt':date, 'asset.bulk_count__gt':count}
-        res = asset_queries.get_assets(filters=filters)
-        ids = sorted([v['id'] for k, v in res.items()])
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        ids = sorted([v['id'] for k, v in assets_subset.items()])
         assert ids == expected_ids
 
     @pytest.mark.parametrize("location, audit_date, count, expected_ids", [
@@ -1286,8 +1288,8 @@ class TestAssetQueries:
         filters = {'location_count.location__eq':location, 
             'location_count.audit_date__gt':audit_date, 
             'location_count.count__gt':count}
-        res = asset_queries.get_assets(filters=filters)
-        ids = sorted([v['id'] for k, v in res.items()])
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
+        ids = sorted([v['id'] for k, v in assets_subset.items()])
         assert ids == expected_ids
 
     
@@ -1357,9 +1359,9 @@ class TestAssetQueries:
             'location_count.audit_date__gt':audit_date, 
             'location_count.count__gt':count}
         #import pdb; pdb.set_trace()
-        res = asset_queries.get_assets(filters=filters)
+        assets_subset, _ = asset_queries.get_assets(filters=filters)
 
-        loc_groups = [v['location_counts'] for k, v in res.items()]
+        loc_groups = [v['location_counts'] for k, v in assets_subset.items()]
         assert loc_groups == expected_location_counts
 
     
