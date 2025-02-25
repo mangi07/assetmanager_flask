@@ -6,6 +6,11 @@ function assertResponseStructureIsValid (response) {
 }
 
 function addAssets (state, response) {
+    // TODO: check that this is the correct json structure sent from the server
+    console.log("DEBUG: What is the structure of the object passed in to this addAssets function?");
+    console.log(response);
+    console.log(assertResponseStructureIsValid(response));
+
     Object.keys(response.data.assets).forEach(function(key) {
         var asset = response.data.assets[key]
         state.assets.push(
@@ -13,13 +18,9 @@ function addAssets (state, response) {
         )
     })
 
-    // TODO: check that this is the correct json structure sent from the server
-    console.log("DEBUG: What is the structure of the object passed in to this addAssets function?");
-    console.log(response);
-    console.log(assertResponseStructureIsValid(response));
-
     state.pagination.prev = response.data.prev;
     //console.info(`state.pagination.prev ${state.pagination.prev}`);
+
     state.pagination.next = response.data.next;
     //console.info(`state.pagination.next ${state.pagination.next}`);
 }

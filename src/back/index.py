@@ -9,6 +9,7 @@ from flask_cors import CORS
 from flask_jwt_extended import (JWTManager, create_access_token,
                                 create_refresh_token, get_jwt_identity,
                                 jwt_required)
+from typing import Tuple
 
 import config
 from models.user import User
@@ -127,7 +128,7 @@ def list_assets(page=0):
     future = request.args.get('future', None)
     # TODO: call to filters library function goes here
     is_current_filters = checkbox_group_filter([past, present, future], 'asset.is_current')
-    log(is_current_filters)
+    #log(is_current_filters)
     #if past == 'true' and present == 'true' and future == 'true':
     #    is_current__includes = None
     #    is_current__is_null = None
@@ -156,7 +157,7 @@ def list_assets(page=0):
             'asset.description__contains': str(desc__contains) if desc__contains else None,
         }
         filters.update(is_current_filters)
-        log(filters)
+        #log(filters)
     except:
         return jsonify(error='Bad Request: malformed query params'), 400
 
@@ -164,18 +165,70 @@ def list_assets(page=0):
     filters_str = '?' + '&'.join(filters_arr) if len(filters_arr) > 0 else ''
     
     # execute query
-    assets = asset_queries.get_assets(page, filters)
-    
-    # pagination links
-    prev = '/assets/' + str(max(page, 0)) + filters_str
-    next = '/assets/' + str(page + 1) + filters_str
+    assets, total_count = asset_queries.get_assets(page, filters)
+   
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # PAGINATION LINKS
+
+    # TODO: This fresh pagination code needs testing !!
+
+    # TODO: Eventually, this should be extracted (refactored) and then tested with unit tests.
+    def get_total_pages(max_page_size:int) -> int:
+        if (total_count > 0):
+            total_pages = (total_count + max_page_size - 1) // max_page_size  # ceiling division
+        else:
+            total_pages = 0
+        return total_pages
+    max_page_size = config.get_pagination_limit() 
+    total_pages = get_total_pages(max_page_size)
+
+    assert page >= 0, "Page must be >= 0"  # TODO: Change this to throw an exception
+    assert total_count >= total_pages, "There must be at least as many assets as there are pages to show them!"  # TODO: Change this to throw an exception
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # determine pagination links:
+
+    # TODO: Eventually, this should be extracted (refactored) and then tested with unit tests.
+    def get_page_numbers(total_pages:int, page:int) -> Tuple[int|None, int|None]:
+        '''
+        Returns a tuple of (prev,next).
+
+        If prev is None, this means we have no previous page to go to.
+        Likewise, if next is None, this means we have no next page to go to.
+          For example, we may be on the last page with no further pages.
+        '''
+        prev = next = None
+
+        if (page > 0 and total_pages > 1):
+            prev = page - 1
+
+        if (page < total_pages - 1): # first page is page "0"
+            next = page + 1
+
+        return prev, next
+    prev_page, next_page = get_page_numbers(total_pages, page)
+
+    # TODO: Eventually, this should be extracted (refactored) and then tested with unit tests.
+    def get_pagination_link(resource:str, page:int|None, filters_str:str) -> str|None:
+        # failsafe:
+        if page is None:
+            return None
+        return f'/{resource}/{str(page)}{filters_str}'
+    prev_link = get_pagination_link('assets', prev_page, filters_str)
+    next_link = get_pagination_link('assets', next_page, filters_str)
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # This older code may have been incorrect, but kept here until newer code is tested:
+    #prev = '/assets/' + str(max(page, 0)) + filters_str
+    #next = '/assets/' + str(page + 1) + filters_str
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     return jsonify(
         msg='testing',
         filters=filters,
         assets=assets,
-        prev=prev,
-        next=next
+        prev=prev_link,
+        next=next_link
     )
 
 
