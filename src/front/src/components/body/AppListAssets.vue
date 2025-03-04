@@ -192,8 +192,8 @@
         </v-expansion-panels>
 
       </v-card>
-      <v-btn :disabled="pagination.prev == null" @click="navigate('prev')"> TODO: Prev</v-btn>
-      <v-btn :disabled="pagination.next == null" @click="navigate('next')"> TODO: Next</v-btn>
+      <v-btn :disabled="pagination.prev == null" @click="navigate('prev')"> Prev </v-btn>
+      <v-btn :disabled="pagination.next == null" @click="navigate('next')"> Next </v-btn>
     </v-container>
   </div>
 </template>
@@ -288,10 +288,8 @@ export default {
 
   computed: {
     assets: function () {
-      console.log("computed.assets called");
       var a = this.$store.state.assetsModule.assets
       var file_access_token = provider.getTokensFromStorage().file_access_token
-      console.log(provider.getTokensFromStorage().file_access_token);
 
       for (let i = 0; i < a.length; i++) {
         for (let j = 0; j < a[i].pictures.length; j++) {

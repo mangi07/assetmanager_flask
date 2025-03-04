@@ -1,8 +1,10 @@
 import base64
 import json
+from os import getenv
 from datetime import datetime
 
 import requests
+from dotenv import load_dotenv
 
 # https://requests.readthedocs.io/en/latest/
 
@@ -22,8 +24,9 @@ Example response:
 '''
 class User:
     def __init__(self):
-        self.username = 'a'
-        self.password = 'a'
+        load_dotenv('../../.env.testing')
+        self.username = getenv('TEST_USERNAME')
+        self.password = getenv('TEST_PASSWORD')
 
         # TODO: consider dunder getters to refresh tokens within this class if expired rather than depending on the caller to provide exception handling/refresh
         self.access_token = None
@@ -54,7 +57,7 @@ class User:
           "file_access_token":"gAAAAABdpsTMUQtEUFl3oOXjYZXVV7hVv0kzK5oLs1UFuye0ESxrPqgjwp32VKuD4MZ7gd3x2Ow5LvYNnScuyJ1hwMp-LZJkrW1qyqRTweSU8tEVoZzOqrQ="
         }
         """
-        print("Performing token refresh...")
+        #print("Performing token refresh...")
         headers = {'Authorization': f'Bearer {self.refresh_token}'}
         #url = 'http://localhost:5000/refresh'
         url = 'https://apps.home.brodev.dev/server1/refresh'
@@ -72,7 +75,7 @@ class User:
         Returns:
             A dict of token types that could be used for request requiring authentication.
         """
-        print("Getting tokens for user login...")
+        #print("Getting tokens for user login...")
         if refresh:
             refresh_tokens = self._refresh()
             return refresh_tokens
@@ -82,7 +85,7 @@ class User:
         #r = requests.post('http://localhost:5000/login', json=payload)
         r = requests.post(f'{url}', json=payload)
         tokens = r.json()
-        print(tokens)
+        #print(tokens)
         return tokens
 
 

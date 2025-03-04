@@ -126,24 +126,7 @@ def list_assets(page=0):
     past = request.args.get('past', None)
     present = request.args.get('present', None)
     future = request.args.get('future', None)
-    # TODO: call to filters library function goes here
     is_current_filters = checkbox_group_filter([past, present, future], 'asset.is_current')
-    #log(is_current_filters)
-    #if past == 'true' and present == 'true' and future == 'true':
-    #    is_current__includes = None
-    #    is_current__is_null = None
-    #else:
-    #    is_current__includes = []
-    #    if past == 'true':
-    #        is_current__includes.append(0)
-    #    if present == 'true':
-    #        is_current__includes.append(1)
-    #    if is_current__includes == []:
-    #        is_current__includes = None
-
-    #is_current__is_null = 1 if future == 'true' else None
-    #log(is_current__includes)
-    #log(is_current__is_null)
 
     # get file access token - if None, image links provided in this response may return 404 forbidden
     file_access_token = request.args.get('file_access_token', None)
@@ -156,12 +139,23 @@ def list_assets(page=0):
             'asset.cost__lt': int(float(cost__lt)*config.get_precision_factor()) if cost__lt else None,
             'asset.description__contains': str(desc__contains) if desc__contains else None,
         }
+        filters_query_params = filters.copy()
         filters.update(is_current_filters)
-        #log(filters)
     except:
         return jsonify(error='Bad Request: malformed query params'), 400
 
-    filters_arr = [f"{k}={v}" for k, v in filters.items() if v is not None]
+    filters_arr = []
+    for k, v in filters_query_params.items():
+        # 'asset.is_current__includes' must be handled separately
+        if v is not None and v != 'asset.is_current__includes':
+            filters_arr.append(f"{k}={v}")
+    # Request represents 'asset.is_current__includes' differently:
+    #   Example query args ('present', 'true'), ('past', 'false'), ('future', 'false')
+    filters_arr.append(f"past={past}")
+    filters_arr.append(f"present={present}")
+    filters_arr.append(f"future={future}")
+    #filters_arr = [f"{k}={v}" for k, v in filters.items() if v is not None]
+
     filters_str = '?' + '&'.join(filters_arr) if len(filters_arr) > 0 else ''
     
     # execute query
@@ -216,6 +210,10 @@ def list_assets(page=0):
         return f'/{resource}/{str(page)}{filters_str}'
     prev_link = get_pagination_link('assets', prev_page, filters_str)
     next_link = get_pagination_link('assets', next_page, filters_str)
+
+    #print(f'filters_str: {filters_str}')
+    #print(f'prev_link: {prev_link}')
+    #print(f'next_link: {next_link}')
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # This older code may have been incorrect, but kept here until newer code is tested:
@@ -225,7 +223,7 @@ def list_assets(page=0):
 
     return jsonify(
         msg='testing',
-        filters=filters,
+        filters=filters_query_params,
         assets=assets,
         prev=prev_link,
         next=next_link

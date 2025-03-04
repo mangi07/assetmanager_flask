@@ -11,17 +11,17 @@ from filters import Filters
 
 user = User()
 user.init_tokens()
-print("\nAccess Token:")
-print(user.access_token)
-
-print("\nFile Access Token:")
-print(user.file_access_token)
-
-print("\nRefresh Token:")
-print(user.refresh_token)
-print()
-print("is expired??")
-print(user.token_is_expired('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxNTA1OTQ0NCwianRpIjoiODU2M2I1MGQtYzY4Yi00ODZkLWFlMGItYmY0ZGFjMmViZDI5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJuYmYiOjE3MTUwNTk0NDQsImV4cCI6MTcxNTA2MDM0NH0.HCoEGxYMtR8RPcxn4V2IiRVyXAXHCsdnj0G_dQ72rvE'))
+#print("\nAccess Token:")
+#print(user.access_token)
+#
+#print("\nFile Access Token:")
+#print(user.file_access_token)
+#
+#print("\nRefresh Token:")
+#print(user.refresh_token)
+#print()
+#print("is expired??")
+#print(user.token_is_expired('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxNTA1OTQ0NCwianRpIjoiODU2M2I1MGQtYzY4Yi00ODZkLWFlMGItYmY0ZGFjMmViZDI5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VybmFtZSI6ImEiLCJyb2xlIjoicmVndWxhciJ9LCJuYmYiOjE3MTUwNTk0NDQsImV4cCI6MTcxNTA2MDM0NH0.HCoEGxYMtR8RPcxn4V2IiRVyXAXHCsdnj0G_dQ72rvE'))
 
 
 # #############################################################################
@@ -277,6 +277,7 @@ def get_assets_filtered(user:User,filters:Filters):
 
 # ########################################################################################
 # Example based on ./back/db/db.sqlite3, filtering for cost range of assets at location with location id 3
+'''
 filtered_res_1 = get_assets_filtered(
         user,
         Filters(
@@ -285,15 +286,16 @@ filtered_res_1 = get_assets_filtered(
             location = 3,
         )
     ).json()
-#pprint(filtered_res_1)
+pprint(filtered_res_1)
+'''
 # Example based on ./back/db/db.sqlite3, filtering for asset descriptions containing 'far'
 filtered_res_2 = get_assets_filtered(
         user,
         Filters(
-            description = "far",
+            description = "test",
         )
     ).json()
-#pprint(filtered_res_2)
+pprint(filtered_res_2)
 
 # #############################################################################
 # Get image
@@ -357,6 +359,7 @@ def test_correct_file(test_method, file_requested, file_expected):
     return f1_hash == f2_hash
 
 # Test /img/<file_name> route
+'''
 if test_correct_file(get_image, '1.JPG', '../../db/files/assets/1.JPG'):
     print("File requested as expected.")
 if test_correct_file(get_image, 'non_existant_file.JPG', '../../db/files/file_not_found.jpg'):
@@ -367,6 +370,7 @@ if test_correct_file(get_file, 'invoices/1a.pdf', '../../db/files/invoices/1a.pd
     print("File requested as expected.")
 if test_correct_file(get_file, 'non_existant_file.JPG', '../../db/files/file_not_found.jpg'):
     print("File requested as expected.")
+'''
 
 # #############################################################################
 # Get location listing
@@ -389,7 +393,8 @@ def get_location_listing(user:User):
     location_listing = requests.get(f'{url}', headers=headers)
     return location_listing
 
+'''
 locs = get_location_listing(user)
 pprint(locs.json())
-
+'''
 

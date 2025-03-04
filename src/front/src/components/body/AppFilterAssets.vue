@@ -2,6 +2,12 @@
 
   <div>
     <p>Filter Assets</p>
+
+    <!-- TODO: Need to integrate these filters with vuetify. 
+      This is just a dirty fix.  This raw HTML is outside vuetify and vuetify header 
+      was hiding the two inputs at the top -->
+    <br/><br/>
+
     <div>
       <label for="cost-lt">Cost Less Than</label>
       <input id="cost-lt" type="number" placeholder="0.00" step="0.01" min="0" v-model="filters.cost__lt">

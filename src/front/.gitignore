@@ -3,6 +3,7 @@ node_modules
 
 # This config is machine specific, set up per machine:
 vite.config.js
+src/js/config.js
 
 # This is not project source code:
 dist/

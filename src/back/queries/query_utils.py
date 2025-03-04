@@ -3,14 +3,16 @@
 # #########################################
 from  logger import log
 import sqlite3
-from .db_path import DB_PATH
+#from .db_path import DB_PATH
+import config
 
 # TODO: optionally cache database schema 
 class MyDB(object):
     __instance = None
 
     def __init__(self):
-        self._conn = sqlite3.connect(DB_PATH)
+        #self._conn = sqlite3.connect(DB_PATH)
+        self._conn = sqlite3.connect(config.get_db_path())
         self._cursor = self._conn.cursor()
 
     def __new__(cls):

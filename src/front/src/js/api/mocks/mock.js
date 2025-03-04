@@ -35,7 +35,8 @@ function filterAssetListing(link) {
     return assets;
   } else {
     const keys = Object.keys(assets);
-    const allowed_keys = keys.slice(0,2); // TODO: change hard-coded pagination page size of 2 to use a value from _getPageRangeFrom, instead
+    // TODO: change hard-coded pagination page size of 2 to use a value from _getPageRangeFrom, instead
+    const allowed_keys = keys.slice(0,2);
     const filtered = keys
       .filter(key => allowed_keys.includes(key)) // TODO: modify this as needed to apply all filters
       .reduce((obj, key) => {
