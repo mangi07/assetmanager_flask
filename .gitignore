@@ -12,7 +12,7 @@ src/back/.env
 src/back/.env.testing
 src/back/flaskenv/*
 
-src/front/src/js/config.py
+src/front/src/js/config.js
 src/front/src/node_modules/*
 
 

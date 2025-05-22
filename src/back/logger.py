@@ -19,3 +19,4 @@ def log(message):
         message = pp.pformat(message)
         s = f"\n\n<<<{datetime.datetime.now()}\n" + "**" + trace + "\n\n" + message +  "\n>>>\n"
         f.write(s)
+

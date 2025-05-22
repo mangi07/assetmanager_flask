@@ -1,0 +1,19 @@
+VITE_BASE_URL="/path/to/dist/"
+
+# In the context of Vite configuration, the `VITE_BASE_URL` environment variable is used to define the base URL for your application. This variable is particularly useful when you want to specify a different base path for your application, especially in scenarios where your app is served from a subdirectory or when deploying to different environments (like staging or production).
+# 
+# Here's how it works:
+# 
+# 1. **Base URL Configuration**: The `VITE_BASE_URL` variable can be set in your `.env` files (e.g., `.env`, `.env.production`, etc.). For example:
+#    ```
+#    VITE_BASE_URL=/my-app/
+#    ```
+# 
+# 2. **Accessing the Variable**: In your Vite application, you can access this variable using `import.meta.env.VITE_BASE_URL`. This allows you to dynamically use the base URL in your application code.
+# 
+# 3. **Usage in Routing**: If you're using a router (like Vue Router or React Router), you can configure the router to use this base URL, ensuring that all routes are correctly prefixed.
+# 
+# 4. **Build and Deployment**: When you build your application for production, Vite will replace occurrences of `import.meta.env.VITE_BASE_URL` with the value defined in your environment variables, allowing for seamless deployment across different environments.
+# 
+# Overall, `VITE_BASE_URL` helps in managing the base path of your application effectively, making it easier to handle different deployment scenarios.
+

@@ -9,6 +9,7 @@ src/js/config.js
 dist/
 
 # local env files
+.env
 .env.local
 .env.*.local
 test/setup/.env
