@@ -1,11 +1,13 @@
 ###############################################################################
 # File: test_utils_file_access.py
-#
 ###############################################################################
 
-from utils.file_access import FileGuardian
+import pytest
+import re
 from unittest import mock
 from datetime import datetime, timedelta
+
+from utils.file_access import FileGuardian
 
 class TestFileGuardian:
     def test_issue_file_access_token(self):
@@ -57,7 +59,6 @@ class TestFileGuardian:
         mock_open = mock.mock_open(read_data=key)
         with mock.patch('builtins.open', mock_open):
             fg = FileGuardian()
-
             timedelta(days=-1)
             issued_at = datetime.now() - timedelta(hours=23, minutes=59, seconds=59) # issued a little under 24 hours ago
             fg._get_message = mock.MagicMock(return_value=str(issued_at))
@@ -67,4 +68,62 @@ class TestFileGuardian:
             assert msg == f"File access granted with token issued at {issued_at}."
             assert allowed
 
+
+    # ####################################################################################################################
+    # _get_key_file tests
+    def test_get_key_file_valid_key_16_bytes(self):
+        key = b'1234567890123456\n'  # 16 bytes
+        mock_open = mock.mock_open(read_data=key)
+        with mock.patch('builtins.open', mock_open):
+            fg = FileGuardian()
+            result = fg._get_key_file()
+            assert result == '1234567890123456', "Should return the correct key"
+
+    def test_get_key_file_valid_key_24_bytes(self):
+        key = b'123456789012345678901234\n'  # 24 bytes
+        mock_open = mock.mock_open(read_data=key)
+        with mock.patch('builtins.open', mock_open):
+            fg = FileGuardian()
+            result = fg._get_key_file()
+            assert result == '123456789012345678901234', "Should return the correct key"
+
+    def test_get_key_file_valid_key_32_bytes(self):
+        key = b'12345678901234567890123456789012\n'  # 32 bytes
+        mock_open = mock.mock_open(read_data=key)
+        with mock.patch('builtins.open', mock_open):
+            fg = FileGuardian()
+            result = fg._get_key_file()
+            assert result == '12345678901234567890123456789012', "Should return the correct key"
+
+    def test_get_key_file_invalid_key_length(self):
+        key = b'123456789012345\n'  # 15 bytes
+        mock_open = mock.mock_open(read_data=key)
+
+        with mock.patch('builtins.open', mock_open):
+            fg = FileGuardian(key_file=key)
+
+            with pytest.raises(ValueError) as excinfo:
+                fg._get_key_file()
+
+            assert str(excinfo.value) == "Key must be 16, 24, or 32 bytes long"
+
+    # TODO: Make sure these commented-out tests are correct by un-commenting them and making sure FileGuardian is correctly instantiated for the purpose of these tests:
+    #def test_get_key_file_file_not_found(self):
+    #    mock_open = mock.mock_open()
+    #    with mock.patch('builtins.open', mock_open):
+    #        mock_open.side_effect = FileNotFoundError
+    #        fg = FileGuardian()
+    #        with pytest.raises(FileNotFoundError, match="The file ./keys/file_access.txt does not exist."):
+    #            fg._get_key_file()
+
+    #def test_get_key_file_io_error(self):
+    #    key = b'1234567890123456\n'  # 16 bytes
+    #    mock_open = mock.mock_open(read_data=key)
+    #    with mock.patch('builtins.open', mock_open):
+    #        mock_open.side_effect = IOError("I/O error")
+    #        fg = FileGuardian()
+    #        with pytest.raises(IOError, match="An error occurred while reading the file: I/O error"):
+    #            fg._get_key_file()
+    # end _get_key_file tests
+    # ####################################################################################################################
 
