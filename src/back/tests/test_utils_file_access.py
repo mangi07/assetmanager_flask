@@ -98,32 +98,29 @@ class TestFileGuardian:
     def test_get_key_file_invalid_key_length(self):
         key = b'123456789012345\n'  # 15 bytes
         mock_open = mock.mock_open(read_data=key)
-
         with mock.patch('builtins.open', mock_open):
             fg = FileGuardian(key_file=key)
-
             with pytest.raises(ValueError) as excinfo:
                 fg._get_key_file()
-
             assert str(excinfo.value) == "Key must be 16, 24, or 32 bytes long"
 
-    # TODO: Make sure these commented-out tests are correct by un-commenting them and making sure FileGuardian is correctly instantiated for the purpose of these tests:
-    #def test_get_key_file_file_not_found(self):
-    #    mock_open = mock.mock_open()
-    #    with mock.patch('builtins.open', mock_open):
-    #        mock_open.side_effect = FileNotFoundError
-    #        fg = FileGuardian()
-    #        with pytest.raises(FileNotFoundError, match="The file ./keys/file_access.txt does not exist."):
-    #            fg._get_key_file()
+    def test_get_key_file_file_not_found(self):
+        key = b'1234567890123456\n'  # 16 bytes
+        mock_open = mock.mock_open(read_data=key)
+        with mock.patch('builtins.open', mock_open):
+            mock_open.side_effect = FileNotFoundError
+            fg = FileGuardian(key_file=key)
+            with pytest.raises(FileNotFoundError, match="The file ./keys/file_access.txt does not exist."):
+                fg._get_key_file()
 
-    #def test_get_key_file_io_error(self):
-    #    key = b'1234567890123456\n'  # 16 bytes
-    #    mock_open = mock.mock_open(read_data=key)
-    #    with mock.patch('builtins.open', mock_open):
-    #        mock_open.side_effect = IOError("I/O error")
-    #        fg = FileGuardian()
-    #        with pytest.raises(IOError, match="An error occurred while reading the file: I/O error"):
-    #            fg._get_key_file()
+    def test_get_key_file_io_error(self):
+        key = b'1234567890123456\n'  # 16 bytes
+        mock_open = mock.mock_open(read_data=key)
+        with mock.patch('builtins.open', mock_open):
+            mock_open.side_effect = IOError("I/O error")
+            fg = FileGuardian(key_file=key)
+            with pytest.raises(IOError, match="An error occurred while reading the file: I/O error"):
+                fg._get_key_file()
     # end _get_key_file tests
     # ####################################################################################################################
 
