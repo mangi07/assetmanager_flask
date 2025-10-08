@@ -1,29 +1,8 @@
-Background:
-Package cryptography in requirements.txt has issued in a Cygwin environment, and it may be good anyway to update the method used to generate and check
-these security keys that are used to guard file access.
-
-
-Prompt used:
-How might I refactor this class to provide the same (or better or updated) encrypting and decrypting using a library such as PyCryptodome or CryptoPy ?
-
-
-Answer:
-To refactor your `FileGuardian` class to use [PyCryptodome](https://pycryptodome.readthedocs.io/) (which is modern, well-maintained, and recommended), you’ll want to choose a symmetric encryption algorithm. **AES-GCM** is a great choice for both confidentiality and integrity.
-
-Below is a refactored version of your class using **PyCryptodome**'s AES-GCM.  
-**Key points:**
-- The token contains the encrypted message, the nonce (needed for decryption), and the authentication tag (to verify integrity).
-- The key should be 16, 24, or 32 bytes (AES-128/192/256).
-- We'll base64-encode the token for safe transport.
-
----
-
-```python
 from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
+#from Crypto.Random import get_random_bytes
 from datetime import datetime, timedelta
 import base64
-import os
+#import os
 
 class FileGuardian:
     def __init__(self):
@@ -70,20 +49,3 @@ class FileGuardian:
             return allowed, f"File access granted with token issued at {issued_at}."
         else:
             return allowed, 'File access token has expired.'
-```
-
----
-
-### Notes:
-
-- **Key handling:** Always use a securely generated key, and keep it safe. If your key is stored as a string, be sure to decode appropriately.
-- **Token format:** The token is nonce + tag + ciphertext, all base64-encoded. This is a common pattern with AES-GCM.
-- **Integrity:** AES-GCM ensures both confidentiality and authenticity.
-- **Error handling:** Any tampering with the token will raise an exception during decryption or verification.
-
----
-
-**You do not need to use CryptoPy** (which is old and generally not recommended).  
-PyCryptodome is the modern standard for Python cryptography.
-
-Let me know if you’d like an example of secure key generation or suggestions for further improvements!
