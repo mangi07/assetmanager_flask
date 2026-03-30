@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS "asset"
     [serial_number] TEXT,
     [bulk_count] INTEGER NOT NULL DEFAULT 1, -- often 1 but several entries are bulk
     [bulk_count_removed] INTEGER NOT NULL DEFAULT 0, -- how many of this entry are disposed/removed
-    [system_id] INTEGER, -- if NOT NULL, this identifies the physical system to which the asset entry belongs, where the physical system itself is not an asset entry in this table
+    [system_id] INTEGER, -- foreign key to system table ... if NOT NULL, this identifies the physical system to which the asset entry belongs, where the physical system itself is not an asset entry in this table
     [date_placed] TEXT,
     [date_removed] TEXT,
     [date_record_created] TEXT NOT NULL DEFAULT (datetime(current_timestamp)),
@@ -110,7 +110,20 @@ CREATE TABLE IF NOT EXISTS "asset"
     FOREIGN KEY ([purchase_order]) REFERENCES "purchase_order" ([id])
       ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY ([department]) REFERENCES "department" ([id])
+      ON DELETE NO ACTION ON UPDATE NO ACTION,
+    FOREIGN KEY ([system_id]) REFERENCE "system" ([id])
       ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS "system"
+(
+    [id] INTEGER PRIMARY KEY,
+    [system_type] TEXT, -- e.g. 'Split AC', 'Generator'
+    [description] TEXT,
+    [location_id] INTEGER,
+    [date_placed] DATE,
+    [date_removed] DATE,
+    [notes] TEXT
 );
 
 CREATE TABLE IF NOT EXISTS "checkout"
