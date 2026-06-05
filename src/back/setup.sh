@@ -26,6 +26,9 @@ elif [[ "$OSTYPE" == "cygwin" ]]; then
 
 fi
 
+# check for successful Python virtual environment activation
+[ "$(which python)" = "./flaskenv/bin/python" ] && [ "$(which pip)" = "./flaskenv/bin/pip" ] && echo "Python virtual environment seems to be correctly activated." || echo "Double check whether the Python virtual environment activated - Mismatch: which python=$(which python), which pip=$(which pip)"
+
 # Create the database using the scripts in the db folder.
 #
 # Note: This database setup is currently also needed for front end tests, 
