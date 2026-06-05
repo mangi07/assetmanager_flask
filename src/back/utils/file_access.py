@@ -17,7 +17,7 @@ class FileGuardian:
             self.key = key
 
 
-    def _get_key_file(self, file_path: str = './keys/key.txt') -> bytes:
+    def _get_key_file(self, file_path: str = './keys/file_access.txt') -> bytes:
         """
         Retrieve the encryption key from a specified file.
 

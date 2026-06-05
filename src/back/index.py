@@ -65,7 +65,7 @@ def login():
     access_token = create_access_token(identity=username)
     refresh_token = create_refresh_token(identity=username)
     fg = FileGuardian()
-    file_access_token = fg.issue_file_access_token()
+    file_access_token: str = fg.issue_file_access_token().decode('utf-8') # debug - why is this returning bytes (which cannot be jsonified on next line)
     return jsonify(access_token=access_token, refresh_token=refresh_token, file_access_token=file_access_token), 200
 
 
