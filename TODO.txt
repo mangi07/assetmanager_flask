@@ -1,3 +1,7 @@
+devops consolidation of setup from various readmes and scripts into centralized orchestrator
+
+
+-----------------------------------
 Need to test location tree creation
 
 See 
