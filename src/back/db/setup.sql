@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS "asset"
       ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY ([department]) REFERENCES "department" ([id])
       ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY ([system_id]) REFERENCE "system" ([id])
+    FOREIGN KEY ([system_id]) REFERENCES "system" ([id])
       ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
